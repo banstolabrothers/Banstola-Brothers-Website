@@ -24,10 +24,3 @@ export interface FormErrors {
   pndBranch?: string;
   streetAddress?: string;
 }
-
-export interface PromoCode {
-  code: string;
-  type: "percentage" | "fixed" | "shipping";
-  value: number;
-  description: string;
-}

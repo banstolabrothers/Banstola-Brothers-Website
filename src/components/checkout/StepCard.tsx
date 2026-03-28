@@ -1,3 +1,4 @@
+"use client";
 import MyButton from "@/components/ui/MyButton";
 
 interface StepCardProps {
@@ -25,11 +26,11 @@ const StepCard = ({
   >
     <div className="p-6 flex items-center gap-6">
       <div className="flex flex-col text-left w-full">
-        <h6 className="text-gray-900">
+        <h5 className="text-brand-900">
           {stepNumber}. {title}
-        </h6>
+        </h5>
         {isCompleted && !isActive && summaryText && (
-          <p className="text-gray-600 mt-2">{summaryText}</p>
+          <label className="text-brand-900/90 mt-2">{summaryText}</label>
         )}
       </div>
       {isCompleted && !isActive && (

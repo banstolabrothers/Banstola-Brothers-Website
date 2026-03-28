@@ -1,14 +1,13 @@
 "use client";
-import { useState, useCallback } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Check, ChevronLeft, Loader2, XIcon } from "lucide-react";
 import MyButton from "@/components/ui/MyButton";
-import { InputField } from "@/components/ui/InputField";
+import { InputField, ComboSelectField } from "@/components/ui/InputField";
 import { createOrder } from "@/lib/pickndropService";
 import type { OrderResult } from "@/lib/pickndropService";
 import StepCard from "@/components/checkout/StepCard";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import OrderSuccessCard from "@/components/checkout/OrderSuccessCard";
-import NativeSelect from "@/components/checkout/NativeSelect";
 import { usePicknDrop } from "./_hooks/usePicknDrop";
 import { DEMO_CART_ITEMS, INITIAL_FORM } from "@/lib/constants";
 import type { CartItem, CheckoutFormData, FormErrors } from "@/lib/checkout";
@@ -137,8 +136,27 @@ export default function CheckoutPage() {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
   return (
-    <section className="flex mx-auto min-h-screen my-auto w-full bg-white">
+    <section className="flex flex-col mx-auto min-h-screen my-auto w-full bg-white">
+      {/* Header Bar */}
+      <div className="flex flex-row justify-between items-center max-w-5xl w-full mx-auto px-4 py-8">
+        <MyButton
+          type="secondarybutton"
+          leadicon={<ChevronLeft size={24} />}
+          text="Go Back"
+          link="/"
+        />
+        <MyButton
+          type="secondarybutton"
+          leadicon={<XIcon size={24} />}
+          link="/"
+        />
+      </div>
+
       <div className="flex md:flex-row max-w-5xl w-full mx-auto gap-8 px-4 py-8">
         {/* LEFT: Steps */}
         <div className="flex flex-col w-7/12 gap-6">
@@ -231,25 +249,25 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            <NativeSelect
+            <ComboSelectField
               label="Delivery Branch"
               name="pndBranch"
               value={formData.pndBranch}
-              onChange={handleInputChange}
+              onChange={handleInputChange} // works unchanged — same synthetic event shape
               options={branchNames}
               placeholder={
                 initLoading
                   ? `Scanning… (${scanProgress}%)`
                   : branchNames.length === 0
                     ? "No delivery locations available"
-                    : "Select delivery branch"
+                    : "Search delivery branch…"
               }
               error={errors.pndBranch}
               required
               disabled={initLoading}
             />
 
-            {formData.pndBranch && (
+            {/* {formData.pndBranch && (
               <div className="flex items-center justify-between px-4 py-3 rounded-2xl border bg-green-50 border-green-200">
                 <div>
                   <span className="text-xs text-gray-500 block">
@@ -263,30 +281,25 @@ export default function CheckoutPage() {
                   Rs. {Number(deliveryRate ?? 0).toFixed(2)}
                 </span>
               </div>
-            )}
+            )} */}
 
-            <div className="border-t border-gray-100 pt-4 flex flex-col gap-4">
-              <p className="text-xs text-gray-400">
-                Street address for the delivery rider
-              </p>
-              <InputField
-                label="Street Address"
-                name="streetAddress"
-                value={formData.streetAddress}
-                onChange={handleInputChange}
-                placeholder="Street name, house no., tole"
-                error={errors.streetAddress}
-                required
-              />
-              <InputField
-                label="Landmark"
-                name="landmark"
-                value={formData.landmark}
-                onChange={handleInputChange}
-                placeholder="Near temple, opposite school, etc."
-                optional
-              />
-            </div>
+            <InputField
+              label="Street Address"
+              name="streetAddress"
+              value={formData.streetAddress}
+              onChange={handleInputChange}
+              placeholder="Street name, house no., tole"
+              error={errors.streetAddress}
+              required
+            />
+            <InputField
+              label="Landmark"
+              name="landmark"
+              value={formData.landmark}
+              onChange={handleInputChange}
+              placeholder="Near temple, opposite school, etc."
+              required
+            />
 
             <MyButton
               type="primarybutton"
@@ -305,26 +318,6 @@ export default function CheckoutPage() {
             summaryText={`COD · Rs. ${codAmount}`}
             onChangeClick={() => setCurrentStep(3)}
           >
-            <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-2xl border border-gray-100">
-              <div>
-                <span className="text-xs text-gray-500 block">
-                  Delivering to
-                </span>
-                <span className="text-sm font-medium text-gray-800">
-                  {formData.pndBranch}
-                </span>
-                <span className="text-xs text-gray-400 block mt-0.5">
-                  {formData.streetAddress}
-                  {formData.landmark ? `, ${formData.landmark}` : ""}
-                </span>
-              </div>
-              {deliveryRate !== null && (
-                <span className="text-sm font-bold text-gray-900 flex-shrink-0">
-                  Rs. {Number(deliveryRate).toFixed(2)}
-                </span>
-              )}
-            </div>
-
             <InputField
               label="Add a note to your order"
               name="orderNote"
@@ -337,24 +330,19 @@ export default function CheckoutPage() {
             />
 
             <div className="w-full flex flex-col gap-2">
-              <h6 className="text-gray-900">Payment Method</h6>
+              <label className="text-gray-900">Payment Method</label>
               <div className="p-4 border-2 border-brand-500 rounded-xl bg-brand-500/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 rounded-full border-2 border-brand-500 flex items-center justify-center flex-shrink-0">
                     <div className="w-2 h-2 rounded-full bg-brand-500" />
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <h6 className="text-brand-900">Cash on Delivery (COD)</h6>
-                    <p className="text-brand-900/70 text-sm">
+                    <h5 className="text-brand-900">Cash on Delivery (COD)</h5>
+                    <label className="text-brand-900/70 text-sm">
                       Pay when you receive your order
-                    </p>
+                    </label>
                   </div>
                 </div>
-                <Check
-                  size={20}
-                  className="text-brand-500 flex-shrink-0"
-                  strokeWidth={3}
-                />
               </div>
             </div>
 

@@ -29,15 +29,5 @@ export const INITIAL_FORM: CheckoutFormData = {
   orderNote: "",
 };
 
-export const PROMO_CODES = {
-  WELCOME10: { type: "percentage" as const, value: 10, description: "10% off" },
-  FLAT50: { type: "fixed" as const, value: 50, description: "NPR 50 off" },
-  FREESHIP: {
-    type: "shipping" as const,
-    value: 0,
-    description: "Free shipping",
-  },
-};
-
 export const PND_CONCURRENCY = 10;
 export const PND_CACHE_TTL = 24 * 60 * 60 * 1000;
