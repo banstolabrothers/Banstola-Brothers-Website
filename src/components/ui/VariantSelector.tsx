@@ -17,18 +17,19 @@ interface VariantGroup {
   groupName: string;
   options: VariantOptionData[];
 }
-
-interface VariantSelectorProps {
-  group: VariantGroup;
-  selectedOption: string;
-  onOptionSelect: (optionName: string) => void;
-}
-
 interface VariantOptionProps {
   option: VariantOptionData;
   isSelected: boolean;
   isOutOfStock: boolean;
   onSelect: () => void;
+}
+
+interface VariantSelectorProps {
+  group: VariantGroup;
+  selectedOption: string;
+  onOptionSelect: (optionName: string) => void;
+  layout?: "grid" | "row"; // add this
+  columns?: number; // add this
 }
 
 // ── Individual option ────────────────────────────────────────────────────────
