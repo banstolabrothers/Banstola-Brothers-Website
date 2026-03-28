@@ -164,7 +164,7 @@ const ReviewHeader = ({
       <div className="border-t border-brand-900/40 mb-6" />
 
       {/* ── Row 2: Filter + Write review buttons ── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {showFilters && (
           <MyButton
             type="secondarybutton"
@@ -179,13 +179,13 @@ const ReviewHeader = ({
           link={reviewLink}
           leadicon={<Pencil size={32} />}
         />
-      </div>
+      </div> */}
 
       {/* ── Filter panel ── */}
-      {showFilters && isFilterOpen && (
+      {/* {showFilters && isFilterOpen && (
         <div className="animate-in slide-in-from-top-2 duration-300">
           {/* Product filter */}
-          {products.length > 0 && (
+      {/* {products.length > 0 && (
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
                 <h6 className="text-neutral-700">Product</h6>
@@ -214,10 +214,10 @@ const ReviewHeader = ({
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
-          {/* Rating filter */}
-          <div className="mb-6">
+      {/* Rating filter */}
+      {/* <div className="mb-6">
             <div className="flex items-center gap-3 mb-3">
               <h6 className="text-neutral-700">Rating</h6>
               {hasRatingFilter && (
@@ -244,10 +244,10 @@ const ReviewHeader = ({
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
-          {/* Content type filter */}
-          <div className="mb-6">
+      {/* Content type filter */}
+      {/* <div className="mb-6">
             <div className="flex items-center gap-3 mb-3">
               <h6 className="text-neutral-700">Content Type</h6>
               {hasContentFilters && (
@@ -285,9 +285,9 @@ const ReviewHeader = ({
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </div> */}
+      {/* </div> */}
+      {/* )} */}
 
       {/* ── Row 3: Count + Sort ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
