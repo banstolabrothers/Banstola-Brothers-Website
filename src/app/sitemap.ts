@@ -21,9 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: "https://www.banstolabrothers.com.np", priority: 1.0 },
     { url: "https://www.banstolabrothers.com.np/products", priority: 0.9 },
     { url: "https://www.banstolabrothers.com.np/story", priority: 0.6 },
-    { url: "https://www.banstolabrothers.com.np/reviews", priority: 0.6 },
+    { url: "https://www.banstolabrothers.com.np/all-reviews", priority: 0.6 },
     { url: "https://www.banstolabrothers.com.np/store", priority: 0.6 },
     ...productUrls,
-    ...categoryUrls,
   ];
 }
