@@ -218,7 +218,7 @@ const ProductReviewSection = ({
     return (
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h3 className="text-neutral-900 mb-4">No Reviews Yet</h3>
+          <h3 className="text-brand-900 mb-4">No Reviews Yet</h3>
           <p className="text-neutral-600 mb-8">
             Be the first to review this product!
           </p>

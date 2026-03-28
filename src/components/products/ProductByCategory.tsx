@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
 import { allProductsQuery, allCategoriesQuery } from "@/lib/queries";
 import type { Product, Category } from "@/types/product";
-
 import MyButton from "@/components/ui/MyButton";
-import shadow from "../../../public/image/homepage/shadow.svg";
+import shadow from "@/assets/svg/shadow.svg";
 import { MoveRightIcon } from "lucide-react";
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -134,7 +133,7 @@ const ProductByCategory = () => {
               {/* Product Info */}
               <div className="flex flex-col text-center justify-center items-center w-full gap-8">
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-neutral-900">{product.title}</h2>
+                  <h2 className="text-brand-900">{product.title}</h2>
                   {product.shortDescription && (
                     <p className="text-neutral-800">
                       {product.shortDescription}

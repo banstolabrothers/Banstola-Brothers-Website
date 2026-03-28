@@ -37,6 +37,7 @@ interface MyButtonProps {
   showTextWhenSelected?: boolean;
   disabled?: boolean;
   product?: Record<string, unknown> | null;
+  onClick?: () => void;
 }
 
 // ── WhatsApp settings hook ───────────────────────────────────────────────────
@@ -83,7 +84,12 @@ const generateWhatsAppURL = (
   message: string,
   product?: Record<string, unknown> | null,
 ) => {
-  let finalMessage = message;
+  // Fallback if Sanity defaultMessage is null/empty
+  const baseMessage =
+    message ||
+    "Hello! I'm interested in your products. Could you please share more details? Thank you!";
+
+  let finalMessage = baseMessage;
 
   if (product) {
     const productName = (product.title as string) || "this product";
@@ -142,6 +148,7 @@ const MyButton = ({
   showTextWhenSelected = false,
   disabled = false,
   product = null,
+  onClick,
 }: MyButtonProps) => {
   const router = useRouter();
   const { settings, loading } = useWhatsAppSettings();
@@ -232,9 +239,11 @@ const MyButton = ({
   }
 
   // Default button
+  // Default button
   return (
     <button
-      onClick={handleClick}
+      type="button"
+      onClick={onClick ?? handleClick}
       className={cn(
         btnClassName,
         disabled && "opacity-50 cursor-not-allowed",
@@ -244,11 +253,13 @@ const MyButton = ({
     >
       {type === "whatsapp" && !leadicon && !trailicon && <WhatsAppIcon />}
       {leadicon}
-      <label className="text-[20px] leading-[160%] font-RGRegular cursor-pointer">
-        {type === "whatsapp" && !text
-          ? settings?.buttonText || "Chat with us"
-          : text}
-      </label>
+      {(text || (type === "whatsapp" && !text)) && (
+        <span className="text-[20px] leading-[160%] font-RGRegular cursor-pointer">
+          {type === "whatsapp" && !text
+            ? settings?.buttonText || "Chat with us"
+            : text}
+        </span>
+      )}
       {trailicon}
       {children}
     </button>

@@ -33,13 +33,13 @@ const portableTextComponents: PortableTextComponents = {
       <p className="text-neutral-700 leading-relaxed mb-6">{children}</p>
     ),
     h1: ({ children }) => (
-      <h2 className="text-neutral-900 mb-6 mt-8">{children}</h2>
+      <h2 className="text-brand-900 mb-6 mt-8">{children}</h2>
     ),
     h2: ({ children }) => (
-      <h3 className="text-neutral-900 mb-5 mt-8">{children}</h3>
+      <h3 className="text-brand-900 mb-5 mt-8">{children}</h3>
     ),
     h3: ({ children }) => (
-      <h4 className="text-2xl font-semibold text-neutral-900 mb-4 mt-6">
+      <h4 className="text-2xl font-semibold text-brand-900 mb-4 mt-6">
         {children}
       </h4>
     ),
@@ -67,7 +67,7 @@ const portableTextComponents: PortableTextComponents = {
   },
   marks: {
     strong: ({ children }) => (
-      <strong className="font-bold text-neutral-900">{children}</strong>
+      <strong className="font-bold text-brand-900">{children}</strong>
     ),
     em: ({ children }) => <em className="italic">{children}</em>,
     code: ({ children }) => (

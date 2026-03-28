@@ -77,7 +77,6 @@ const ReviewHeader = ({
     setFilterBy(filterValue);
   }, [showPhotosOnly, showTextOnly, setFilterBy]);
 
-  // Auto-size the select to fit the current label
   useEffect(() => {
     if (measureRef.current && selectRef.current) {
       selectRef.current.style.width = `${measureRef.current.offsetWidth}px`;
@@ -164,7 +163,7 @@ const ReviewHeader = ({
       <div className="border-t border-brand-900/40 mb-6" />
 
       {/* ── Row 2: Filter + Write review buttons ── */}
-      {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {showFilters && (
           <MyButton
             type="secondarybutton"
@@ -179,20 +178,20 @@ const ReviewHeader = ({
           link={reviewLink}
           leadicon={<Pencil size={32} />}
         />
-      </div> */}
+      </div>
 
       {/* ── Filter panel ── */}
-      {/* {showFilters && isFilterOpen && (
+      {showFilters && isFilterOpen && (
         <div className="animate-in slide-in-from-top-2 duration-300">
           {/* Product filter */}
-      {/* {products.length > 0 && (
+          {products.length > 0 && (
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
                 <h6 className="text-neutral-700">Product</h6>
                 {hasProductFilter && (
                   <button
                     onClick={() => setSelectedProduct?.("all")}
-                    className="px-3 py-1 text-xs text-neutral-600 hover:text-neutral-900 underline"
+                    className="px-3 py-1 text-xs text-neutral-600 hover:text-brand-900 underline"
                   >
                     Clear
                   </button>
@@ -206,7 +205,7 @@ const ReviewHeader = ({
                     className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition-all ${
                       selectedProduct === product.id
                         ? "bg-brand-500 text-white border-brand-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                        : "bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50"
+                        : "bg-white text-neutral-700 border-neutral-300 hover:border-brand-900 hover:bg-neutral-50"
                     }`}
                   >
                     {product.name}
@@ -214,16 +213,16 @@ const ReviewHeader = ({
                 ))}
               </div>
             </div>
-          )} */}
+          )}
 
-      {/* Rating filter */}
-      {/* <div className="mb-6">
+          {/* Rating filter */}
+          <div className="mb-6">
             <div className="flex items-center gap-3 mb-3">
               <h6 className="text-neutral-700">Rating</h6>
               {hasRatingFilter && (
                 <button
                   onClick={() => setSelectedRating?.("all")}
-                  className="px-3 py-1 text-xs text-neutral-600 hover:text-neutral-900 underline"
+                  className="px-3 py-1 text-xs text-neutral-600 hover:text-brand-900 underline"
                 >
                   Clear
                 </button>
@@ -237,23 +236,23 @@ const ReviewHeader = ({
                   className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
                     selectedRating === rating.toString()
                       ? "bg-brand-500 text-white border-brand-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                      : "bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50"
+                      : "bg-white text-neutral-700 border-neutral-300 hover:border-brand-900 hover:bg-neutral-50"
                   }`}
                 >
                   {rating} <span className="text-xs">★</span>
                 </button>
               ))}
             </div>
-          </div> */}
+          </div>
 
-      {/* Content type filter */}
-      {/* <div className="mb-6">
+          {/* Content type filter */}
+          <div className="mb-6">
             <div className="flex items-center gap-3 mb-3">
               <h6 className="text-neutral-700">Content Type</h6>
               {hasContentFilters && (
                 <button
                   onClick={clearContentFilters}
-                  className="px-3 py-1 text-xs text-neutral-600 hover:text-neutral-900 underline"
+                  className="px-3 py-1 text-xs text-neutral-600 hover:text-brand-900 underline"
                 >
                   Clear
                 </button>
@@ -278,16 +277,16 @@ const ReviewHeader = ({
                   className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition-all ${
                     state
                       ? "bg-brand-500 text-white border-brand-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                      : "bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900 hover:bg-neutral-50"
+                      : "bg-white text-neutral-700 border-neutral-300 hover:border-brand-900 hover:bg-neutral-50"
                   }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
-          </div> */}
-      {/* </div> */}
-      {/* )} */}
+          </div>
+        </div>
+      )}
 
       {/* ── Row 3: Count + Sort ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -296,7 +295,6 @@ const ReviewHeader = ({
         <div className="flex flex-row items-center w-fit gap-4">
           <h5>Sort By:</h5>
           <div className="relative inline-block">
-            {/* Invisible measure span for auto-width */}
             <span
               ref={measureRef}
               className="invisible absolute whitespace-nowrap pl-8 py-4 pr-12"

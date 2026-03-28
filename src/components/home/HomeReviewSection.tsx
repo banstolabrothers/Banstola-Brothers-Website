@@ -1,9 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { MoveRightIcon } from "lucide-react";
 import { client } from "@/lib/sanity";
 import ReviewCarousel from "./ReviewCarousel";
-import MyButton from "../ui/MyButton";
+import MyButton from "@/components/ui/MyButton";
 
 interface ReviewItem {
   description: string;
@@ -77,7 +75,7 @@ const HomeReviewSection = async () => {
       <div className="w-full mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between max-w-7xl mx-auto mb-16">
-          <h2 className="text-neutral-900">
+          <h2 className="text-brand-900">
             {totalCount.toLocaleString()}+ reviews
           </h2>
 

@@ -86,12 +86,12 @@ const ReviewCard = ({
       <div className="w-full lg:w-4/12 gap-4">
         {/* User info */}
         <div className="flex flex-row items-center gap-4">
-          <span className="flex w-16 h-16 aspect-square rounded-full bg-yellow-500 items-center justify-center text-neutral-900 flex-shrink-0">
+          <span className="flex w-16 h-16 aspect-square rounded-full bg-yellow-500 items-center justify-center text-brand-900 flex-shrink-0">
             <h4>{getInitials(review.username)}</h4>
           </span>
           <div className="flex flex-col gap-1 w-full">
             <span className="flex flex-wrap gap-4 w-full">
-              <h4 className="text-neutral-900">
+              <h4 className="text-brand-900">
                 {review.username || "Anonymous"}
               </h4>
               <label className="inline-flex items-center gap-1 rounded-full">
@@ -130,7 +130,7 @@ const ReviewCard = ({
               <label className="text-neutral-500 pointer-events-none">
                 Purchased item
               </label>
-              <h4 className="text-neutral-900 hover:text-brand-500 transition-colors pointer-events-none">
+              <h4 className="text-brand-900 hover:text-brand-500 transition-colors pointer-events-none">
                 {review.product.title}
               </h4>
             </div>

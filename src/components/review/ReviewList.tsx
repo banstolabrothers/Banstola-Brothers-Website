@@ -1,4 +1,4 @@
-import MyButton from "../ui/MyButton";
+import MyButton from "@/components/ui/MyButton";
 import ReviewCard from "./ReviewCard";
 
 // ── Types ────────────────────────────────────────────────────────────────────

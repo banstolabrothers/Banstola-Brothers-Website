@@ -2,7 +2,7 @@
 import MyButton from "@/components/ui/MyButton";
 import ProductImageGallerySection from "@/components/products/ProductImageGallerySection";
 import { MapPin } from "lucide-react";
-import VariantSelector from "../ui/VariantSelector";
+import VariantSelector from "@/components/ui/VariantSelector";
 import type { Product, SelectedOptions } from "@/types/product";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ const ProductHeroSection = ({
 
       {/* Right: Product Info */}
       <div className="flex flex-col w-full md:w-6/12 md:items-center md:justify-center gap-8">
-        <h2 className="text-neutral-900 w-fit md:w-full">{product.title}</h2>
+        <h2 className="text-brand-900 w-fit md:w-full">{product.title}</h2>
 
         {(product.variantGroups?.length ?? 0) > 0 && (
           <div className="flex flex-col flex-wrap gap-8 w-full">
@@ -61,7 +61,7 @@ const ProductHeroSection = ({
           <MyButton
             type="whatsapp"
             text="Order Via WhatsApp"
-            product={{ ...product, selectedOptions }}
+            product={product ? { ...product, selectedOptions } : null}
           />
         </div>
       </div>

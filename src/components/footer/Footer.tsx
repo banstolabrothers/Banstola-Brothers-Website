@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import logo from "../../../public/image/banstola brothers vertical.svg";
+import logo from "@/assets/svg/banstola brothers vertical.svg";
 import { footerData } from "./footerData";
 
 const Footer = () => {

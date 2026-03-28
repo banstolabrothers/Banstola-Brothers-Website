@@ -9,6 +9,8 @@ import { Drawer } from "vaul";
 import headerData from "./headerData";
 import Image from "next/image";
 import { linksData } from "./linksData";
+import MyButton from "@/components/ui/MyButton";
+import logo from "@/assets/svg/BanstolaBrothers White.svg";
 
 // ── Register GSAP plugin ─────────────────────────────────────────────────────
 gsap.registerPlugin(ScrollTrigger);
@@ -238,7 +240,7 @@ const Logo = ({
   <Link href="/" className="flex-shrink-0 z-50">
     <Image
       ref={logoRef as React.RefObject<HTMLImageElement>}
-      src="/image/BanstolaBrothers.svg"
+      src={logo}
       alt="Banstola Brothers Logo"
       width={200}
       height={60}
@@ -266,9 +268,7 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
                 : "text-white hover:line-through"
             }`}
           >
-            <span className="text-[20px] leading-[160%] font-RGRegular">
-              {item.title}
-            </span>
+            <p>{item.title}</p>
           </Link>
         ))}
       </nav>
@@ -284,12 +284,10 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
                 : "text-white hover:line-through"
             }`}
           >
-            <span className="text-[20px] leading-[160%] font-RGRegular">
-              {item.title}
-            </span>
+            <p>{item.title}</p>
           </Link>
         ))}
-        {/* MyButton goes here once converted */}
+        <MyButton type="whatsapp" />
       </nav>
     </section>
   );

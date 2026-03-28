@@ -62,7 +62,7 @@ const ProductStickyNav = ({
           <MyButton
             type="whatsapp"
             text="Order Via WhatsApp"
-            product={{ ...product, selectedOptions }}
+            product={product ? { ...product, selectedOptions } : null}
           />
         </div>
       </div>

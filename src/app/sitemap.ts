@@ -17,18 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const categoryUrls = categories.map((c: any) => ({
-    url: `https://www.banstolabrothers.com.np/category/${c.slug.current}`,
-    lastModified: new Date(c._updatedAt),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
-
   return [
     { url: "https://www.banstolabrothers.com.np", priority: 1.0 },
-    { url: "https://www.banstolabrothers.com.np/product", priority: 0.9 },
-    { url: "https://www.banstolabrothers.com.np/about", priority: 0.6 },
-    { url: "https://www.banstolabrothers.com.np/contact", priority: 0.6 },
+    { url: "https://www.banstolabrothers.com.np/products", priority: 0.9 },
+    { url: "https://www.banstolabrothers.com.np/story", priority: 0.6 },
+    { url: "https://www.banstolabrothers.com.np/reviews", priority: 0.6 },
+    { url: "https://www.banstolabrothers.com.np/store", priority: 0.6 },
     ...productUrls,
     ...categoryUrls,
   ];

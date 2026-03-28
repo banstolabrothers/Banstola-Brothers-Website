@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@/lib/sanity";
-import star from "@/assets/star.svg";
+import star from "@/assets/svg/star.svg";
 import { productListQuery } from "@/lib/queries";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ const page = () => {
 
                 {/* Product Info */}
                 <div className="flex flex-col items-center gap-2 mt-4">
-                  <h3 className="text-neutral-900 text-center duration-300 ease-in-out">
+                  <h3 className="text-brand-900 text-center duration-300 ease-in-out">
                     {product.title}
                   </h3>
 

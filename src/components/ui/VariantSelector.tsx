@@ -66,12 +66,12 @@ const VariantOption = ({
 
           {/* Hover overlay */}
           {isHovered && !isSelected && !isOutOfStock && (
-            <div className="absolute inset-0 bg-neutral-900/20 rounded-xl transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-brand-900/20 rounded-xl transition-opacity duration-300" />
           )}
 
           {/* Selected checkmark overlay */}
           {isSelected && (
-            <div className="absolute inset-0 m-1 bg-neutral-900/60 flex rounded-xl items-center justify-center transition-opacity duration-300">
+            <div className="absolute inset-0 m-1 bg-brand-900/60 flex rounded-xl items-center justify-center transition-opacity duration-300">
               <svg
                 className="w-10 h-10 text-white"
                 fill="none"
@@ -92,7 +92,7 @@ const VariantOption = ({
         {/* Label */}
         <div className="mt-2">
           <label
-            className={`${isSelected ? "text-neutral-900 font-HBold" : "text-neutral-600"}`}
+            className={`${isSelected ? "text-brand-900 font-HBold" : "text-neutral-600"}`}
           >
             {option.optionName}
           </label>
@@ -122,9 +122,7 @@ const VariantOption = ({
         <div className="flex-1 space-y-1">
           <label
             className={`cursor-pointer ${
-              isSelected && !isOutOfStock
-                ? "text-brand-500"
-                : "text-neutral-900"
+              isSelected && !isOutOfStock ? "text-brand-500" : "text-brand-900"
             }`}
           >
             {option.optionName}
@@ -151,7 +149,7 @@ const VariantSelector = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h5 className="text-neutral-900">{group.groupName}</h5>
+        <h5 className="text-brand-900">{group.groupName}</h5>
       </div>
 
       <div className="flex flex-wrap flex-row gap-3">

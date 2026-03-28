@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MoveRightIcon } from "lucide-react";
-import MyButton from "../ui/MyButton";
+import MyButton from "@/components/ui/MyButton";
 
 const HistorySection = () => {
   return (

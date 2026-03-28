@@ -1,8 +1,7 @@
 import Link from "next/link";
-// import { Instagram } from "lucide-react";
 import { client } from "@/lib/sanity";
 import InstagramCarousel from "./InstagramCarousel";
-import MyButton from "../ui/MyButton";
+import MyButton from "@/components/ui/MyButton";
 
 interface SanityImage {
   _key: string;

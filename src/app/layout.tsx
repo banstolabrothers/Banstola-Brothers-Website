@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,7 +24,7 @@ export const metadata: Metadata = {
     locale: "en_NP",
     url: "https://www.banstolabrothers.com.np",
     siteName: "Banstola Brothers",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [{ url: "./og-image.png", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
@@ -39,11 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

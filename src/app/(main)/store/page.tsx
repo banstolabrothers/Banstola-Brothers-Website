@@ -1,4 +1,4 @@
-import store from "../../../public/image/storepage/Store.png";
+import store from "@/assets/image/Store.png";
 import MyButton from "@/components/ui/MyButton";
 
 const page = () => {
