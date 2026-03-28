@@ -95,8 +95,15 @@ const ProductReviewSection = ({
               username?: string;
               rating?: number;
               description?: string;
-              productReviewImages?: unknown[];
-              reply?: unknown;
+              productReviewImages?: Array<{
+                asset?: { url: string };
+                caption?: string;
+              }>; // ← matches ReviewItem
+              reply?: {
+                message: string;
+                replyDate?: string;
+                repliedBy?: string;
+              }; // ← also fix reply while here
             }>;
             product?: unknown;
             category?: { title?: string; image?: { asset?: { url?: string } } };
