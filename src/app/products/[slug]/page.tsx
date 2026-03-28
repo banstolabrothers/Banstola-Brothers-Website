@@ -9,58 +9,9 @@ import ProductHeroSection from "@/components/products/ProductHeroSection";
 import ProductContentSection from "@/components/products/ProductContentSection";
 import ProductReviewSection from "@/components/review/ProductReviewSection";
 import ProductStickyNav from "@/components/header/ProductStickyNav";
+import type { Product, SelectedOptions } from "@/types/product";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-interface SanityImageAsset {
-  _id: string;
-  url: string;
-}
-
-interface SanityImage {
-  asset: SanityImageAsset;
-  alt?: string;
-  caption?: string;
-}
-
-interface CategoryRef {
-  title: string;
-  slug: { current: string };
-}
-
-interface VariantOption {
-  optionName: string;
-  description?: string;
-  price?: number;
-  currency?: string;
-  inStock: boolean;
-  optionImage?: SanityImage;
-}
-
-interface VariantGroup {
-  groupName: string;
-  groupType?: string;
-  options: VariantOption[];
-}
-
-export interface Product {
-  _id: string;
-  title: string;
-  shortDescription?: string;
-  content?: unknown[];
-  slug: { current: string };
-  brand?: string;
-  sku?: string;
-  metaDescription?: string;
-  category?: CategoryRef;
-  primaryImage?: SanityImage;
-  additionalImages?: SanityImage[];
-  variantGroups?: VariantGroup[];
-  _createdAt: string;
-  _updatedAt: string;
-}
-
-export type SelectedOptions = Record<string, string>;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

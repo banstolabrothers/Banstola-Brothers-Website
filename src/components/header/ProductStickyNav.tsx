@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import MyButton from "@/components/ui/MyButton";
+import type { Product, SelectedOptions } from "@/types/product"; // add this import
 
 interface ProductStickyNavProps {
   productName?: string;
-  selectedOptions?: Record<string, string>;
-  product?: Record<string, unknown>;
+  selectedOptions?: SelectedOptions;
+  product?: Product; // was: Record<string, unknown>
 }
 
 const ProductStickyNav = ({
