@@ -53,4 +53,13 @@ export interface Category {
   image?: { asset: SanityImageAsset };
 }
 
+export interface GalleryImage {
+  url: string;
+  alt: string;
+  caption?: string;
+  type: "primary" | "additional" | "variant";
+  variantGroup?: string;
+  variantOption?: string;
+}
+
 export type SelectedOptions = Record<string, string>;

@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import "swiper/css/free-mode";
-import type { Product } from "@/types/product";
+import type { GalleryImage } from "@/types/product";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
