@@ -98,8 +98,7 @@ export default function CheckoutPage() {
   const [submitError, setSubmitError] = useState("");
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!validateStep(2)) return;
     setIsSubmitting(true);
     setSubmitError("");
