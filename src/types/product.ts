@@ -46,4 +46,11 @@ export interface Product {
   _updatedAt: string;
 }
 
+export interface Category {
+  title: string;
+  slug: { current: string };
+  description?: string;
+  image?: { asset: SanityImageAsset };
+}
+
 export type SelectedOptions = Record<string, string>;

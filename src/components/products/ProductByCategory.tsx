@@ -3,12 +3,7 @@
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
 import { allProductsQuery, allCategoriesQuery } from "@/lib/queries";
-import type {
-  Product,
-  CategoryRef,
-  VariantOption,
-  VariantGroup,
-} from "@/types/product";
+import type { Product, Category } from "@/types/product";
 
 import MyButton from "@/components/ui/MyButton";
 import shadow from "../../../public/image/homepage/shadow.svg";
