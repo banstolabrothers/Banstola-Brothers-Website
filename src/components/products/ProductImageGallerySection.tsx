@@ -8,38 +8,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import "swiper/css/free-mode";
+import type { Product } from "@/types/product";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface GalleryImage {
-  url: string;
-  alt: string;
-  caption?: string;
-  type: "primary" | "additional" | "variant";
-  variantGroup?: string;
-  variantOption?: string;
-}
-
-interface Product {
-  title: string;
-  primaryImage?: { asset?: { url: string }; alt?: string };
-  additionalImages?: Array<{
-    asset?: { url: string };
-    alt?: string;
-    caption?: string;
-  }>;
-  variantGroups?: Array<{
-    groupName: string;
-    options?: Array<{
-      optionName: string;
-      optionImage?: { asset?: { url: string }; alt?: string };
-    }>;
-  }>;
-}
-
-interface ProductImageGallerySectionProps {
-  product: Product;
-  selectedOptions?: Record<string, string>;
-}
 
 // ── Thumbnail gallery ────────────────────────────────────────────────────────
 const ProductImageGallery = ({

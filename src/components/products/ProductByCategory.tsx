@@ -3,57 +3,16 @@
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
 import { allProductsQuery, allCategoriesQuery } from "@/lib/queries";
+import type {
+  Product,
+  CategoryRef,
+  VariantOption,
+  VariantGroup,
+} from "@/types/product";
+
 import MyButton from "@/components/ui/MyButton";
 import shadow from "../../../public/image/homepage/shadow.svg";
 import { MoveRightIcon } from "lucide-react";
-
-// ─── Types (shaped exactly to your GROQ projections) ──────────────────────────
-
-// Expanded asset shape — query uses asset->{ _id, url }
-interface SanityImageAsset {
-  _id: string;
-  url: string;
-}
-
-interface SanityImage {
-  asset: SanityImageAsset;
-  alt?: string;
-}
-
-// allCategoriesQuery → category->{ title, slug }  (no _id)
-interface CategoryRef {
-  title: string;
-  slug: { current: string };
-}
-
-// allCategoriesQuery top-level shape
-interface Category {
-  title: string;
-  slug: { current: string };
-  description?: string;
-  image?: { asset: SanityImageAsset };
-}
-
-// allProductsQuery → variantGroups[0]{ options[0]{ price, currency } }
-interface VariantOption {
-  price: number;
-  currency: string;
-}
-
-interface VariantGroup {
-  options: [VariantOption?];
-}
-
-// allProductsQuery top-level shape
-interface Product {
-  title: string;
-  slug: { current: string };
-  shortDescription?: string;
-  primaryImage?: SanityImage; // expanded: asset->{ _id, url }
-  brand?: string;
-  category?: CategoryRef; // ← slug only, NO _id
-  variantGroups?: [VariantGroup?] | null;
-}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

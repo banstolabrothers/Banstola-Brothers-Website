@@ -3,7 +3,7 @@ import MyButton from "@/components/ui/MyButton";
 import ProductImageGallerySection from "@/components/products/ProductImageGallerySection";
 import { MapPin } from "lucide-react";
 import VariantSelector from "../ui/VariantSelector";
-// import type { Product, SelectedOptions } from "./ProductDetail";
+import type { Product, SelectedOptions } from "@/types/product";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
