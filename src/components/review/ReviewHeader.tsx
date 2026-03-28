@@ -294,7 +294,7 @@ const ReviewHeader = ({
 
         <div className="flex flex-row items-center w-fit gap-4">
           <h5>Sort By:</h5>
-          <div className="relative inline-block">
+          <p className="relative inline-block">
             <span
               ref={measureRef}
               className="invisible absolute whitespace-nowrap pl-8 py-4 pr-12"
@@ -315,7 +315,7 @@ const ReviewHeader = ({
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
               <ChevronDown size={24} />
             </div>
-          </div>
+          </p>
         </div>
       </div>
 

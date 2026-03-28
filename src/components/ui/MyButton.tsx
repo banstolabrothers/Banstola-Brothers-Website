@@ -254,11 +254,11 @@ const MyButton = ({
       {type === "whatsapp" && !leadicon && !trailicon && <WhatsAppIcon />}
       {leadicon}
       {(text || (type === "whatsapp" && !text)) && (
-        <span className="text-[20px] leading-[160%] font-RGRegular cursor-pointer">
+        <p className="cursor-pointer">
           {type === "whatsapp" && !text
             ? settings?.buttonText || "Chat with us"
             : text}
-        </span>
+        </p>
       )}
       {trailicon}
       {children}

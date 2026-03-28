@@ -30,7 +30,7 @@ interface LinkValue {
 const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="text-neutral-700 leading-relaxed mb-6">{children}</p>
+      <p className="text-brand-900 leading-relaxed mb-6">{children}</p>
     ),
     h1: ({ children }) => (
       <h2 className="text-brand-900 mb-6 mt-8">{children}</h2>
@@ -122,7 +122,7 @@ const portableTextComponents: PortableTextComponents = {
             className="w-full rounded-2xl shadow-sm"
           />
           {v?.caption && (
-            <figcaption className="text-center text-sm text-neutral-600 mt-3">
+            <figcaption className="text-center font-family-regular text-md text-neutral-600 mt-3">
               {v.caption}
             </figcaption>
           )}
