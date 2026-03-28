@@ -61,5 +61,9 @@ export interface GalleryImage {
   variantGroup?: string;
   variantOption?: string;
 }
+export interface ProductImageGallerySectionProps {
+  product: Product;
+  selectedOptions?: SelectedOptions;
+}
 
 export type SelectedOptions = Record<string, string>;
