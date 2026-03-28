@@ -1,26 +1,512 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Custom Theme Tokens (Tailwind v4 uses @theme, not tailwind.config.js) ──
+   Define all custom colors, fonts, and design tokens here.
+   These become available as Tailwind utilities automatically.
+──────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Brand colors — used as bg-brand-*, text-brand-*, border-brand-*, etc. */
+  --color-brand-50: #fff8f0;
+  --color-brand-100: #ffe8cc;
+  --color-brand-200: #ffc999;
+  --color-brand-300: #ffa366;
+  --color-brand-400: #ff7a33;
+  --color-brand-500: #ef4130;
+  --color-brand-600: #cc2a1a;
+  --color-brand-700: #a81f10;
+  --color-brand-800: #7a1508;
+  --color-brand-900: #451e00;
+
+  /* Custom font-family tokens — used as font-narrow-bold, font-compact, etc. */
+  --font-family-narrow-bold: "RightGrotesk-NarrowBold", sans-serif;
+  --font-family-narrow-dark: "RightGrotesk-NarrowDark", sans-serif;
+  --font-family-compact-regular: "RightGrotesk-CompactRegular", sans-serif;
+  --font-family-regular: "RightGrotesk-Regular", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Fonts ─────────────────────────────────────────────────────────────────
+   In Next.js, files in /public are served from the root.
+   So /public/font/... becomes /font/...
+──────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "RightGrotesk-NarrowBold";
+  src: url("/font/RightGrotesk-NarrowBold.otf") format("opentype");
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@font-face {
+  font-family: "RightGrotesk-NarrowDark";
+  src: url("/font/RightGrotesk-NarrowDark.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "RightGrotesk-CompactRegular";
+  src: url("/font/RightGrotesk-CompactRegular.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "RightGrotesk-Regular";
+  src: url("/font/RightGrotesk-Regular.otf") format("opentype");
+  font-display: swap;
+}
+
+/* ── Typography scale helpers ───────────────────────────────────────────────
+   Tailwind v4 does NOT support responsive variants (sm:, md:, lg:) inside
+   @apply. All responsive typography is written as plain CSS + media queries.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* heading-one  (40 → 48 → 64 → 72 → 96px) */
+.heading-one {
+  font-family: "RightGrotesk-NarrowDark", sans-serif;
+  font-size: 40px;
+  line-height: 120%;
+  letter-spacing: 0.025em;
+}
+@media (min-width: 640px) {
+  .heading-one {
+    font-size: 48px;
+  }
+}
+@media (min-width: 768px) {
+  .heading-one {
+    font-size: 64px;
+  }
+}
+@media (min-width: 1024px) {
+  .heading-one {
+    font-size: 72px;
+  }
+}
+@media (min-width: 1280px) {
+  .heading-one {
+    font-size: 96px;
   }
 }
 
+/* heading-two  (48 → 60 → 64px) */
+.heading-two {
+  font-family: "RightGrotesk-NarrowDark", sans-serif;
+  font-size: 48px;
+  line-height: 120%;
+}
+@media (min-width: 768px) {
+  .heading-two {
+    font-size: 60px;
+  }
+}
+@media (min-width: 1024px) {
+  .heading-two {
+    font-size: 64px;
+  }
+}
+
+/* heading-three  (28 → 30 → 56px) */
+.heading-three {
+  font-family: "RightGrotesk-NarrowDark", sans-serif;
+  font-size: 28px;
+  line-height: 120%;
+}
+@media (min-width: 768px) {
+  .heading-three {
+    font-size: 30px;
+  }
+}
+@media (min-width: 1024px) {
+  .heading-three {
+    font-size: 56px;
+  }
+}
+
+/* tagline */
+.tagline {
+  font-family: "RightGrotesk-Regular", sans-serif;
+  font-size: 18px;
+  line-height: 150%;
+}
+
+/* body-one  (20 → 22 → 24px) */
+.body-one {
+  font-family: "RightGrotesk-Regular", sans-serif;
+  font-size: 20px;
+  line-height: 160%;
+  letter-spacing: normal;
+}
+@media (min-width: 1024px) {
+  .body-one {
+    font-size: 22px;
+  }
+}
+@media (min-width: 1280px) {
+  .body-one {
+    font-size: 24px;
+  }
+}
+
+/* ── Component Layer ────────────────────────────────────────────────────────
+   In Tailwind v4, @apply works inside @layer components.
+   Custom color utilities (text-neutral-*, bg-brand-*) resolve via @theme.
+   Responsive variants still cannot be used inside @apply — use plain CSS.
+──────────────────────────────────────────────────────────────────────────── */
+@layer components {
+  .sectiontitle {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 40px;
+    line-height: 120%;
+    letter-spacing: 0.025em;
+    color: var(--color-neutral-900);
+  }
+  @media (min-width: 640px) {
+    .sectiontitle {
+      font-size: 48px;
+    }
+  }
+  @media (min-width: 768px) {
+    .sectiontitle {
+      font-size: 64px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .sectiontitle {
+      font-size: 72px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .sectiontitle {
+      font-size: 96px;
+    }
+  }
+
+  .sectionheading {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 48px;
+    line-height: 120%;
+    color: var(--color-neutral-900);
+  }
+  @media (min-width: 768px) {
+    .sectionheading {
+      font-size: 60px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .sectionheading {
+      font-size: 64px;
+    }
+  }
+
+  .sectionsubheading {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 28px;
+    line-height: 120%;
+    color: var(--color-neutral-900);
+  }
+  @media (min-width: 768px) {
+    .sectionsubheading {
+      font-size: 30px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .sectionsubheading {
+      font-size: 56px;
+    }
+  }
+
+  .sectiontagline {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 18px;
+    line-height: 150%;
+    color: var(--color-neutral-600);
+  }
+
+  .sectionbody {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 20px;
+    line-height: 160%;
+    letter-spacing: normal;
+    color: var(--color-neutral-900);
+  }
+  @media (min-width: 1024px) {
+    .sectionbody {
+      font-size: 22px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .sectionbody {
+      font-size: 24px;
+    }
+  }
+
+  .imagecaption {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 20px;
+    line-height: 160%;
+    letter-spacing: normal;
+    font-style: italic;
+    color: var(--color-neutral-600);
+    text-align: center;
+  }
+  @media (min-width: 1024px) {
+    .imagecaption {
+      font-size: 22px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .imagecaption {
+      font-size: 24px;
+    }
+  }
+
+  /* primaryaction: uses brand tokens defined in @theme above */
+  .primaryaction {
+    padding: 0.75rem 1.25rem; /* py-3 px-5 */
+    height: fit-content;
+    border-radius: 9999px; /* rounded-full */
+    color: #ffffff;
+    border: 2px solid var(--color-brand-500);
+    background-color: var(--color-brand-500);
+    box-shadow: 3px 3px 0px 0px rgba(69, 30, 0, 1);
+  }
+}
+
+/* ── Base Layer ─────────────────────────────────────────────────────────────
+   In Tailwind v4, @layer base is still valid.
+   Use plain CSS properties — avoid @apply with responsive variants here.
+──────────────────────────────────────────────────────────────────────────── */
+@layer base {
+  h1 {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 40px;
+    line-height: 120%;
+    letter-spacing: 0.025em;
+  }
+  h2 {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 48px;
+    line-height: 120%;
+  }
+  h3 {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 28px;
+    line-height: 120%;
+  }
+  h4 {
+    font-family: "RightGrotesk-NarrowBold", sans-serif;
+    font-size: 24px;
+    line-height: 120%;
+  }
+  h5 {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 20px;
+    line-height: 120%;
+  }
+  h6 {
+    font-family: "RightGrotesk-NarrowDark", sans-serif;
+    font-size: 18px;
+    line-height: 120%;
+  }
+  p {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 20px;
+    line-height: 160%;
+    letter-spacing: normal;
+  }
+  label {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 18px;
+    line-height: 150%;
+  }
+  caption {
+    font-family: "RightGrotesk-Regular", sans-serif;
+    font-size: 14px;
+    line-height: 150%;
+  }
+}
+
+/* ── Base responsive breakpoints for h1–p ──────────────────────────────── */
+@media (min-width: 640px) {
+  h1 {
+    font-size: 48px;
+  }
+}
+@media (min-width: 768px) {
+  h1 {
+    font-size: 64px;
+  }
+  h2 {
+    font-size: 60px;
+  }
+  h3 {
+    font-size: 30px;
+  }
+  h4 {
+    font-size: 28px;
+  }
+  h5 {
+    font-size: 22px;
+  }
+  h6 {
+    font-size: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 72px;
+  }
+  h2 {
+    font-size: 64px;
+  }
+  h3 {
+    font-size: 56px;
+  }
+  h4 {
+    font-size: 30px;
+  }
+  h5 {
+    font-size: 24px;
+  }
+  h6 {
+    font-size: 20px;
+  }
+  p {
+    font-size: 22px;
+  }
+}
+@media (min-width: 1280px) {
+  h1 {
+    font-size: 96px;
+  }
+  p {
+    font-size: 24px;
+  }
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #fefbe9;
+}
+
+/* ── Hover underline animations ─────────────────────────────────────────── */
+.hover-underline {
+  display: inline-block;
+  position: relative;
+  transition: color 0.25s ease-out;
+}
+.hover-underline:hover {
+  color: #ef4130;
+}
+.hover-underline::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 6px;
+  bottom: 0;
+  left: 0;
+  background-color: #ef4130;
+  transform-origin: bottom left;
+  transition: transform 0.25s ease-out;
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+}
+
+.hover-underline-right {
+  display: inline-block;
+  position: relative;
+  transition: color 0.25s ease-out;
+}
+.hover-underline-right:hover {
+  color: #ef4130;
+}
+.hover-underline-right::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 6px;
+  bottom: 0;
+  left: 0;
+  background-color: #ef4130;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+.hover-underline-right:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.hover-underline-center {
+  display: inline-block;
+  position: relative;
+  transition: color 0.25s ease-out;
+}
+.hover-underline-center:hover {
+  color: #ef4130;
+}
+.hover-underline-center::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 6px;
+  bottom: 0;
+  left: 0;
+  background-color: #ef4130;
+  transform-origin: bottom center;
+  transition: transform 0.25s ease-out;
+}
+.hover-underline-center:hover::after {
+  transform: scaleX(1);
+}
+
+/* ── Swiper thumbnails ──────────────────────────────────────────────────── */
+.thumbnail-wrapper {
+  opacity: 0.45;
+}
+.swiper-slide-thumb-active .thumbnail-wrapper {
+  border-color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* ── Elevation shadows ──────────────────────────────────────────────────── */
+.elevation-1 {
+  box-shadow:
+    0 1px 1.75px 0 rgba(0, 0, 0, 0.12),
+    0 -0.5px 1.5px 0 rgba(0, 0, 0, 0.09),
+    0 3px 4px 0 rgba(0, 0, 0, 0.03);
+}
+.elevation-2 {
+  box-shadow:
+    0 1px 2px -0.5px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.08),
+    0 3px 6px -1.5px rgba(0, 0, 0, 0.08),
+    0 -0.5px 1.5px 0 rgba(0, 0, 0, 0.09);
+}
+.elevation-3 {
+  box-shadow:
+    0 1px 2px -0.5px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.08),
+    0 3px 6px -1.5px rgba(0, 0, 0, 0.08),
+    0 8px 16px -6px rgba(0, 0, 0, 0.06),
+    0 -0.5px 2px 0 rgba(0, 0, 0, 0.09);
+}
+.elevation-4 {
+  box-shadow:
+    0 1px 2px -0.5px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.08),
+    0 3px 6px -1.5px rgba(0, 0, 0, 0.08),
+    0 8px 16px -6px rgba(0, 0, 0, 0.06),
+    0 24px 40px -12px rgba(0, 0, 0, 0.06),
+    0 -0.5px 1.5px 0 rgba(0, 0, 0, 0.09);
+}
+.elevation-5 {
+  box-shadow:
+    0 1px 2px -0.5px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.08),
+    0 3px 6px -1.5px rgba(0, 0, 0, 0.08),
+    0 8px 16px -6px rgba(0, 0, 0, 0.06),
+    0 24px 40px -12px rgba(0, 0, 0, 0.06),
+    0 32px 48px -12px rgba(0, 0, 0, 0.06),
+    0 -0.5px 1.5px 0 rgba(0, 0, 0, 0.09);
 }
