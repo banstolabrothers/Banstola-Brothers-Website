@@ -8,6 +8,7 @@ import FollowUsSection from "@/components/home/FollowUsSection";
 
 import { pageMeta } from "@/lib/metadata";
 import { LocalBusinessSchema } from "@/lib/schema"; // ← import from central file
+import { ProductSchema, BreadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = pageMeta.home;
 
