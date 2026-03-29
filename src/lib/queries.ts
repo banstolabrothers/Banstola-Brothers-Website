@@ -98,10 +98,9 @@ export const productDetailQuery = `
     },
     _createdAt,
     _updatedAt,
-    
-    "reviewData": *[_type == "review" && references(^._id)][0]{
+    "reviewData": *[_type == "review" && product._ref == ^._id][0]{
       "totalReviews": count(reviews),
-      "averageRating": math::avg(reviews[].rating),
+      "ratingSum": math::sum(reviews[].rating),
       "reviews": reviews[0..9]{
         username,
         rating,

@@ -75,7 +75,7 @@ export interface ReviewEntry {
 
 export interface ProductReviewData {
   totalReviews: number;
-  averageRating: number;
+  ratingSum: number;
   reviews: ReviewEntry[];
 }
 
