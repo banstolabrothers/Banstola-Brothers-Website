@@ -1,6 +1,3 @@
-// ✅ No 'use client' — this is a Server Component
-// metadata + data fetch both happen on the server
-
 import { pageMeta } from "@/lib/metadata";
 import { client } from "@/lib/sanity";
 import { productListQuery } from "@/lib/queries";
