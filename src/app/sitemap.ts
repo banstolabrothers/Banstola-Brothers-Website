@@ -2,9 +2,13 @@ import { client } from "@/lib/sanity";
 import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await client.fetch(
-    `*[_type == "product"]{ slug, _updatedAt }`,
-  );
+  let products: { slug: { current: string }; _updatedAt: string }[] = [];
+
+  try {
+    products = await client.fetch(`*[_type == "product"]{ slug, _updatedAt }`);
+  } catch (error) {
+    console.error("Sitemap: failed to fetch products", error);
+  }
 
   return [
     {
@@ -32,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
       changeFrequency: "weekly",
     },
-    ...products.map((p: { slug: { current: string }; _updatedAt: string }) => ({
+    ...products.map((p) => ({
       url: `https://www.banstolabrothers.com.np/products/${p.slug.current}`,
       lastModified: new Date(p._updatedAt),
       priority: 0.8,
