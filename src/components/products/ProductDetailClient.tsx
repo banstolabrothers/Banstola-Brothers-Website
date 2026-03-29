@@ -7,7 +7,7 @@ import ProductReviewSection from "@/components/review/ProductReviewSection";
 import ProductStickyNav from "@/components/header/ProductStickyNav";
 import type { Product, SelectedOptions } from "@/types/product";
 
-// ── JSON-LD structured data ───────────────────────────────────────────────────
+// ── JSON-LD ───────────────────────────────────────────────────────────────────
 const ProductSchema = ({ product }: { product: Product }) => {
   const schema = {
     "@context": "https://schema.org/",
@@ -38,20 +38,18 @@ const ProductSchema = ({ product }: { product: Product }) => {
   );
 };
 
-// ── Main client component ─────────────────────────────────────────────────────
-interface ProductDetailClientProps {
+// ── Component ─────────────────────────────────────────────────────────────────
+interface Props {
   product: Product | null;
   slug: string;
 }
 
-const ProductDetailClient = ({ product, slug }: ProductDetailClientProps) => {
-  // Seed default selections — first in-stock option per group
+const ProductDetailClient = ({ product }: Props) => {
   const getDefaultSelections = (p: Product): SelectedOptions => {
     const defaults: SelectedOptions = {};
     p.variantGroups?.forEach((group) => {
       if (group.options?.length) {
-        const first =
-          group.options.find((opt) => opt.inStock) ?? group.options[0];
+        const first = group.options.find((o) => o.inStock) ?? group.options[0];
         defaults[group.groupName] = first.optionName;
       }
     });
@@ -66,7 +64,6 @@ const ProductDetailClient = ({ product, slug }: ProductDetailClientProps) => {
     setSelectedOptions((prev) => ({ ...prev, [groupName]: optionName }));
   };
 
-  // Error state
   if (!product) {
     return (
       <div className="flex flex-col justify-center items-center min-h-96 gap-4">
@@ -84,10 +81,11 @@ const ProductDetailClient = ({ product, slug }: ProductDetailClientProps) => {
     <div className="w-full">
       <ProductSchema product={product} />
 
+      {/* ✅ product is typed as Product — no cast needed */}
       <ProductStickyNav
         productName={product.title}
         selectedOptions={selectedOptions}
-        product={product as unknown as Record<string, unknown>}
+        product={product}
       />
 
       <ProductHeroSection
