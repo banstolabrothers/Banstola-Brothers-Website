@@ -1,3 +1,5 @@
+import type { Product } from "@/types/product";
+
 // lib/schema.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // Centralised JSON-LD schema components.
