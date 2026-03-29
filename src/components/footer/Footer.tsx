@@ -51,6 +51,7 @@ const Footer = () => {
                           <Link
                             href={link.path}
                             className="text-brand-900 hover:underline hover:opacity-70 hover:underline-offset-4"
+                            rel="me"
                           >
                             <p>{link.label}</p>
                           </Link>

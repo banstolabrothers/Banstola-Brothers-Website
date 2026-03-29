@@ -27,7 +27,7 @@ export const footerData: FooterData = {
     {
       title: "PRODUCTS",
       links: [
-        { label: "Chhhurpi", path: "/products/chhurpi" },
+        { label: "Chhurpi", path: "/products/chhurpi" },
         { label: "Khattu", path: "/products/khattu" },
         { label: "Dog Chew", path: "/products/dog-chew" },
       ],
