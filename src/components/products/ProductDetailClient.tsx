@@ -7,38 +7,8 @@ import ProductReviewSection from "@/components/review/ProductReviewSection";
 import ProductStickyNav from "@/components/header/ProductStickyNav";
 import type { Product, SelectedOptions } from "@/types/product";
 
-// ── JSON-LD ───────────────────────────────────────────────────────────────────
-const ProductSchema = ({ product }: { product: Product }) => {
-  const schema = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    name: product.title,
-    image: product.primaryImage?.asset?.url,
-    description: product.shortDescription,
-    sku: product.sku ?? product._id,
-    brand: { "@type": "Brand", name: "Banstola Brothers" },
-    offers: product.variantGroups?.flatMap((group) =>
-      group.options?.map((option) => ({
-        "@type": "Offer",
-        priceCurrency: option.currency ?? "NPR",
-        price: option.price,
-        availability: option.inStock
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
-        sku: `${product._id}-${option.optionName}`,
-      })),
-    ),
-  };
+// ✅ ProductSchema removed — it now lives in page.tsx (server component)
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-};
-
-// ── Component ─────────────────────────────────────────────────────────────────
 interface Props {
   product: Product | null;
   slug: string;
@@ -79,25 +49,19 @@ const ProductDetailClient = ({ product }: Props) => {
 
   return (
     <div className="w-full">
-      <ProductSchema product={product} />
-
-      {/* ✅ product is typed as Product — no cast needed */}
       <ProductStickyNav
         productName={product.title}
         selectedOptions={selectedOptions}
         product={product}
       />
-
       <ProductHeroSection
         product={product}
         selectedOptions={selectedOptions}
         onOptionSelect={handleOptionSelect}
       />
-
       {(product.content?.length ?? 0) > 0 && (
         <ProductContentSection content={product.content!} />
       )}
-
       <ProductReviewSection
         productId={product._id}
         productSlug={product.slug?.current}

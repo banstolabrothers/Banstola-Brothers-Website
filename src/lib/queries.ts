@@ -97,6 +97,30 @@ export const productDetailQuery = `
       }
     },
     _createdAt,
-    _updatedAt
+    _updatedAt,
+    
+    "reviewData": *[_type == "review" && references(^._id)][0]{
+      "totalReviews": count(reviews),
+      "averageRating": math::avg(reviews[].rating),
+      "reviews": reviews[0..9]{
+        username,
+        rating,
+        reviewDate,
+        description
+      }
+    }
+  }
+`;
+
+export const productReviewsQuery = `
+  *[_type == "review" && references(*[_type=="product" && slug.current==$slug]._id)][0]{
+    "totalReviews": count(reviews),
+    "averageRating": math::avg(reviews[].rating),
+    "reviews": reviews[0..9]{
+      username,
+      rating,
+      reviewDate,
+      description
+    }
   }
 `;

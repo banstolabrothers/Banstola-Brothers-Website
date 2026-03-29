@@ -44,6 +44,7 @@ export interface Product {
   variantGroups?: VariantGroup[];
   _createdAt: string;
   _updatedAt: string;
+  reviewData?: ProductReviewData;
 }
 
 export interface Category {
@@ -64,6 +65,18 @@ export interface GalleryImage {
 export interface ProductImageGallerySectionProps {
   product: Product;
   selectedOptions?: SelectedOptions;
+}
+export interface ReviewEntry {
+  username: string;
+  rating: number;
+  reviewDate?: string; // ISO string from Sanity
+  description?: string;
+}
+
+export interface ProductReviewData {
+  totalReviews: number;
+  averageRating: number;
+  reviews: ReviewEntry[];
 }
 
 export type SelectedOptions = Record<string, string>;

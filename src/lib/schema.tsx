@@ -188,88 +188,73 @@ export function LocalBusinessSchema() {
 //   );
 
 interface ProductSchemaProps {
-  product: SanityProduct;
-  reviews?: SanityReview[];
+  product: Product;
 }
 
-export function ProductSchema({ product, reviews = [] }: ProductSchemaProps) {
-  const productUrl = `https://www.banstolabrothers.com.np/products/${product.slug}`;
-  const currency = product.price?.currency ?? "NPR";
-
-  // Build aggregateRating — prefer explicit Sanity data, fallback to reviews array
-  const totalReviews = product.aggregateRating?.reviewCount ?? reviews.length;
-  const avgRating =
-    product.aggregateRating?.ratingValue ??
-    (reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-      : null);
+export function ProductSchema({ product }: ProductSchemaProps) {
+  const slug = product.slug?.current ?? "";
+  const productUrl = `https://www.banstolabrothers.com.np/products/${slug}`;
+  const rd = product.reviewData;
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
-
-    name: product.name,
-    description: product.description ?? "",
-    image: product.image ?? "",
+    name: product.title,
+    description: product.shortDescription ?? product.metaDescription ?? "",
+    image: product.primaryImage?.asset?.url ?? "",
     url: productUrl,
-
+    sku: product.sku ?? product._id,
     brand: {
       "@type": "Brand",
-      name: "Banstola Brothers",
+      name: product.brand ?? "Banstola Brothers",
     },
-
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: currency,
-      // If you have a price range from Sanity:
-      ...(product.price
-        ? {
-            price: product.price.min,
-            priceValidUntil: new Date(
-              new Date().setFullYear(new Date().getFullYear() + 1),
-            )
-              .toISOString()
-              .split("T")[0],
-          }
-        : {}),
-      availability: "https://schema.org/InStoreOnly",
-      seller: {
-        "@type": "LocalBusiness",
-        "@id": "https://www.banstolabrothers.com.np/#business",
-        name: "Banstola Brothers",
-      },
-    },
+    // Build offers from variant groups
+    offers: product.variantGroups?.flatMap((group) =>
+      group.options
+        .filter((o) => o.price)
+        .map((option) => ({
+          "@type": "Offer",
+          priceCurrency: option.currency ?? "NPR",
+          price: option.price,
+          availability: option.inStock
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+          url: productUrl,
+          sku: `${product._id}-${option.optionName}`,
+          seller: {
+            "@type": "LocalBusiness",
+            "@id": "https://www.banstolabrothers.com.np/#business",
+            name: "Banstola Brothers",
+          },
+        })),
+    ),
   };
 
-  // Add aggregateRating only when we have real data
-  if (avgRating !== null && totalReviews > 0) {
+  // ✅ aggregateRating — only added when real data exists
+  if (rd && rd.totalReviews > 0 && rd.averageRating) {
     schema.aggregateRating = {
       "@type": "AggregateRating",
-      ratingValue: Number(avgRating.toFixed(1)),
+      ratingValue: Number(rd.averageRating.toFixed(1)),
       bestRating: 5,
       worstRating: 1,
-      reviewCount: totalReviews,
+      reviewCount: rd.totalReviews,
     };
-  }
 
-  // Add individual reviews (Google shows up to ~5 in rich results)
-  if (reviews.length > 0) {
-    schema.review = reviews.slice(0, 10).map((r) => ({
-      "@type": "Review",
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: r.rating,
-        bestRating: 5,
-        worstRating: 1,
-      },
-      author: {
-        "@type": "Person",
-        name: r.author,
-      },
-      reviewBody: r.body,
-      ...(r.datePublished ? { datePublished: r.datePublished } : {}),
-    }));
+    // ✅ Individual reviews (Google uses up to ~5)
+    if (rd.reviews?.length > 0) {
+      schema.review = rd.reviews.slice(0, 10).map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.username },
+        reviewBody: r.description ?? "",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: r.rating,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        ...(r.reviewDate ? { datePublished: r.reviewDate } : {}),
+      }));
+    }
   }
 
   return (
