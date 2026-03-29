@@ -5,47 +5,8 @@ import ProductByCategory from "@/components/products/ProductByCategory";
 import HomeReviewSection from "@/components/home/HomeReviewSection";
 import FollowUsSection from "@/components/home/FollowUsSection";
 
-// ── SEO ──────────────────────────────────────────────────────────────────────
-export const metadata: Metadata = {
-  title: "Banstola Brothers | Authentic Chhurpi – Pokhara Nepal",
-  description:
-    "Buy authentic handcrafted Chhurpi from Banstola Brothers. Smoked, White & Coffee Chhurpi sourced from Ilam, Dolakha & Palpa. Shop in Pokhara since 1999.",
-  keywords: [
-    "Chhurpi Pokhara",
-    "Banstola Brothers",
-    "Smoked Chhurpi",
-    "White Chhurpi",
-    "Coffee Chhurpi",
-    "Nepali hard cheese",
-    "Chhurpi from Ilam",
-    "traditional Nepali cheese",
-  ],
-  openGraph: {
-    title: "Banstola Brothers | Authentic Chhurpi – Pokhara Nepal",
-    description:
-      "Traditionally processed Nepali hard cheese from Ilam, Dolakha & Palpa. Visit our shop in Pokhara.",
-    url: "https://www.banstolabrothers.com.np",
-    type: "website",
-    images: [
-      {
-        url: "https://www.banstolabrothers.com.np/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Banstola Brothers Chhurpi – Pokhara Nepal",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Banstola Brothers | Authentic Chhurpi – Pokhara Nepal",
-    description:
-      "Traditionally processed Nepali hard cheese from Ilam, Dolakha & Palpa. Visit our shop in Pokhara.",
-    images: ["https://www.banstolabrothers.com.np/og-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://www.banstolabrothers.com.np",
-  },
-};
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.home;
 
 // ── LocalBusiness JSON-LD ─────────────────────────────────────────────────────
 function LocalBusinessSchema() {

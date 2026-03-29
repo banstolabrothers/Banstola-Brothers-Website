@@ -2,16 +2,9 @@ import type { Metadata } from "next";
 import { client } from "@/lib/sanity";
 import ReviewPageClient from "@/components/review/ReviewpageClient";
 
-export const metadata: Metadata = {
-  title: "Customer Reviews",
-  description:
-    "Read authentic customer reviews for Banstola Brothers Chhurpi. See what customers say about our Smoked, White & Coffee Chhurpi from Pokhara.",
-  openGraph: {
-    title: "Customer Reviews | Banstola Brothers",
-    description: "Authentic reviews from Chhurpi lovers across Nepal.",
-    url: "https://www.banstolabrothers.com.np/all-reviews",
-  },
-};
+// src/app/all-reviews/page.tsx
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.allReviews;
 
 // ── Server fetch ─────────────────────────────────────────────────────────────
 const ReviewPage = async () => {

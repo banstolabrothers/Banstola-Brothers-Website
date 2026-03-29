@@ -1,6 +1,9 @@
 import store from "@/assets/image/Store.png";
 import MyButton from "@/components/ui/MyButton";
 
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.store;
+
 const page = () => {
   return (
     <section className="flex flex-col w-full  px-4 items-center justify-center">

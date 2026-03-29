@@ -349,13 +349,50 @@ export const product = defineType({
     }),
 
     // SEO fields (optional)
+    // In your product.js schema — replace the metaDescription field with this:
+
     defineField({
-      name: 'metaDescription',
-      title: 'Meta Description',
-      type: 'text',
-      rows: 2,
-      description: 'SEO meta description',
-      validation: (rule) => rule.max(160),
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      fields: [
+        {
+          name: 'metaTitle',
+          title: 'Meta Title',
+          type: 'string',
+          description: 'Page title for Google (50–60 chars recommended)',
+          validation: (rule) => rule.max(60),
+        },
+        {
+          name: 'metaDescription',
+          title: 'Meta Description',
+          type: 'text',
+          rows: 2,
+          description: 'Google snippet description (120–160 chars)',
+          validation: (rule) => rule.max(160),
+        },
+        {
+          name: 'ogImage',
+          title: 'Social Share Image (OG Image)',
+          type: 'image',
+          description: 'Image shown when shared on Facebook, WhatsApp etc. (1200×630px)',
+          options: {hotspot: true},
+        },
+        {
+          name: 'keywords',
+          title: 'Focus Keywords',
+          type: 'array',
+          of: [{type: 'string'}],
+          options: {layout: 'tags'},
+        },
+        {
+          name: 'noIndex',
+          title: 'Hide from Search Engines',
+          type: 'boolean',
+          initialValue: false,
+          description: 'Turn ON only for draft or private pages',
+        },
+      ],
     }),
   ],
 

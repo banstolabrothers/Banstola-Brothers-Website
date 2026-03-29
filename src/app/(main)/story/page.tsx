@@ -1,4 +1,5 @@
-import React from "react";
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.story;
 
 const page = () => {
   return (
