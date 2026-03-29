@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
-// ── Site-wide defaults ────────────────────────────────────────────────────────
+// ── Site-wide constants ───────────────────────────────────────────────────────
 const SITE_NAME = "Banstola Brothers";
 const SITE_URL = "https://www.banstolabrothers.com.np";
-const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+const OG_IMAGE = "/og-image.png"; // must be in /public/og-image.png
 
 const DEFAULT_OG_IMAGE = [
   {
     url: OG_IMAGE,
     width: 1200,
     height: 630,
-    alt: "Banstola Brothers – Authentic Chhurpi, Pokhara Nepal",
+    alt: "Banstola Brothers | Authentic Chhurpi, Pokhara Nepal",
   },
 ];
 
@@ -30,6 +30,7 @@ const buildMeta = (
     description,
     url: `${SITE_URL}${path}`,
     type: "website",
+    locale: "en_NP",
     siteName: SITE_NAME,
     images: ogImage,
   },
@@ -47,12 +48,16 @@ const buildMeta = (
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. STATIC PAGE METADATA
-//    Usage: import { pageMeta } from '@/lib/metadata'
-//           export const metadata = pageMeta.home
+//
+//    Usage in any static page:
+//    import { pageMeta } from "@/lib/metadata";
+//    export const metadata = pageMeta.home;
 // ─────────────────────────────────────────────────────────────────────────────
 export const pageMeta = {
+  // layout.tsx default title handles homepage — but we still export it
+  // so pages can explicitly set it if needed
   home: buildMeta(
-    "Banstola Brothers | Authentic Chhurpi – Pokhara Nepal",
+    "Original Chhurpi Since 1999",
     "Buy authentic handcrafted Chhurpi from Banstola Brothers. Smoked, White & Coffee Chhurpi sourced from Ilam, Dolakha & Palpa. Shop in Pokhara since 1999.",
     "/",
     [
@@ -64,24 +69,28 @@ export const pageMeta = {
       "Nepali hard cheese",
       "Chhurpi from Ilam",
       "traditional Nepali cheese",
+      "Chhurpi online Nepal",
+      "buy Chhurpi Pokhara",
     ],
   ),
 
   products: buildMeta(
-    "All Products | Banstola Brothers",
-    "Browse Chhurpi, Khattu, Dog Chew and more from Banstola Brothers – Pokhara, Nepal. Traditionally processed, 100% natural.",
+    "All Products",
+    "Browse Chhurpi, Khattu, Dog Chew and Papaya from Banstola Brothers – Pokhara, Nepal. Traditionally processed, 100% natural.",
     "/products",
     [
       "Chhurpi buy Pokhara",
       "Khattu Nepal",
       "Dog Chew Nepal",
+      "Papaya snack Nepal",
       "Nepali traditional snacks",
       "Banstola Brothers products",
+      "natural Nepali food online",
     ],
   ),
 
   story: buildMeta(
-    "Our Story – Since 1999 | Banstola Brothers",
+    "Our Story – Since 1999",
     "Pokhara's first Chhurpi & Pau shop, founded by Muktinath Banstola in the late 1990s. 25 years of authentic Himalayan taste.",
     "/story",
     [
@@ -90,98 +99,137 @@ export const pageMeta = {
       "Pokhara first Chhurpi shop",
       "Muktinath Banstola",
       "Chhurpi from Ilam",
+      "authentic Nepali food brand",
     ],
   ),
 
   store: buildMeta(
-    "Find Our Store in Pokhara | Banstola Brothers",
+    "Find Our Store in Pokhara",
     "Visit Banstola Brothers in Pokhara, Nepal. Find our store location, opening hours, and get authentic Chhurpi near you.",
     "/store",
     [
       "Banstola Brothers Pokhara store",
       "Chhurpi shop Pokhara",
       "where to buy Chhurpi Pokhara",
+      "Chhurpi store location Nepal",
     ],
   ),
 
   allReviews: buildMeta(
-    "Customer Reviews | Banstola Brothers",
+    "Customer Reviews",
     "258+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
     "/all-reviews",
     [
       "Banstola Brothers reviews",
       "Chhurpi reviews Nepal",
       "Khattu reviews",
+      "Dog Chew reviews",
       "customer feedback Chhurpi",
     ],
   ),
 
   submitReview: buildMeta(
-    "Write a Review | Banstola Brothers",
+    "Write a Review",
     "Share your experience with Banstola Brothers products. Submit your review for Chhurpi, Khattu, Dog Chew and more.",
     "/submit-reviews",
-    [],
+    [
+      "review Banstola Brothers",
+      "submit Chhurpi review",
+      "Banstola Brothers feedback",
+    ],
   ),
 } satisfies Record<string, Metadata>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. DYNAMIC PRODUCT PAGE METADATA
-//    Usage: import { buildProductMeta } from '@/lib/metadata'
-//           export async function generateMetadata({ params }) {
-//             const product = await client.fetch(...)
-//             return buildProductMeta(product, slug)
-//           }
+//
+//    Usage in app/products/[slug]/page.tsx:
+//
+//    import { buildProductMeta, productMetaQuery } from "@/lib/metadata";
+//
+//    export async function generateMetadata({ params }): Promise<Metadata> {
+//      const product = await client.fetch(productMetaQuery, { slug: params.slug });
+//      if (!product) return {};
+//      return buildProductMeta(product, params.slug);
+//    }
 // ─────────────────────────────────────────────────────────────────────────────
-interface SanityImage {
+interface SanityImageAsset {
   asset?: { url?: string };
 }
 
-interface SanityProduct {
+export interface SanityProductMeta {
   title: string;
   shortDescription?: string;
   brand?: string;
-  primaryImage?: SanityImage;
+  primaryImage?: SanityImageAsset;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
     keywords?: string[];
     noIndex?: boolean;
-    ogImage?: SanityImage;
+    ogImage?: SanityImageAsset;
   };
 }
 
 export const buildProductMeta = (
-  product: SanityProduct,
+  product: SanityProductMeta,
   slug: string,
 ): Metadata => {
-  const title = product.seo?.metaTitle ?? `${product.title} | ${SITE_NAME}`;
+  // Uses seo.metaTitle if set in Sanity, otherwise just product title.
+  // layout.tsx template then appends "| Banstola Brothers" automatically.
+  // Result: "Chhurpi | Banstola Brothers"
+  const title = product.seo?.metaTitle ?? product.title;
+
   const description =
     product.seo?.metaDescription ??
     product.shortDescription ??
     `Buy ${product.title} from Banstola Brothers. Authentic Nepali product from Pokhara.`;
-  const keywords = product.seo?.keywords ?? [
-    product.title,
-    "Banstola Brothers",
-    "buy Pokhara Nepal",
-  ];
+
+  const keywords = product.seo?.keywords?.length
+    ? product.seo.keywords
+    : [
+        product.title,
+        `${product.title} Nepal`,
+        `${product.title} Pokhara`,
+        `buy ${product.title}`,
+        "Banstola Brothers",
+        "authentic Nepali snacks",
+        "buy Pokhara Nepal",
+      ];
+
+  // OG Image priority:
+  // 1. seo.ogImage (manually set in Sanity Studio)
+  // 2. primaryImage (product's main image — auto fallback)
+  // 3. /og-image.png (site-wide default)
   const imageUrl =
     product.seo?.ogImage?.asset?.url ??
     product.primaryImage?.asset?.url ??
     OG_IMAGE;
+
   const canonical = `${SITE_URL}/products/${slug}`;
 
   return {
     title,
     description,
     keywords,
-    robots: product.seo?.noIndex ? "noindex, nofollow" : "index, follow",
+    robots: product.seo?.noIndex
+      ? { index: false, follow: false }
+      : { index: true, follow: true },
     openGraph: {
       title,
       description,
       url: canonical,
       type: "website",
+      locale: "en_NP",
       siteName: SITE_NAME,
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: product.title }],
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${product.title} | Banstola Brothers`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
@@ -189,6 +237,33 @@ export const buildProductMeta = (
       description,
       images: [imageUrl],
     },
-    alternates: { canonical },
+    alternates: {
+      canonical,
+    },
   };
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. SANITY GROQ QUERY
+//    Import alongside buildProductMeta and pass to client.fetch()
+//    The ->url dereference is required to resolve Sanity image asset URLs
+// ─────────────────────────────────────────────────────────────────────────────
+export const productMetaQuery = `
+  *[_type == "product" && slug.current == $slug][0]{
+    title,
+    shortDescription,
+    brand,
+    "primaryImage": {
+      "asset": { "url": primaryImage.asset->url }
+    },
+    seo {
+      metaTitle,
+      metaDescription,
+      keywords,
+      noIndex,
+      "ogImage": {
+        "asset": { "url": ogImage.asset->url }
+      }
+    }
+  }
+`;

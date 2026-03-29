@@ -356,11 +356,12 @@ export const product = defineType({
       title: 'SEO',
       type: 'object',
       fields: [
+        // ✅ Add metaTitle back
         {
           name: 'metaTitle',
           title: 'Meta Title',
           type: 'string',
-          description: 'Page title for Google (50–60 chars recommended)',
+          description: 'Leave empty to auto-use: "Product Name | Banstola Brothers"',
           validation: (rule) => rule.max(60),
         },
         {
@@ -371,11 +372,12 @@ export const product = defineType({
           description: 'Google snippet description (120–160 chars)',
           validation: (rule) => rule.max(160),
         },
+        // ✅ Add ogImage back
         {
           name: 'ogImage',
           title: 'Social Share Image (OG Image)',
           type: 'image',
-          description: 'Image shown when shared on Facebook, WhatsApp etc. (1200×630px)',
+          description: 'Leave empty to auto-use Product Primary Image. (1200×630px recommended)',
           options: {hotspot: true},
         },
         {
