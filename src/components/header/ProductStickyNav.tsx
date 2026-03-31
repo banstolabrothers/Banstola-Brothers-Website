@@ -25,17 +25,18 @@ const ProductStickyNav = ({
   }, []);
 
   return (
-    <div
-      className={`fixed bottom-4 max-w-3xl mx-auto left-0 right-0 px-4 py-4 bg-white/80 backdrop-blur-sm transition-all duration-300 ease-linear border-2 border-brand-900/40 shadow-[3px_3px_0px_0px_rgba(69,30,0,.40)] rounded-full ${
+    <section
+      className={`fixed bottom-4 max-w-5xl mx-auto left-0 right-0 flex items-center justify-center gap-2 ${
         isVisible
           ? "-translate-y-0 opacity-100 z-50"
           : "translate-y-[150%] opacity-0 -z-10"
       }`}
       style={{ willChange: isVisible ? "transform, opacity" : "auto" }}
     >
-      <div className="flex flex-col items-center md:flex-row justify-between h-fit gap-4">
+      {/* Product */}
+      <div className="max-w-8/12 w-full mx-2 h-fit flex flex-row items-center justify-between gap-4 px-4 py-4 bg-white/80 backdrop-blur-sm transition-all duration-300 ease-linear border-2 border-brand-900/40 shadow-[3px_3px_0px_0px_rgba(69,30,0,.40)] rounded-full">
         {/* Product name + selected options */}
-        <div className="flex flex-col justify-start items-center gap-1 px-6 min-w-0 flex-1">
+        <div className="flex flex-col hidden sm:flex w-full justify-start items-center gap-1 px-6 flex-1">
           <h4 className="text-brand-900 w-full">{productName || "Product"}</h4>
           {selectedOptions && Object.keys(selectedOptions).length > 0 && (
             <div className="flex justify-start w-full items-center gap-2 flex-wrap">
@@ -50,12 +51,11 @@ const ProductStickyNav = ({
             </div>
           )}
         </div>
-
         {/* CTAs */}
         <div className="flex items-center gap-4">
           <MyButton
             type="secondarybutton"
-            text="Visit Store"
+            text="Visit"
             leadicon={<MapPin size={32} />}
             link="/store"
           />
@@ -66,7 +66,10 @@ const ProductStickyNav = ({
           />
         </div>
       </div>
-    </div>
+
+      {/* My Cart */}
+      {/* <div className=" w-4/12 px-4 py-4 bg-white/80 backdrop-blur-sm transition-all duration-300 ease-linear border-2 border-brand-900/40 shadow-[3px_3px_0px_0px_rgba(69,30,0,.40)] rounded-full "></div> */}
+    </section>
   );
 };
 
