@@ -53,13 +53,13 @@ const VariantOption = ({
           isOutOfStock ? "opacity-20 cursor-not-allowed" : "cursor-pointer"
         }`}
       >
-        <div className="relative rounded-2xl">
+        <div className="relative rounded-3xl">
           <Image
             src={option.optionImage!.asset!.url}
             alt={option.optionImage?.alt || option.optionName}
             width={200}
             height={128}
-            className={`w-fit aspect-video h-32 shadow-md rounded-2xl ring-1 object-cover transition-all duration-300 ${
+            className={`w-fit aspect-video h-32 shadow-md rounded-3xl ring-1 object-cover transition-all duration-300 ${
               isSelected ? "ring-brand-500/10 p-1" : "ring-neutral-100"
             }`}
           />
@@ -91,11 +91,11 @@ const VariantOption = ({
 
         {/* Label */}
         <div className="mt-2">
-          <label
-            className={`${isSelected ? "text-brand-900 font-HBold" : "text-neutral-600"}`}
+          <p
+            className={`${isSelected ? "text-brand-900" : "text-neutral-600"}`}
           >
             {option.optionName}
-          </label>
+          </p>
           {option.description && (
             <label className="text-neutral-500 mt-1 line-clamp-2 block">
               {option.description}
@@ -110,25 +110,25 @@ const VariantOption = ({
   return (
     <div
       onClick={isOutOfStock ? undefined : onSelect}
-      className={`relative rounded-xl px-6 py-4 transition-all duration-300 border-2 w-fit ${
+      className={`relative rounded-3xl px-6 py-4 transition-all duration-300 border-2 w-fit ${
         isOutOfStock
           ? "bg-neutral-50 opacity-40 text-neutral-400 cursor-not-allowed border-neutral-200 pointer-events-none"
           : isSelected
-            ? "text-white border-brand-500 shadow-lg cursor-pointer"
-            : "bg-white hover:bg-brand-500/5 border-neutral-200 hover:border-brand-500 cursor-pointer"
+            ? "text-white bg-brand-100 cursor-pointer"
+            : "bg-white hover:bg-brand-100/50 border-neutral-200  cursor-pointer"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 space-y-1">
-          <label
+          <p
             className={`cursor-pointer ${
-              isSelected && !isOutOfStock ? "text-brand-500" : "text-brand-900"
+              isSelected && !isOutOfStock ? "text-brand-900" : "text-brand-900"
             }`}
           >
             {option.optionName}
-          </label>
+          </p>
           {option.description && (
-            <label className="cursor-pointer line-clamp-1 text-neutral-500 block">
+            <label className="cursor-pointer line-clamp-1 text-brand-900/80 block">
               {option.description}
             </label>
           )}
@@ -149,7 +149,7 @@ const VariantSelector = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h5 className="text-brand-900">{group.groupName}</h5>
+        <p className="text-brand-900">{group.groupName}</p>
       </div>
 
       <div className="flex flex-wrap flex-row gap-3">

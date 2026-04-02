@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, Filter, Pencil } from "lucide-react";
 import Image from "next/image";
 import MyButton from "@/components/ui/MyButton";
+import star from "@/assets/svg/star.svg";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface RatingStats {
@@ -99,13 +100,24 @@ const ReviewHeader = ({
       {/* ── Row 1: Rating summary + customer images ── */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mb-6">
         {/* Left: rating summary + bars */}
-        <div className="flex flex-col w-full lg:w-5/12 gap-4">
+        <div className="flex flex-col w-full  gap-4">
           <div className="flex items-center gap-4">
-            <h4 className="text-brand-900">
+            <h3 className="text-brand-900">
               {ratingStats.averageRating.toFixed(1)}
-            </h4>
-            <div className="flex mb-1 text-brand-900">
-              {renderStars(Math.round(ratingStats.averageRating), "w-6 h-6")}
+            </h3>
+            <div className="flex mb-1 gap-1">
+              {Array.from({ length: 5 }, (_, i) => (
+                <Image
+                  key={i}
+                  src={star}
+                  alt="star"
+                  className="w-8 h-8 transition-opacity duration-200"
+                  style={{
+                    opacity:
+                      i < Math.round(ratingStats.averageRating) ? 1 : 0.2,
+                  }}
+                />
+              ))}
             </div>
             <label className="text-brand-900">
               Based on {ratingStats.totalReviews} reviews
@@ -137,20 +149,17 @@ const ReviewHeader = ({
         </div>
 
         {/* Right: customer images */}
-        <div className="flex flex-col w-full lg:w-7/12 gap-4">
+        <div className="flex flex-col w-full gap-4">
           {showCustomerImages && customerImages.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
-              {customerImages.slice(0, 20).map((img, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-brand-100/50 hover:scale-105 transition-transform duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                >
+            <div className="flex gap-1 pb-1 scroll-smooth flex-wrap">
+              {customerImages.slice(0, 18).map((img, index) => (
+                <div key={index} className="bg-brand-100/50  ">
                   <Image
                     src={img.url}
                     alt={`Submitted by ${img.username}`}
-                    width={112}
-                    height={112}
-                    className="w-full h-full object-cover"
+                    width={80}
+                    height={80}
+                    className="w-20 h-20 rounded-xl object-cover hover:scale-105 transition-transform duration-200 cursor-pointer hover:shadow-sm"
                     loading="lazy"
                   />
                 </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
+import LenisProvider from "@/components/ui/LenisProvider"; // 👈 import
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.banstolabrothers.com.np"),
@@ -39,7 +40,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const GTM_ID = "GTM-04011M7W45"; // 👈 Replace with your real GTM ID
+  const GTM_ID = "GTM-04011M7W45";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -48,7 +49,6 @@ export default function RootLayout({
           name="google-site-verification"
           content="SZDSjUuQzGszyhBTAGd-lCMzEzZmWd05CMzuJ545xro"
         />
-        {/* GTM Script — must be in <head> */}
         <Script
           id="gtm-script"
           strategy="beforeInteractive"
@@ -62,7 +62,6 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {/* GTM noscript — must be first inside <body> */}
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
@@ -71,10 +70,7 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-
-        {children}
-
-        {/* Google Analytics — you can keep this OR move GA4 into GTM instead */}
+        <LenisProvider>{children}</LenisProvider> {/* 👈 wrap children */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-04011M7W45"
           strategy="afterInteractive"
@@ -91,8 +87,6 @@ export default function RootLayout({
             `,
           }}
         />
-
-        {/* Hotjar */}
         <Script
           id="hotjar"
           strategy="afterInteractive"
