@@ -37,7 +37,7 @@ export const footerData: FooterData = {
       links: [
         { label: "About Us", path: "/story" },
         { label: "Find in Store", path: "/store" },
-        // { label: "Contact us", path: "/contact" },
+        { label: "Blogs", path: "/blogs" },
       ],
     },
     {

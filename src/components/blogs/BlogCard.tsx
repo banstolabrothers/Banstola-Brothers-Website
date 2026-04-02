@@ -24,20 +24,19 @@ export default function BlogCard({ blog }: Props) {
         <Image
           src={imageUrl}
           alt={blog.primaryImage?.alt ?? blog.title}
-          // fill={true}
           width={320}
           height={160}
           quality={100}
-          className="h-full w-full object-cover  aspect-5/4 group-hover:scale-105 rounded-3xl transition-transform duration-500"
+          className="h-64 w-full object-cover rounded-3xl border-2 border-brand-900/4"
         />
       )}
 
       {/* Content */}
-      <div className="flex flex-col flex-1 py-6 gap-3">
+      <div className="flex flex-col flex-1 py-2 gap-3">
         {/* Title */}
-        <h3 className="text-brand-900 opacity-75 group-hover:opacity-100 transition-opacity line-clamp-2">
+        <h4 className="font-family-compact-regular text-brand-900 group-hover:opacity-50 transition-opacity">
           {blog.title}
-        </h3>
+        </h4>
       </div>
     </Link>
   );

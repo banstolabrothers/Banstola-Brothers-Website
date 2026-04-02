@@ -21,14 +21,9 @@ export default function BlogsClient({ blogs, tags }: Props) {
 
   return (
     <main className="min-h-screen py-20">
-      <div className="max-w-[1200px] mx-auto px-4">
+      <div className="max-w-[1280px] mx-auto px-4">
         {/* ── Header ── */}
-        <div className="mb-12 text-center">
-          <h1 className=" text-brand-900 mb-4">Blog & Insights</h1>
-          <p className="text-neutral-600 max-w-xl mx-auto">
-            Tips, stories, and insights from the Banstola Brothers team.
-          </p>
-        </div>
+        <h1 className=" text-brand-900 mb-12 text-center">Blog & Insights</h1>
 
         {/* ── Tag Filter ── */}
         {tags.length > 0 && (
@@ -41,7 +36,7 @@ export default function BlogsClient({ blogs, tags }: Props) {
 
         {/* ── Blog Grid ── */}
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
             {filtered.map((blog) => (
               <BlogCard key={blog._id} blog={blog} />
             ))}

@@ -113,11 +113,11 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
       {/* ── Related Blogs ─────────────────────────────────────────────────── */}
       {relatedBlogs.length > 0 && (
         <section className="py-16 border-t border-neutral-100">
-          <div className="max-w-[1200px] mx-auto px-4">
+          <div className=" mx-auto px-4">
             <h2 className="text-2xl font-bold text-brand-900 mb-8">
               Related Articles
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {relatedBlogs.map((b) => (
                 <BlogCard key={b._id} blog={b} />
               ))}
