@@ -116,7 +116,7 @@ export const pageMeta = {
 
   allReviews: buildMeta(
     "Customer Reviews",
-    "258+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
+    "262+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
     "/all-reviews",
     [
       "Banstola Brothers reviews",

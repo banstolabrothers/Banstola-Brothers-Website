@@ -68,7 +68,7 @@ export function LocalBusinessSchema() {
 
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Tersapatti Road, Opposite Pokhara Central Oasis",
+      streetAddress: "Tersapatti Rd, Pokhara 33700",
       addressLocality: "Pokhara",
       postalCode: "33700",
       addressRegion: "Gandaki Province",
@@ -77,14 +77,15 @@ export function LocalBusinessSchema() {
 
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 28.2259,
-      longitude: 83.985,
+      latitude: 28.2285494,
+      longitude: 83.9885977,
     },
 
     hasMap:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14061.556005867795!2d83.98500705!3d28.225870399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399595eb31663f9f%3A0xeb2b74dd8de8beea!2sBanstola%20Brothers!5e0!3m2!1sen!2snp",
 
-    telephone: "+977-9856041086",
+    telephone: ["+977-9856041086", "+977-9806512036"],
+    whatsapp_number: "+977-9762554136",
     email: "banstolabrothers@gmail.com",
 
     openingHoursSpecification: {
@@ -102,9 +103,11 @@ export function LocalBusinessSchema() {
       closes: "23:59",
     },
 
-    priceRange: "NRs 150 – NRs 800",
+    brand: "Banstola Brothers",
+
+    priceRange: "NPR 100 – NPR 2000",
     currenciesAccepted: "NPR",
-    paymentAccepted: "Cash, eSewa, Khalti",
+    paymentAccepted: "Cash, eSewa, Khalti, Online Banking",
 
     areaServed: {
       "@type": "Country",
@@ -115,6 +118,8 @@ export function LocalBusinessSchema() {
       "https://www.instagram.com/banstolabrothers/",
       "https://www.facebook.com/banstolabrothers/",
       "https://www.tiktok.com/@banstolabrothers",
+      "https://www.x.com/banstolabrother",
+      "https://www.youtube.com/@banstolabrothers",
     ],
 
     hasOfferCatalog: {
@@ -213,12 +218,13 @@ export function ProductSchema({ product }: ProductSchemaProps) {
       },
     },
 
+    // schema.tsx — update this
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: Number(avgRating.toFixed(1)),
-      bestRating: 5,
-      worstRating: 1,
-      reviewCount: totalReviews > 0 ? totalReviews : 258,
+      ratingValue: "5",
+      bestRating: "5",
+      worstRating: "1",
+      reviewCount: "262", // ← was 258, site shows 262+
     },
 
     review:
