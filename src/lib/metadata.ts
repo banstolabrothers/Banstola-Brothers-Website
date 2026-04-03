@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import type { BlogDetail } from "@/types/blog";
 
 // ── Site-wide constants ───────────────────────────────────────────────────────
 const SITE_NAME = "Banstola Brothers";
 const SITE_URL = "https://www.banstolabrothers.com.np";
-const OG_IMAGE = "/og-image.png"; // must be in /public/og-image.png
+const OG_IMAGE = "/og-image.png";
 
 const DEFAULT_OG_IMAGE = [
   {
@@ -49,13 +50,11 @@ const buildMeta = (
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. STATIC PAGE METADATA
 //
-//    Usage in any static page:
+//    Usage:
 //    import { pageMeta } from "@/lib/metadata";
 //    export const metadata = pageMeta.home;
 // ─────────────────────────────────────────────────────────────────────────────
 export const pageMeta = {
-  // layout.tsx default title handles homepage — but we still export it
-  // so pages can explicitly set it if needed
   home: buildMeta(
     "Original Chhurpi Since 1999",
     "Buy authentic handcrafted Chhurpi from Banstola Brothers. Smoked, White & Coffee Chhurpi sourced from Ilam, Dolakha & Palpa. Shop in Pokhara since 1999.",
@@ -138,6 +137,20 @@ export const pageMeta = {
       "Banstola Brothers feedback",
     ],
   ),
+
+  // ── Blog list page (static) ───────────────────────────────────────────────
+  blogs: buildMeta(
+    "Blog",
+    "Explore articles, tips, and insights from the Banstola Brothers team — from Chhurpi traditions to Himalayan food culture.",
+    "/blogs",
+    [
+      "Banstola Brothers blog",
+      "Chhurpi articles",
+      "Nepali food culture",
+      "Himalayan cheese blog",
+      "Chhurpi recipes",
+    ],
+  ),
 } satisfies Record<string, Metadata>;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -175,9 +188,6 @@ export const buildProductMeta = (
   product: SanityProductMeta,
   slug: string,
 ): Metadata => {
-  // Uses seo.metaTitle if set in Sanity, otherwise just product title.
-  // layout.tsx template then appends "| Banstola Brothers" automatically.
-  // Result: "Chhurpi | Banstola Brothers"
   const title = product.seo?.metaTitle ?? product.title;
 
   const description =
@@ -197,10 +207,6 @@ export const buildProductMeta = (
         "buy Pokhara Nepal",
       ];
 
-  // OG Image priority:
-  // 1. seo.ogImage (manually set in Sanity Studio)
-  // 2. primaryImage (product's main image — auto fallback)
-  // 3. /og-image.png (site-wide default)
   const imageUrl =
     product.seo?.ogImage?.asset?.url ??
     product.primaryImage?.asset?.url ??
@@ -237,22 +243,122 @@ export const buildProductMeta = (
       description,
       images: [imageUrl],
     },
-    alternates: {
-      canonical,
-    },
+    alternates: { canonical },
   };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. SANITY GROQ QUERY
-//    Import alongside buildProductMeta and pass to client.fetch()
-//    The ->url dereference is required to resolve Sanity image asset URLs
+// 3. SANITY GROQ QUERY — PRODUCTS
 // ─────────────────────────────────────────────────────────────────────────────
 export const productMetaQuery = `
   *[_type == "product" && slug.current == $slug][0]{
     title,
     shortDescription,
     brand,
+    "primaryImage": {
+      "asset": { "url": primaryImage.asset->url }
+    },
+    seo {
+      metaTitle,
+      metaDescription,
+      keywords,
+      noIndex,
+      "ogImage": {
+        "asset": { "url": ogImage.asset->url }
+      }
+    }
+  }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. DYNAMIC BLOG PAGE METADATA
+//
+//    Usage in app/blogs/[slug]/page.tsx:
+//
+//    import { buildBlogMeta, blogMetaQuery } from "@/lib/metadata";
+//
+//    export async function generateMetadata({ params }): Promise<Metadata> {
+//      const blog = await client.fetch(blogMetaQuery, { slug: params.slug });
+//      if (!blog) return { title: "Blog Not Found" };
+//      return buildBlogMeta(blog, params.slug);
+//    }
+// ─────────────────────────────────────────────────────────────────────────────
+export interface SanityBlogMeta {
+  title: string;
+  shortDescription?: string;
+  publishedAt?: string;
+  author?: string;
+  primaryImage?: SanityImageAsset;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[];
+    noIndex?: boolean;
+    ogImage?: SanityImageAsset;
+  };
+}
+
+export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
+  const title = blog.seo?.metaTitle ?? blog.title;
+
+  const description =
+    blog.seo?.metaDescription ??
+    blog.shortDescription ??
+    `${blog.title} — Read the latest from Banstola Brothers.`;
+
+  const keywords = blog.seo?.keywords?.length
+    ? blog.seo.keywords
+    : [
+        blog.title,
+        "Banstola Brothers blog",
+        "Chhurpi articles",
+        "Nepali food culture",
+      ];
+
+  const imageUrl =
+    blog.seo?.ogImage?.asset?.url ?? blog.primaryImage?.asset?.url ?? OG_IMAGE;
+
+  const canonical = `${SITE_URL}/blogs/${slug}`;
+
+  return {
+    title,
+    description,
+    keywords,
+    robots: blog.seo?.noIndex
+      ? { index: false, follow: false }
+      : { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "article",
+      locale: "en_NP",
+      siteName: SITE_NAME,
+      ...(blog.publishedAt && { publishedTime: blog.publishedAt }),
+      ...(blog.author && { authors: [blog.author] }),
+      images: imageUrl
+        ? [{ url: imageUrl, width: 1200, height: 630, alt: blog.title }]
+        : [DEFAULT_OG_IMAGE[0]],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl || OG_IMAGE],
+    },
+    alternates: { canonical },
+  };
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. SANITY GROQ QUERY — BLOGS
+// ─────────────────────────────────────────────────────────────────────────────
+export const blogMetaQuery = `
+  *[_type == "blog" && slug.current == $slug][0]{
+    title,
+    shortDescription,
+    publishedAt,
+    "author": author->name,
     "primaryImage": {
       "asset": { "url": primaryImage.asset->url }
     },

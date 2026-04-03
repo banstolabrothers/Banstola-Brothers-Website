@@ -1,11 +1,9 @@
 import { client } from "@/lib/sanity";
-import { blogListQuery, allTagsQuery } from "@/lib/blogQueries";
-import { blogListMeta } from "@/lib/blogMetadata";
 import BlogsClient from "@/components/blogs/BlogsClient";
 import type { BlogCard, Tag } from "@/types/blog";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = blogListMeta;
+import { blogListQuery, allTagsQuery } from "@/lib/queries";
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.blogs;
 
 export default async function BlogsPage() {
   const [blogs, tags] = await Promise.all([

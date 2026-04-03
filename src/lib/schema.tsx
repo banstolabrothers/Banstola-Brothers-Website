@@ -1,4 +1,5 @@
 import type { Product } from "@/types/product";
+import type { BlogDetail } from "@/types/blog";
 
 // lib/schema.tsx
 // ─────────────────────────────────────────────────────────────────────────────
@@ -6,58 +7,58 @@ import type { Product } from "@/types/product";
 // All schema components are pure Server Components — zero client JS shipped.
 //
 // Usage:
-//   import { LocalBusinessSchema, ProductSchema } from "@/lib/schema";
-//
-//   // In page.tsx (server component)
-//   <LocalBusinessSchema />
-//   <ProductSchema product={sanityProduct} reviews={sanityReviews} />
+//   import { LocalBusinessSchema, ProductSchema, BreadcrumbSchema } from "@/lib/schema";
+//   import { BlogArticleSchema } from "@/lib/schema";
 // ─────────────────────────────────────────────────────────────────────────────
+
+const BASE_URL = "https://www.banstolabrothers.com.np";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-/** Shape of a product document coming out of Sanity */
 export interface SanityProduct {
   name: string;
-  slug: string; // e.g. "chhurpi"
+  slug: string;
   description?: string;
-  image?: string; // resolved Sanity CDN URL
+  image?: string;
   price?: {
     min: number;
     max: number;
-    currency?: string; // default "NPR"
+    currency?: string;
   };
-  /** Pass the full aggregateRating block if you store it in Sanity */
   aggregateRating?: {
-    ratingValue: number; // e.g. 5
-    reviewCount: number; // e.g. 258
+    ratingValue: number;
+    reviewCount: number;
   };
 }
 
-/** Shape of a single review coming out of Sanity */
 export interface SanityReview {
   author: string;
-  rating: number; // 1–5
+  rating: number;
   body: string;
-  datePublished?: string; // ISO 8601 e.g. "2024-11-15"
+  datePublished?: string;
+}
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
 }
 
 // ── 1. LocalBusiness ─────────────────────────────────────────────────────────
-// Place once in app/page.tsx (homepage). Do NOT repeat on every page.
 
 export function LocalBusinessSchema() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://www.banstolabrothers.com.np/#business",
+    "@id": `${BASE_URL}/#business`,
 
     name: "Banstola Brothers",
     alternateName: "Banstola Brothers Chhurpi & Khattu",
     description:
       "Pokhara's original Chhurpi and Khattu shop, founded in 1999 by Muktinath Banstola. Authentic Himalayan Chhurpi sourced from Illam, Khattu, natural Dog Chew, and Papaya snacks — available in-store and delivered across Nepal.",
 
-    url: "https://www.banstolabrothers.com.np",
-    logo: "https://www.banstolabrothers.com.np/og-image.png",
-    image: "https://www.banstolabrothers.com.np/og-image.png",
+    url: BASE_URL,
+    logo: `${BASE_URL}/og-image.png`,
+    image: `${BASE_URL}/og-image.png`,
 
     foundingDate: "1999",
     founder: {
@@ -83,8 +84,8 @@ export function LocalBusinessSchema() {
     hasMap:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14061.556005867795!2d83.98500705!3d28.225870399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399595eb31663f9f%3A0xeb2b74dd8de8beea!2sBanstola%20Brothers!5e0!3m2!1sen!2snp",
 
-    telephone: "+977-9856041086", // ← add your phone number e.g. "+977-61-123456"
-    email: "banstolabrothers@gmail.com", // ← add contact email if available
+    telephone: "+977-9856041086",
+    email: "banstolabrothers@gmail.com",
 
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
@@ -103,7 +104,7 @@ export function LocalBusinessSchema() {
 
     priceRange: "NRs 150 – NRs 800",
     currenciesAccepted: "NPR",
-    paymentAccepted: "Cash, eSewa, Khalti", // ← update if needed
+    paymentAccepted: "Cash, eSewa, Khalti",
 
     areaServed: {
       "@type": "Country",
@@ -125,7 +126,7 @@ export function LocalBusinessSchema() {
           itemOffered: {
             "@type": "Product",
             name: "Chhurpi",
-            url: "https://www.banstolabrothers.com.np/products/chhurpi",
+            url: `${BASE_URL}/products/chhurpi`,
           },
         },
         {
@@ -133,7 +134,7 @@ export function LocalBusinessSchema() {
           itemOffered: {
             "@type": "Product",
             name: "Dog Chew",
-            url: "https://www.banstolabrothers.com.np/products/dog-chew",
+            url: `${BASE_URL}/products/dog-chew`,
           },
         },
         {
@@ -141,7 +142,7 @@ export function LocalBusinessSchema() {
           itemOffered: {
             "@type": "Product",
             name: "Khattu",
-            url: "https://www.banstolabrothers.com.np/products/khattu",
+            url: `${BASE_URL}/products/khattu`,
           },
         },
         {
@@ -149,13 +150,12 @@ export function LocalBusinessSchema() {
           itemOffered: {
             "@type": "Product",
             name: "Papaya Snack",
-            url: "https://www.banstolabrothers.com.np/products/papaya",
+            url: `${BASE_URL}/products/papaya`,
           },
         },
       ],
     },
 
-    // Aggregate across all products — update reviewCount as it grows
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "5",
@@ -174,20 +174,6 @@ export function LocalBusinessSchema() {
 }
 
 // ── 2. ProductSchema ──────────────────────────────────────────────────────────
-// Place on each individual product page (app/products/[slug]/page.tsx).
-// Pass the product data from Sanity + the reviews array for that product.
-//
-// Example usage in a product page:
-//
-//   const product = await sanityFetch<SanityProduct>({ ... });
-//   const reviews = await sanityFetch<SanityReview[]>({ ... });
-//
-//   return (
-//     <>
-//       <ProductSchema product={product} reviews={reviews} />
-//       <YourProductUI ... />
-//     </>
-//   );
 
 interface ProductSchemaProps {
   product: Product;
@@ -195,13 +181,12 @@ interface ProductSchemaProps {
 
 export function ProductSchema({ product }: ProductSchemaProps) {
   const slug = product.slug?.current ?? "";
-  const productUrl = `https://www.banstolabrothers.com.np/products/${slug}`;
+  const productUrl = `${BASE_URL}/products/${slug}`;
   const rd = product.reviewData;
 
-  // ✅ Compute average manually — no math::avg dependency
   const totalReviews = rd?.totalReviews ?? 0;
   const avgRating =
-    totalReviews > 0 && rd?.ratingSum ? rd.ratingSum / totalReviews : 5; // fallback: all reviews are 5-star
+    totalReviews > 0 && rd?.ratingSum ? rd.ratingSum / totalReviews : 5;
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -216,7 +201,6 @@ export function ProductSchema({ product }: ProductSchemaProps) {
       name: product.brand ?? "Banstola Brothers",
     },
 
-    // ✅ Always present — offer without price is valid
     offers: {
       "@type": "Offer",
       url: productUrl,
@@ -224,12 +208,11 @@ export function ProductSchema({ product }: ProductSchemaProps) {
       availability: "https://schema.org/InStoreOnly",
       seller: {
         "@type": "LocalBusiness",
-        "@id": "https://www.banstolabrothers.com.np/#business",
+        "@id": `${BASE_URL}/#business`,
         name: "Banstola Brothers",
       },
     },
 
-    // ✅ Always present — fallback to 258 if Sanity returns nothing
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: Number(avgRating.toFixed(1)),
@@ -238,7 +221,6 @@ export function ProductSchema({ product }: ProductSchemaProps) {
       reviewCount: totalReviews > 0 ? totalReviews : 258,
     },
 
-    // ✅ Always present — fallback to 2 real reviews from the homepage
     review:
       rd?.reviews && rd.reviews.length > 0
         ? rd.reviews.slice(0, 10).map((r) => ({
@@ -288,22 +270,7 @@ export function ProductSchema({ product }: ProductSchemaProps) {
 }
 
 // ── 3. BreadcrumbSchema ───────────────────────────────────────────────────────
-// Adds breadcrumb rich results — helps Google understand your site structure.
-// Place on product pages alongside ProductSchema.
-//
-// Example:
-//   <BreadcrumbSchema
-//     items={[
-//       { name: "Home", url: "https://www.banstolabrothers.com.np" },
-//       { name: "Products", url: "https://www.banstolabrothers.com.np/products" },
-//       { name: "Chhurpi", url: "https://www.banstolabrothers.com.np/products/chhurpi" },
-//     ]}
-//   />
-
-interface BreadcrumbItem {
-  name: string;
-  url: string;
-}
+// Shared by both product and blog pages.
 
 export function BreadcrumbSchema({ items }: { items: BreadcrumbItem[] }) {
   const schema = {
@@ -315,6 +282,59 @@ export function BreadcrumbSchema({ items }: { items: BreadcrumbItem[] }) {
       name: item.name,
       item: item.url,
     })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// ── 4. BlogArticleSchema ──────────────────────────────────────────────────────
+// Place on each blog detail page (app/blogs/[slug]/page.tsx).
+//
+// Usage:
+//   import { BlogArticleSchema, BreadcrumbSchema } from "@/lib/schema";
+//
+//   <BlogArticleSchema blog={blog} slug={slug} />
+//   <BreadcrumbSchema
+//     items={[
+//       { name: "Home",  url: BASE_URL },
+//       { name: "Blogs", url: `${BASE_URL}/blogs` },
+//       { name: blog.title, url: `${BASE_URL}/blogs/${slug}` },
+//     ]}
+//   />
+
+interface BlogSchemaProps {
+  blog: BlogDetail;
+  slug: string;
+}
+
+export function BlogArticleSchema({ blog, slug }: BlogSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description: blog.shortDescription,
+    image: blog.primaryImage?.asset?.url ?? "",
+    author: {
+      "@type": "Person",
+      name: blog.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Banstola Brothers",
+      url: BASE_URL,
+    },
+    datePublished: blog.publishedAt,
+    dateModified: blog.publishedAt,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/blogs/${slug}`,
+    },
+    keywords: blog.tags?.map((t) => t.name).join(", ") ?? "",
   };
 
   return (

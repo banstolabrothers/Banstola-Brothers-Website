@@ -3,9 +3,9 @@ import {
   blogBySlugQuery,
   blogSlugsQuery,
   relatedBlogsQuery,
-} from "@/lib/blogQueries";
-import { buildBlogMeta } from "@/lib/blogMetadata";
-import { BlogArticleSchema, BlogBreadcrumbSchema } from "@/lib/blogSchema";
+} from "@/lib/queries";
+import { buildBlogMeta, blogMetaQuery } from "@/lib/metadata";
+import { BlogArticleSchema, BreadcrumbSchema } from "@/lib/schema";
 import BlogDetailClient from "@/components/blogs/BlogDetailClient";
 import type { BlogDetail, BlogCard } from "@/types/blog";
 import type { Metadata } from "next";
@@ -48,7 +48,7 @@ export default async function BlogDetailPage({ params }: Props) {
       {blog && (
         <>
           <BlogArticleSchema blog={blog} slug={slug} />
-          <BlogBreadcrumbSchema
+          <BreadcrumbSchema
             items={[
               { name: "Home", url: BASE_URL },
               { name: "Blogs", url: `${BASE_URL}/blogs` },
