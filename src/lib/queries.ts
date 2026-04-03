@@ -115,6 +115,10 @@ export const productDetailQuery = `
   }
 `;
 
+export const productSlugsQuery = `
+  *[_type == "product"] { "slug": slug.current }
+`;
+
 export const productReviewsQuery = `
   *[_type == "review" && references(*[_type=="product" && slug.current==$slug]._id)][0]{
     "totalReviews": count(reviews),

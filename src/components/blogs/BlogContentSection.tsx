@@ -1,5 +1,3 @@
-// BlogContentSection.tsx — mirrors ProductContentSection.tsx
-
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { urlFor } from "@/lib/sanity";
 

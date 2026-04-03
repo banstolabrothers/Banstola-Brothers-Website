@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import BlogCard from "@/components/blogs/BlogCard";
 import TagFilter from "@/components/blogs/TagFilter";
 import type { BlogCard as BlogCardType, Tag } from "@/types/blog";
-import MyButton from "../ui/MyButton";
+import MyButton from "@/components/ui/MyButton";
 
 interface Props {
   blogs: BlogCardType[];
