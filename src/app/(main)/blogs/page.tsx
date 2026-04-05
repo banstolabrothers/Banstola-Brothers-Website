@@ -1,3 +1,4 @@
+import { Suspense } from "react"; // 👈
 import { client } from "@/lib/sanity";
 import BlogsClient from "@/components/blogs/BlogsClient";
 import type { BlogCard, Tag } from "@/types/blog";
@@ -11,5 +12,11 @@ export default async function BlogsPage() {
     client.fetch<Tag[]>(allTagsQuery),
   ]);
 
-  return <BlogsClient blogs={blogs} tags={tags} />;
+  return (
+    <Suspense fallback={null}>
+      {" "}
+      {/* 👈 */}
+      <BlogsClient blogs={blogs} tags={tags} />
+    </Suspense>
+  );
 }
