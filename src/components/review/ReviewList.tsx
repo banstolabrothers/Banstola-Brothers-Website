@@ -33,11 +33,7 @@ const ReviewList = ({
     <>
       <div className="flex flex-col gap-2">
         {reviews.map((review, index) => (
-          <ReviewCard
-            key={index}
-            review={review}
-            isRepeatCustomer={review.isRepeatCustomer}
-          />
+          <ReviewCard key={index} review={review} />
         ))}
       </div>
 
