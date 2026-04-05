@@ -34,93 +34,97 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
   const imageUrl = blog.primaryImage?.asset?.url;
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 ">
+    <section className="w-full mx-auto">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className=" flex flex-col pt-16 gap-6">
-        {/* Breadcrumb */}
-        <p className="flex items-center gap-2 text-brand-900/65 mb-8">
-          <Link href="/" className="hover:text-brand-900 transition-colors">
-            Home
-          </Link>
-          <span>/</span>
-          <Link
-            href="/blogs"
-            className="hover:text-brand-900 transition-colors"
-          >
-            Blogs
-          </Link>
-          <span>/</span>
-          <span className="text-brand-900 line-clamp-1">{blog.title}</span>
-        </p>
-
-        {/* Title */}
-        <h2 className="text-brand-900 w-full">{blog.title}</h2>
-
-        {/* Tags */}
-        {blog.tags?.length > 0 && (
-          <label className="flex flex-wrap gap-2 mb-5">
-            {blog.tags.map((tag) => (
-              <Link
-                key={tag._id}
-                href={`/blogs?tag=${tag.slug}`}
-                className="px-3 py-1.5 rounded-full border-2 border-brand-900/20 bg-brand-100 text-brand-900 transition-colors  opacity-60 hover:opacity-100"
-              >
-                {tag.name}
-              </Link>
-            ))}
-          </label>
-        )}
-
-        {/* Meta */}
-        <p className="flex flex-wrap items-center gap-1 text-brand-900">
-          <span>By {blog.author}</span>
-          {blog.category && (
-            <>
-              <span>·</span>
-              <span className="capitalize">{blog.category.title}</span>
-            </>
-          )}
-          {blog.publishedAt && (
-            <>
-              <span>·</span>
-              <time dateTime={blog.publishedAt}>
-                {formatDate(blog.publishedAt)}
-              </time>
-            </>
-          )}
-        </p>
-
+      <section className="flex flex-col md:flex-row md:min-h-screen h-full">
         {/* Hero Image */}
         {imageUrl && (
-          <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden bg-neutral-100">
+          <div className="flex w-full bg-neutral-100">
             <Image
               src={imageUrl}
               alt={blog.primaryImage?.alt ?? blog.title}
-              fill
+              width="1000"
+              height="1000"
               className="object-cover"
               priority
-              sizes="(max-width: 1200px) 100vw, 1200px"
             />
           </div>
         )}
+
+        <section className="flex flex-col w-full md:h-screen text-center px-10 pt-20 pb-24 md:pt-64 lg:pt-80 items-center justify-start gap-6 bg-brand-500">
+          {/* Breadcrumb */}
+          {/* <p className="flex items-center gap-2 text-brand-900/65">
+            <Link href="/" className="hover:text-brand-900 transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <Link
+              href="/blogs"
+              className="hover:text-brand-900 transition-colors"
+            >
+              Blogs
+            </Link>
+            <span>/</span>
+            <span className="text-brand-900 line-clamp-1">{blog.title}</span>
+          </p> */}
+
+          {/* Tags */}
+          {blog.tags?.length > 0 && (
+            <label className="flex flex-wrap gap-2">
+              {blog.tags.map((tag) => (
+                <Link
+                  key={tag._id}
+                  href={`/blogs?tag=${tag.slug}`}
+                  className="px-3 py-1.5 rounded-full border-2 border-brand-50 bg-brand-100 text-brand-900 transition-colors"
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </label>
+          )}
+
+          {/* Title */}
+          <h2 className="text-brand-900">{blog.title}</h2>
+
+          {/* Meta */}
+          <p className="flex flex-wrap items-center justify-center gap-1 text-brand-900">
+            <span>By {blog.author}</span>
+            {blog.category && (
+              <>
+                <span>·</span>
+                <span className="capitalize">{blog.category.title}</span>
+              </>
+            )}
+            {blog.publishedAt && (
+              <>
+                <span>·</span>
+                <time dateTime={blog.publishedAt}>
+                  {formatDate(blog.publishedAt)}
+                </time>
+              </>
+            )}
+          </p>
+        </section>
       </section>
 
-      {/* ── Content ──────────────────────────────────────────────────────── */}
-      {(blog.content?.length ?? 0) > 0 && (
-        <BlogContentSection content={blog.content!} />
-      )}
+      <section className="w-full max-w-2xl mx-auto px-4">
+        {/* ── Content ──────────────────────────────────────────────────────── */}
+        {(blog.content?.length ?? 0) > 0 && (
+          <BlogContentSection content={blog.content!} />
+        )}
 
-      {/* ── Related Blogs ─────────────────────────────────────────────────── */}
-      {relatedBlogs.length > 0 && (
-        <div className="pb-16">
-          <h3 className=" text-brand-900 mb-4">Related Articles</h3>
-          <div className="flex flex-col gap-4">
-            {relatedBlogs.map((b) => (
-              <RelatedBlogCard key={b._id} blog={b} />
-            ))}
+        {/* ── Related Blogs ─────────────────────────────────────────────────── */}
+        {relatedBlogs.length > 0 && (
+          <div className="pb-16">
+            <h3 className=" text-brand-900 mb-4">Related Articles</h3>
+            <div className="flex flex-col gap-4">
+              {relatedBlogs.map((b) => (
+                <RelatedBlogCard key={b._id} blog={b} />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </section>
+    </section>
   );
 }
