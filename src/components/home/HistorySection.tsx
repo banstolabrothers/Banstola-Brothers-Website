@@ -9,18 +9,12 @@ const HistorySection = () => {
         <div className="max-w-3xl text-center lg:text-left text-brand-900">
           <h2>Founded in the late 1990s</h2>
           <p>
-            by{" "}
-            <b className="font-RGRegular text-brand-500 italic">
-              Muktinath Banstola
-            </b>
-            , Introducing <br />
-            Churpi from Illam &amp;
+            by <span className="text-brand-500">Muktinath Banstola,</span>
             <br />
-            Paun from Kathmandu
+            Introducing Chhurpi from Illam, Paun from Kathmandu
             <br />— establishing Pokhara&apos;s
           </p>
-          <h3>FIRST CHURPI &amp; PAUN SHOP,</h3>
-          <h2 className="text-brand-500 uppercase">Banstola Brothers</h2>
+          <h4>FIRST CHURPI & PAUN SHOP</h4>
         </div>
 
         {/* Replaced MyButton with inline link — swap back once MyButton is converted */}

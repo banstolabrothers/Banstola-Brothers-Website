@@ -37,7 +37,7 @@ const ProductStickyNav = ({
       <div className="max-w-8/12 w-full mx-2 h-fit flex flex-row items-center justify-between gap-4 px-4 py-4 bg-white/80 backdrop-blur-sm transition-all duration-300 ease-linear border-2 border-brand-900/40 shadow-[3px_3px_0px_0px_rgba(69,30,0,.40)] rounded-full">
         {/* Product name + selected options */}
         <div className="flex flex-col hidden sm:flex w-full justify-start items-center gap-1 px-6 flex-1">
-          <h4 className="text-brand-900 w-full">{productName || "Product"}</h4>
+          <h5 className="text-brand-900 w-full">{productName || "Product"}</h5>
           {selectedOptions && Object.keys(selectedOptions).length > 0 && (
             <div className="flex justify-start w-full items-center gap-2 flex-wrap">
               {Object.entries(selectedOptions).map(([key, value]) => (

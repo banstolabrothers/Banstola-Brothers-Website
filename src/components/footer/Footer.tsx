@@ -26,7 +26,7 @@ const Footer = () => {
             <div className="flex flex-wrap gap-4 w-full">
               {footerData.linkGroups.map((group, index) => (
                 <div key={index} className="min-w-36">
-                  <h4 className="text-brand-900 mb-4">{group.title}</h4>
+                  <h5 className="text-brand-900 mb-4">{group.title}</h5>
 
                   {/* Check if it's social media section */}
                   {group.isSocial ? (

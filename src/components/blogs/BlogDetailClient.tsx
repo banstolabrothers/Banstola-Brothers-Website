@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import BlogContentSection from "@/components/blogs/BlogContentSection";
-import BlogCard from "@/components/blogs/BlogCard";
 import MyButton from "@/components/ui/MyButton";
 import type { BlogDetail, BlogCard as BlogCardType } from "@/types/blog";
+import RelatedBlogCard from "@/components/blogs/RelatedBlogCard";
 
 interface Props {
   blog: BlogDetail | null;
@@ -36,9 +36,9 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
   return (
     <div className="w-full max-w-2xl mx-auto px-4 ">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className=" pt-16 pb-0">
+      <section className=" flex flex-col pt-16 gap-6">
         {/* Breadcrumb */}
-        <p className="flex items-center gap-2  text-brand-900/65 mb-8">
+        <p className="flex items-center gap-2 text-brand-900/65 mb-8">
           <Link href="/" className="hover:text-brand-900 transition-colors">
             Home
           </Link>
@@ -52,6 +52,9 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
           <span>/</span>
           <span className="text-brand-900 line-clamp-1">{blog.title}</span>
         </p>
+
+        {/* Title */}
+        <h2 className="text-brand-900 w-full">{blog.title}</h2>
 
         {/* Tags */}
         {blog.tags?.length > 0 && (
@@ -68,11 +71,8 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
           </label>
         )}
 
-        {/* Title */}
-        <h1 className="text-brand-900 mb-6 w-full">{blog.title}</h1>
-
         {/* Meta */}
-        <label className="flex flex-wrap items-center gap-2 text-brand-900">
+        <p className="flex flex-wrap items-center gap-1 text-brand-900">
           <span>By {blog.author}</span>
           {blog.category && (
             <>
@@ -88,11 +88,11 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
               </time>
             </>
           )}
-        </label>
+        </p>
 
         {/* Hero Image */}
-        {/* {imageUrl && (
-          <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden bg-neutral-100">
+        {imageUrl && (
+          <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden bg-neutral-100">
             <Image
               src={imageUrl}
               alt={blog.primaryImage?.alt ?? blog.title}
@@ -102,7 +102,7 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
               sizes="(max-width: 1200px) 100vw, 1200px"
             />
           </div>
-        )} */}
+        )}
       </section>
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
@@ -112,18 +112,14 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
 
       {/* ── Related Blogs ─────────────────────────────────────────────────── */}
       {relatedBlogs.length > 0 && (
-        <section className="py-16 border-t border-neutral-100">
-          <div className=" mx-auto px-4">
-            <h2 className="text-2xl font-bold text-brand-900 mb-8">
-              Related Articles
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {relatedBlogs.map((b) => (
-                <BlogCard key={b._id} blog={b} />
-              ))}
-            </div>
+        <div className="pb-16">
+          <h3 className=" text-brand-900 mb-4">Related Articles</h3>
+          <div className="flex flex-col gap-4">
+            {relatedBlogs.map((b) => (
+              <RelatedBlogCard key={b._id} blog={b} />
+            ))}
           </div>
-        </section>
+        </div>
       )}
     </div>
   );

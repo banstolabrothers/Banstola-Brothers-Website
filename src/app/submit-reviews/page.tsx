@@ -152,9 +152,9 @@ const ProductSelector = ({
   onSelect: (p: SanityProduct) => void;
 }) => (
   <div>
-    <h3 className="text-brand-900 text-center mb-16">
+    <h4 className="text-brand-900 text-center mb-16">
       Which product would you like to review?
-    </h3>
+    </h4>
     {products.length === 0 ? (
       <p className="text-center py-8 text-neutral-500">No products available</p>
     ) : (
@@ -173,7 +173,7 @@ const ProductSelector = ({
               height={120}
               className="w-32 h-32 object-cover rounded-xl"
             />
-            <h4 className="text-neutral-800 font-medium">{product.title}</h4>
+            <p className="text-neutral-800 font-medium">{product.title}</p>
           </button>
         ))}
       </div>
@@ -213,9 +213,9 @@ const ReviewForm = ({
     <section className="flex flex-col gap-8 text-center md:text-left flex-1">
       {/* Rating */}
       <div className="flex flex-col gap-2">
-        <h3 className="text-neutral-700">
+        <h4 className="text-brand-900">
           How would you rate <strong>{product.title}</strong>?
-        </h3>
+        </h4>
         <StarRating rating={formData.rating} onChange={onRating} />
       </div>
 

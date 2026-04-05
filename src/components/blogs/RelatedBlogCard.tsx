@@ -14,11 +14,14 @@ function formatDate(iso: string) {
   });
 }
 
-export default function BlogCard({ blog }: Props) {
+export default function RelatedBlogCard({ blog }: Props) {
   const imageUrl = blog.primaryImage?.asset?.url;
 
   return (
-    <Link href={`/blogs/${blog.slug}`} className="group flex flex-col">
+    <Link
+      href={`/blogs/${blog.slug}`}
+      className="group flex items-center gap-4 flex-row"
+    >
       {/* Image */}
       {imageUrl && (
         <Image
@@ -27,17 +30,14 @@ export default function BlogCard({ blog }: Props) {
           width={320}
           height={160}
           quality={100}
-          className="h-64 w-full object-cover rounded-3xl border-2 border-brand-900/4"
+          className="h-32 max-w-4/12 w-full object-cover rounded-3xl border-2 border-brand-900/4"
         />
       )}
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 py-2 gap-3">
-        {/* Title */}
-        <p className=" text-brand-900 group-hover:opacity-50 transition-opacity">
-          {blog.title}
-        </p>
-      </div>
+      {/* Title */}
+      <p className="text-brand-900 w-8/12 group-hover:opacity-50 transition-opacity">
+        {blog.title}
+      </p>
     </Link>
   );
 }

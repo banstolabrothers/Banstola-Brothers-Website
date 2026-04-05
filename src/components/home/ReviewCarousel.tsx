@@ -36,7 +36,7 @@ const TestimonialCard = ({
       <StarRating rating={review.rating} />
       <p className="text-neutral-800">&ldquo;{review.description}&rdquo;</p>
       <div className="flex flex-col w-full gap-2 mt-4">
-        <h4 className="text-brand-900">{review.username || "Anonymous"}</h4>
+        <h5 className="text-brand-900">{review.username || "Anonymous"}</h5>
         {review.productTitle && (
           <div className="flex items-center justify-center gap-3">
             {review.productImage && (

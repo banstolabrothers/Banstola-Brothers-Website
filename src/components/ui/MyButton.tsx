@@ -230,7 +230,7 @@ const MyButton = ({
 
         {((isSelected && showTextWhenSelected) ||
           (isSelected && !showTextWhenSelected)) && (
-          <h4 className="pl-1 pr-2">{category?.title || text}</h4>
+          <h5 className="pl-1 pr-2">{category?.title || text}</h5>
         )}
 
         {children}
