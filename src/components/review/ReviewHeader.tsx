@@ -4,30 +4,12 @@ import { ChevronDown, Filter, Pencil } from "lucide-react";
 import Image from "next/image";
 import MyButton from "@/components/ui/MyButton";
 import star from "@/assets/svg/star.svg";
+import type { RatingStats, CustomerImage, ProductFilter } from "@/types/review";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface RatingStats {
-  totalReviews: number;
-  averageRating: number;
-  ratingCounts: number[];
-}
-
-interface Product {
-  id: string;
-  name: string;
-  slug?: { current: string };
-  image?: string;
-}
-
-interface CustomerImage {
-  url: string;
-  caption?: string;
-  username: string;
-}
 
 interface ReviewHeaderProps {
   ratingStats: RatingStats;
-  renderStars: (rating: number, size?: string) => React.ReactNode;
   sortBy: string;
   setSortBy: (v: string) => void;
   setFilterBy: (v: string) => void;
@@ -35,17 +17,29 @@ interface ReviewHeaderProps {
   reviewLink?: string;
   showFilters?: boolean;
   showCustomerImages?: boolean;
-  products?: Product[];
+  products?: ProductFilter[];
   selectedProduct?: string;
   setSelectedProduct?: (v: string) => void;
   selectedRating?: string;
   setSelectedRating?: (v: string) => void;
 }
 
+const SORT_LABELS: Record<string, string> = {
+  newest: "Newest Review",
+  oldest: "Oldest",
+  highest: "Highest Rating",
+  lowest: "Lowest Rating",
+};
+
+const FILTER_CHIPS = [
+  { label: "With Photos", key: "photos" },
+  { label: "With Text", key: "text" },
+] as const;
+
 // ── Component ────────────────────────────────────────────────────────────────
+
 const ReviewHeader = ({
   ratingStats,
-  renderStars,
   sortBy,
   setSortBy,
   setFilterBy,
@@ -65,11 +59,7 @@ const ReviewHeader = ({
   const selectRef = useRef<HTMLSelectElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
 
-  const clearContentFilters = () => {
-    setShowPhotosOnly(false);
-    setShowTextOnly(false);
-  };
-
+  // Sync content filters → parent filterBy string
   useEffect(() => {
     let filterValue = "all";
     if (showPhotosOnly && showTextOnly) filterValue = "withTextAndImages";
@@ -78,29 +68,27 @@ const ReviewHeader = ({
     setFilterBy(filterValue);
   }, [showPhotosOnly, showTextOnly, setFilterBy]);
 
+  // Keep select width snug around its label
   useEffect(() => {
-    if (measureRef.current && selectRef.current) {
+    if (measureRef.current && selectRef.current)
       selectRef.current.style.width = `${measureRef.current.offsetWidth}px`;
-    }
   }, [sortBy]);
+
+  const clearContentFilters = () => {
+    setShowPhotosOnly(false);
+    setShowTextOnly(false);
+  };
 
   const hasContentFilters = showPhotosOnly || showTextOnly;
   const hasProductFilter = selectedProduct && selectedProduct !== "all";
   const hasRatingFilter = selectedRating && selectedRating !== "all";
 
-  const sortLabel: Record<string, string> = {
-    newest: "Newest Review",
-    oldest: "Oldest",
-    highest: "Highest Rating",
-    lowest: "Lowest Rating",
-  };
-
   return (
     <div className="mb-8 w-full">
       {/* ── Row 1: Rating summary + customer images ── */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mb-6">
-        {/* Left: rating summary + bars */}
-        <div className="flex flex-col w-full  gap-4">
+        {/* Rating bars */}
+        <div className="flex flex-col w-full gap-4">
           <div className="flex items-center gap-4">
             <h3 className="text-brand-900">
               {ratingStats.averageRating.toFixed(1)}
@@ -125,9 +113,9 @@ const ReviewHeader = ({
           </div>
 
           <div className="flex flex-col gap-2">
-            {[5, 4, 3, 2, 1].map((star, index) => (
-              <div key={star} className="flex items-center w-full gap-3">
-                <label className="text-brand-900 w-2">{star}</label>
+            {[5, 4, 3, 2, 1].map((s, index) => (
+              <div key={s} className="flex items-center w-full gap-3">
+                <label className="text-brand-900 w-2">{s}</label>
                 <span className="text-brand-900">★</span>
                 <div className="flex-1 h-3 bg-brand-100 rounded-full overflow-hidden">
                   <div
@@ -148,12 +136,12 @@ const ReviewHeader = ({
           </div>
         </div>
 
-        {/* Right: customer images */}
-        <div className="flex flex-col w-full gap-4">
-          {showCustomerImages && customerImages.length > 0 && (
+        {/* Customer images */}
+        {showCustomerImages && customerImages.length > 0 && (
+          <div className="flex flex-col w-full gap-4">
             <div className="flex gap-1 pb-1 scroll-smooth flex-wrap">
               {customerImages.slice(0, 18).map((img, index) => (
-                <div key={index} className="bg-brand-100/50  ">
+                <div key={index} className="bg-brand-100/50">
                   <Image
                     src={img.url}
                     alt={`Submitted by ${img.username}`}
@@ -165,20 +153,20 @@ const ReviewHeader = ({
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-brand-900/40 mb-6" />
 
-      {/* ── Row 2: Filter + Write review buttons ── */}
+      {/* ── Row 2: Filter + Write review ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {showFilters && (
           <MyButton
             type="secondarybutton"
             text="Filter"
             leadicon={<Filter size={32} />}
-            onClick={() => setIsFilterOpen((prev) => !prev)}
+            onClick={() => setIsFilterOpen((p) => !p)}
           />
         )}
         <MyButton
@@ -308,7 +296,7 @@ const ReviewHeader = ({
               ref={measureRef}
               className="invisible absolute whitespace-nowrap pl-8 py-4 pr-12"
             >
-              {sortLabel[sortBy]}
+              {SORT_LABELS[sortBy]}
             </span>
             <select
               ref={selectRef}
@@ -316,10 +304,11 @@ const ReviewHeader = ({
               onChange={(e) => setSortBy(e.target.value)}
               className="appearance-none bg-brand-100/40 hover:bg-brand-100 rounded-full pl-8 py-4 pr-12 focus:outline-none cursor-pointer"
             >
-              <option value="newest">Newest Review</option>
-              <option value="oldest">Oldest</option>
-              <option value="highest">Highest Rating</option>
-              <option value="lowest">Lowest Rating</option>
+              {Object.entries(SORT_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
               <ChevronDown size={24} />

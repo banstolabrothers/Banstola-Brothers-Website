@@ -2,82 +2,28 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
+import type { ReviewItem } from "@/types/review";
+import { getInitials, getTimeAgo } from "@/lib/reviewUtils";
+import RenderStars from "@/components/review/RenderStars";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface ReviewImage {
-  asset?: { url: string };
-  caption?: string;
-}
-
-interface Review {
-  username?: string;
-  rating?: number;
-  reviewDate?: string;
-  description?: string;
-  productReviewImages?: ReviewImage[];
-  reply?: { message: string; replyDate?: string; repliedBy?: string };
-  product?: {
-    title: string;
-    slug?: { current: string };
-    primaryImage?: { asset?: { url: string } };
-  };
-  isRepeatCustomer?: boolean;
-}
 
 interface ReviewCardProps {
-  review: Review;
-  renderStars: (rating: number, size?: string) => React.ReactNode;
-  formatDate?: (date: string) => string;
-  isRepeatCustomer?: boolean;
+  review: ReviewItem;
   onProductClick?: (slug: string) => void;
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const getTimeAgo = (date?: string) => {
-  if (!date) return "Recent";
-  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-  const intervals: [string, number][] = [
-    ["year", 31536000],
-    ["month", 2592000],
-    ["week", 604800],
-    ["day", 86400],
-    ["hour", 3600],
-    ["minute", 60],
-  ];
-  for (const [unit, s] of intervals) {
-    const n = Math.floor(seconds / s);
-    if (n >= 1) return `${n} ${unit}${n > 1 ? "s" : ""} ago`;
-  }
-  return "Just now";
-};
-
-const getInitials = (name?: string) => {
-  if (!name) return "A";
-  const words = name.trim().split(" ");
-  if (words.length === 1) return words[0][0].toUpperCase();
-  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-};
-
 // ── Component ────────────────────────────────────────────────────────────────
-const ReviewCard = ({
-  review,
-  renderStars,
-  isRepeatCustomer,
-  onProductClick,
-}: ReviewCardProps) => {
+
+const ReviewCard = ({ review, onProductClick }: ReviewCardProps) => {
   const router = useRouter();
-  const hasReply = review.reply?.message;
 
   const handleProductClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     const slug = review.product?.slug?.current;
     if (!slug) return;
-    if (onProductClick) {
-      onProductClick(slug);
-    } else {
-      router.push(`/products/${slug}`); // ← replaces window.location.href
-    }
+    onProductClick ? onProductClick(slug) : router.push(`/products/${slug}`);
   };
 
   return (
@@ -101,7 +47,7 @@ const ReviewCard = ({
                 Verified
               </label>
             </span>
-            {isRepeatCustomer && (
+            {review.isRepeatCustomer && (
               <label className="bg-brand-100 text-amber-700 px-2 py-1 rounded-full w-fit">
                 Repeat Customer
               </label>
@@ -142,10 +88,10 @@ const ReviewCard = ({
       <div className="flex flex-col w-full lg:w-8/12 gap-4">
         {/* Rating + date */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center w-full">
-            {renderStars(review.rating || 5)}
+          <div className="flex items-center gap-1">
+            <RenderStars rating={review.rating || 5} />
           </div>
-          <label className="text-neutral-500 flex flex-nowrap w-full justify-end items-center">
+          <label className="text-neutral-500 flex flex-nowrap justify-end items-center">
             {getTimeAgo(review.reviewDate)}
           </label>
         </div>
@@ -160,34 +106,33 @@ const ReviewCard = ({
         )}
 
         {/* Review images */}
-        {review.productReviewImages &&
-          review.productReviewImages.length > 0 && (
-            <div className="flex gap-2 flex-wrap">
-              {review.productReviewImages.map((img, i) =>
-                img?.asset?.url ? (
-                  <Image
-                    key={i}
-                    src={img.asset.url}
-                    alt={img.caption || `Review image ${i + 1}`}
-                    width={120}
-                    height={120}
-                    className="rounded-xl object-cover w-28 h-28"
-                  />
-                ) : null,
-              )}
-            </div>
-          )}
+        {!!review.productReviewImages?.length && (
+          <div className="flex gap-2 flex-wrap">
+            {review.productReviewImages.map((img, i) =>
+              img?.asset?.url ? (
+                <Image
+                  key={i}
+                  src={img.asset.url}
+                  alt={img.caption || `Review image ${i + 1}`}
+                  width={120}
+                  height={120}
+                  className="rounded-xl object-cover w-28 h-28"
+                />
+              ) : null,
+            )}
+          </div>
+        )}
 
         {/* Store reply */}
-        {hasReply && (
+        {review.reply?.message && (
           <div className="flex flex-col gap-1 flex-1 pl-4 border-l-2 border-brand-500/30">
             <div className="flex items-center justify-between">
               <h6>Store Owner</h6>
               <label className="text-neutral-500">
-                {getTimeAgo(review.reply?.replyDate)}
+                {getTimeAgo(review.reply.replyDate)}
               </label>
             </div>
-            <label className="text-neutral-700">{review.reply?.message}</label>
+            <label className="text-neutral-700">{review.reply.message}</label>
           </div>
         )}
       </div>

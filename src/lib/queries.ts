@@ -5,6 +5,7 @@ import { groq } from "next-sanity";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const imageFragment = `asset->{ _id, url }`;
+
 const reviewEntriesFragment = `
   reviews[]{
     reviewDate, description, username, rating,
@@ -12,11 +13,24 @@ const reviewEntriesFragment = `
     reply{ message, replyDate, repliedBy }
   }
 `;
+
 const reviewDocFragment = `
   _id,
   product->{ _id, title, slug, primaryImage{ ${imageFragment} } },
   category->{ title, image{ ${imageFragment} } },
   ${reviewEntriesFragment}
+`;
+
+const blogCardFragment = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  shortDescription,
+  publishedAt,
+  author,
+  primaryImage { asset->{ url }, alt },
+  category->{ _id, title, "slug": slug.current },
+  tags[]->{ _id, name, "slug": slug.current, color }
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -128,7 +142,7 @@ export const allCategoriesQuery = `
 // REVIEW QUERIES
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Simple — used for rating summaries on product cards
+/** Lightweight — used for rating summaries on product cards */
 export const allReviewsQuery = `
   *[_type == "review"]{
     _id,
@@ -137,21 +151,21 @@ export const allReviewsQuery = `
   }
 `;
 
-// Full — used for All Reviews page
+/** Full — used for All Reviews page */
 export const allReviewsFullQuery = `
   *[_type == "review"]{
     ${reviewDocFragment}
   }
 `;
 
-// Full — used for Product Review Section (filtered by productId)
+/** Full — used for Product Review Section (filtered by productId) */
 export const productReviewsByIdQuery = `
   *[_type == "review" && references($productId)]{
     ${reviewDocFragment}
   }
 `;
 
-// Summary — used for product detail page inline review data
+/** Summary — used for product detail page inline review data */
 export const productReviewsQuery = `
   *[_type == "review" && references(*[_type=="product" && slug.current==$slug]._id)][0]{
     "totalReviews": count(reviews),
@@ -177,18 +191,6 @@ export const socialMediaQuery = `
 // ─────────────────────────────────────────────────────────────────────────────
 // BLOG QUERIES
 // ─────────────────────────────────────────────────────────────────────────────
-
-const blogCardFragment = groq`
-  _id,
-  title,
-  "slug": slug.current,
-  shortDescription,
-  publishedAt,
-  author,
-  primaryImage { asset->{ url }, alt },
-  category->{ _id, title, "slug": slug.current },
-  tags[]->{ _id, name, "slug": slug.current, color }
-`;
 
 export const allTagsQuery = groq`
   *[_type == "tags"] | order(name asc) {

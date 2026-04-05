@@ -1,36 +1,20 @@
 import MyButton from "@/components/ui/MyButton";
-import ReviewCard from "./ReviewCard";
+import ReviewCard from "@/components/review/ReviewCard";
+import type { ReviewItem } from "@/types/review";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface Review {
-  username?: string;
-  rating?: number;
-  reviewDate?: string;
-  description?: string;
-  isRepeatCustomer?: boolean;
-  productReviewImages?: Array<{ asset?: { url: string }; caption?: string }>;
-  reply?: { message: string; replyDate?: string };
-  product?: {
-    title: string;
-    slug?: { current: string };
-    primaryImage?: { asset?: { url: string } };
-  };
-}
 
 interface ReviewListProps {
-  reviews: Review[];
-  renderStars: (rating: number, size?: string) => React.ReactNode;
-  formatDate?: (date: string) => string;
+  reviews: ReviewItem[];
   showLoadMore?: boolean;
   onLoadMore?: () => void;
   totalReviews?: number;
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
+
 const ReviewList = ({
   reviews,
-  renderStars,
-  formatDate,
   showLoadMore = false,
   onLoadMore,
   totalReviews = 0,
@@ -52,14 +36,11 @@ const ReviewList = ({
           <ReviewCard
             key={index}
             review={review}
-            renderStars={renderStars}
-            formatDate={formatDate}
             isRepeatCustomer={review.isRepeatCustomer}
           />
         ))}
       </div>
 
-      {/* Load More */}
       {showLoadMore && onLoadMore && (
         <div
           className="flex justify-center items-center py-12"
@@ -69,7 +50,6 @@ const ReviewList = ({
         </div>
       )}
 
-      {/* Count indicator */}
       {totalReviews > 10 && (
         <div className="text-center py-4 text-sm text-neutral-600">
           Showing {reviews.length} of {totalReviews} reviews

@@ -1,13 +1,14 @@
 import { client } from "@/lib/sanity";
-import ReviewPageClient from "@/components/review/ReviewpageClient";
 import { pageMeta } from "@/lib/metadata";
-import { allReviewsFullQuery } from "@/lib/queries"; // 👈
+import { allReviewsFullQuery } from "@/lib/queries";
+import type { ReviewDoc } from "@/types/review";
+import ReviewPageClient from "@/components/review/ReviewPageClient";
 
 export const metadata = pageMeta.allReviews;
 export const revalidate = 60;
 
 const ReviewPage = async () => {
-  const allReviews = await client.fetch(allReviewsFullQuery); // 👈
+  const allReviews: ReviewDoc[] = await client.fetch(allReviewsFullQuery);
 
   return (
     <div className="w-full flex flex-col">

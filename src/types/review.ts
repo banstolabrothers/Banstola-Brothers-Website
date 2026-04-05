@@ -1,4 +1,6 @@
-// ─── Shared Image ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SHARED REVIEW TYPES
+// ─────────────────────────────────────────────────────────────────────────────
 
 export interface SanityAsset {
   _id?: string;
@@ -10,15 +12,11 @@ export interface ReviewImage {
   caption?: string;
 }
 
-// ─── Reply ────────────────────────────────────────────────────────────────────
-
 export interface ReviewReply {
   message: string;
   replyDate?: string;
   repliedBy?: string;
 }
-
-// ─── Single Review Entry (inside a review doc) ────────────────────────────────
 
 export interface ReviewEntry {
   username?: string;
@@ -29,40 +27,33 @@ export interface ReviewEntry {
   reply?: ReviewReply;
 }
 
-// ─── Review Document (from Sanity) ───────────────────────────────────────────
+export interface ReviewProduct {
+  _id?: string;
+  title: string;
+  slug?: { current: string };
+  primaryImage?: { asset?: SanityAsset };
+}
+
+export interface ReviewCategory {
+  title?: string;
+  image?: { asset?: SanityAsset };
+}
 
 export interface ReviewDoc {
   _id: string;
-  product?: {
-    _id: string;
-    title: string;
-    slug?: { current: string };
-    primaryImage?: { asset?: SanityAsset };
-  };
-  category?: {
-    title?: string;
-    image?: { asset?: SanityAsset };
-  };
+  product?: ReviewProduct;
+  category?: ReviewCategory;
   reviews?: ReviewEntry[];
 }
-
-// ─── Flattened Review Item (used in UI) ──────────────────────────────────────
 
 export interface ReviewItem extends ReviewEntry {
   hasText?: boolean;
   hasImages?: boolean;
   isRepeatCustomer?: boolean;
-  product?: {
-    _id?: string;
-    title: string;
-    slug?: { current: string };
-    primaryImage?: { asset?: SanityAsset };
-  };
+  product?: ReviewProduct;
   category?: string;
   categoryImage?: string;
 }
-
-// ─── Rating Stats ─────────────────────────────────────────────────────────────
 
 export interface RatingStats {
   totalReviews: number;
@@ -70,10 +61,15 @@ export interface RatingStats {
   ratingCounts: number[]; // [5★, 4★, 3★, 2★, 1★]
 }
 
-// ─── Customer Image ───────────────────────────────────────────────────────────
-
 export interface CustomerImage {
   url: string;
   caption?: string;
   username: string;
+}
+
+export interface ProductFilter {
+  id: string;
+  name: string;
+  slug?: { current: string };
+  image?: string;
 }

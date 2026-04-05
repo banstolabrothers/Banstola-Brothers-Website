@@ -32,19 +32,11 @@ export const review = defineType({
             }),
 
             defineField({
-              name: 'reviewDate',
-              title: 'Date of Review',
-              type: 'date',
-              validation: (rule) => rule.required(),
-              options: {
-                dateFormat: 'YYYY-MM-DD',
-              },
-            }),
-
-            defineField({
               name: 'rating',
               title: 'Rating',
               type: 'number',
+              initialValue: 5, // 👈
+
               validation: (rule) =>
                 rule
                   .required()
@@ -60,6 +52,16 @@ export const review = defineType({
                   {title: '4 Stars', value: 4},
                   {title: '5 Stars', value: 5},
                 ],
+              },
+            }),
+
+            defineField({
+              name: 'reviewDate',
+              title: 'Date of Review',
+              type: 'date',
+              initialValue: () => new Date().toISOString().split('T')[0], // 👈 "YYYY-MM-DD"
+              options: {
+                dateFormat: 'YYYY-MM-DD',
               },
             }),
 
