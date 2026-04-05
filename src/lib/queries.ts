@@ -1,6 +1,25 @@
 import { groq } from "next-sanity";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SHARED FRAGMENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const imageFragment = `asset->{ _id, url }`;
+const reviewEntriesFragment = `
+  reviews[]{
+    reviewDate, description, username, rating,
+    productReviewImages[]{ ${imageFragment}, caption },
+    reply{ message, replyDate, repliedBy }
+  }
+`;
+const reviewDocFragment = `
+  _id,
+  product->{ _id, title, slug, primaryImage{ ${imageFragment} } },
+  category->{ title, image{ ${imageFragment} } },
+  ${reviewEntriesFragment}
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PRODUCT QUERIES
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -9,7 +28,7 @@ export const allProductsQuery = `
     title,
     slug,
     shortDescription,
-    primaryImage{ asset->{ _id, url }, alt },
+    primaryImage{ ${imageFragment}, alt },
     brand,
     "category": category->{ title, slug },
     variantGroups[0]{ options[0]{ price, currency } },
@@ -22,8 +41,8 @@ export const productBySlugQuery = `
     title,
     slug,
     shortDescription,
-    primaryImage{ asset->{ _id, url }, alt },
-    additionalImages[]{ asset->{ _id, url }, alt },
+    primaryImage{ ${imageFragment}, alt },
+    additionalImages[]{ ${imageFragment}, alt },
     brand,
     sku,
     content,
@@ -33,39 +52,12 @@ export const productBySlugQuery = `
   }
 `;
 
-export const allCategoriesQuery = `
-  *[_type == "category"] | order(_createdAt asc) {
-    _id,
-    title,
-    slug,
-    description,
-    image{ asset->{ _id, url } },
-    seo { metaTitle, metaDescription, ogImage }
-  }
-`;
-
-export const allReviewsQuery = `
-  *[_type == "review"]{
-    _id,
-    product->{ title, primaryImage{ asset->{ _id, url } } },
-    reviews[]{ username, rating, reviewDate, description }
-  }
-`;
-
-export const socialMediaQuery = `
-  *[_type == "socialmedia"] | order(_createdAt desc) {
-    _id,
-    title,
-    images[]{ _key, asset->{ _id, url }, alt, link }
-  }
-`;
-
 export const productListQuery = `
   *[_type == "product"] | order(_createdAt asc) {
     title,
     slug,
     shortDescription,
-    primaryImage{ asset->{ _id, url }, alt },
+    primaryImage{ ${imageFragment}, alt },
     brand,
     "category": category->{ title, slug },
     "reviewData": *[_type == "review" && references(^._id)][0]{
@@ -87,8 +79,8 @@ export const productDetailQuery = `
     sku,
     metaDescription,
     "category": category->{ title, slug },
-    primaryImage{ asset->{ _id, url }, alt },
-    additionalImages[]{ asset->{ _id, url }, alt, caption },
+    primaryImage{ ${imageFragment}, alt },
+    additionalImages[]{ ${imageFragment}, alt, caption },
     variantGroups[]{
       groupName,
       groupType,
@@ -98,7 +90,7 @@ export const productDetailQuery = `
         price,
         currency,
         inStock,
-        optionImage{ asset->{ _id, url }, alt }
+        optionImage{ ${imageFragment}, alt }
       }
     },
     _createdAt,
@@ -107,10 +99,7 @@ export const productDetailQuery = `
       "totalReviews": count(reviews),
       "ratingSum": math::sum(reviews[].rating),
       "reviews": reviews[0..9]{
-        username,
-        rating,
-        reviewDate,
-        description
+        username, rating, reviewDate, description
       }
     }
   }
@@ -120,22 +109,86 @@ export const productSlugsQuery = `
   *[_type == "product"] { "slug": slug.current }
 `;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY QUERIES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const allCategoriesQuery = `
+  *[_type == "category"] | order(_createdAt asc) {
+    _id,
+    title,
+    slug,
+    description,
+    image{ ${imageFragment} },
+    seo { metaTitle, metaDescription, ogImage }
+  }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REVIEW QUERIES
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Simple — used for rating summaries on product cards
+export const allReviewsQuery = `
+  *[_type == "review"]{
+    _id,
+    product->{ title, primaryImage{ ${imageFragment} } },
+    reviews[]{ username, rating, reviewDate, description }
+  }
+`;
+
+// Full — used for All Reviews page
+export const allReviewsFullQuery = `
+  *[_type == "review"]{
+    ${reviewDocFragment}
+  }
+`;
+
+// Full — used for Product Review Section (filtered by productId)
+export const productReviewsByIdQuery = `
+  *[_type == "review" && references($productId)]{
+    ${reviewDocFragment}
+  }
+`;
+
+// Summary — used for product detail page inline review data
 export const productReviewsQuery = `
   *[_type == "review" && references(*[_type=="product" && slug.current==$slug]._id)][0]{
     "totalReviews": count(reviews),
     "averageRating": math::avg(reviews[].rating),
     "reviews": reviews[0..9]{
-      username,
-      rating,
-      reviewDate,
-      description
+      username, rating, reviewDate, description
     }
+  }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOCIAL MEDIA QUERIES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const socialMediaQuery = `
+  *[_type == "socialmedia"] | order(_createdAt desc) {
+    _id,
+    title,
+    images[]{ _key, ${imageFragment}, alt, link }
   }
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BLOG QUERIES
 // ─────────────────────────────────────────────────────────────────────────────
+
+const blogCardFragment = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  shortDescription,
+  publishedAt,
+  author,
+  primaryImage { asset->{ url }, alt },
+  category->{ _id, title, "slug": slug.current },
+  tags[]->{ _id, name, "slug": slug.current, color }
+`;
 
 export const allTagsQuery = groq`
   *[_type == "tags"] | order(name asc) {
@@ -148,91 +201,26 @@ export const allTagsQuery = groq`
 `;
 
 export const blogListQuery = groq`
-  *[_type == "blogs"] | order(publishedAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    shortDescription,
-    publishedAt,
-    author,
-    primaryImage {
-      asset-> { url },
-      alt
-    },
-    category-> {
-      _id,
-      title,
-      "slug": slug.current
-    },
-    tags[]-> {
-      _id,
-      name,
-      "slug": slug.current,
-      color
-    }
-  }
+  *[_type == "blogs"] | order(publishedAt desc) { ${blogCardFragment} }
 `;
 
 export const blogListByTagQuery = groq`
   *[_type == "blogs" && $tagSlug in tags[]->slug.current] | order(publishedAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    shortDescription,
-    publishedAt,
-    author,
-    primaryImage {
-      asset-> { url },
-      alt
-    },
-    category-> {
-      _id,
-      title,
-      "slug": slug.current
-    },
-    tags[]-> {
-      _id,
-      name,
-      "slug": slug.current,
-      color
-    }
+    ${blogCardFragment}
   }
 `;
 
 export const blogBySlugQuery = groq`
   *[_type == "blogs" && slug.current == $slug][0] {
-    _id,
-    title,
-    "slug": slug.current,
-    shortDescription,
-    publishedAt,
-    author,
-    primaryImage {
-      asset-> { url },
-      alt
-    },
+    ${blogCardFragment},
     content[] {
       ...,
-      _type == "image" => {
-        ...,
-        asset-> { url }
-      }
-    },
-    category-> {
-      _id,
-      title,
-      "slug": slug.current
-    },
-    tags[]-> {
-      _id,
-      name,
-      "slug": slug.current,
-      color
+      _type == "image" => { ..., asset->{ url } }
     },
     seo {
       metaTitle,
       metaDescription,
-      ogImage { asset-> { url } },
+      ogImage{ asset->{ url } },
       keywords,
       noIndex
     }
@@ -248,22 +236,7 @@ export const relatedBlogsQuery = groq`
       count((tags[]->slug.current)[@ in $tagSlugs]) > 0
     )
   ] | order(publishedAt desc) [0...3] {
-    _id,
-    title,
-    "slug": slug.current,
-    shortDescription,
-    publishedAt,
-    author,
-    primaryImage {
-      asset-> { url },
-      alt
-    },
-    tags[]-> {
-      _id,
-      name,
-      "slug": slug.current,
-      color
-    }
+    ${blogCardFragment}
   }
 `;
 

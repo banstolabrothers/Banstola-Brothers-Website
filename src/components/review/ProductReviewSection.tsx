@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
+import { productReviewsByIdQuery } from "@/lib/queries"; // 👈
 import MyButton from "@/components/ui/MyButton";
 import ReviewList from "@/components/review/ReviewList";
 import ReviewHeader from "@/components/review/ReviewHeader";
@@ -36,8 +37,21 @@ interface ProductReviewSectionProps {
   productSlug?: string;
 }
 
+interface ReviewDoc {
+  reviews?: Array<{
+    username?: string;
+    rating?: number;
+    reviewDate?: string;
+    description?: string;
+    productReviewImages?: Array<{ asset?: { url: string }; caption?: string }>;
+    reply?: { message: string; replyDate?: string; repliedBy?: string };
+  }>;
+  product?: unknown;
+  category?: { title?: string; image?: { asset?: { url?: string } } };
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const renderStars = (rating: number, size = "flex w-6 h-6") =>
+const renderStars = (rating: number) =>
   Array.from({ length: 5 }, (_, i) => (
     <span
       key={i}
@@ -75,70 +89,37 @@ const ProductReviewSection = ({
     if (!productId) return;
 
     client
-      .fetch(
-        `*[_type == "review" && references($productId)]{
-          _id,
-          product->{ _id, title, slug, primaryImage{ asset->{ _id, url } } },
-          category->{ title, image{ asset->{ _id, url } } },
-          reviews[]{
-            reviewDate, description, username, rating,
-            productReviewImages[]{ asset->{ _id, url }, caption },
-            reply{ message, replyDate, repliedBy }
-          }
-        }`,
-        { productId },
-      )
-      .then(
-        (
-          data: Array<{
-            reviews?: Array<{
-              username?: string;
-              rating?: number;
-              description?: string;
-              productReviewImages?: Array<{
-                asset?: { url: string };
-                caption?: string;
-              }>; // ← matches ReviewItem
-              reply?: {
-                message: string;
-                replyDate?: string;
-                repliedBy?: string;
-              }; // ← also fix reply while here
-            }>;
-            product?: unknown;
-            category?: { title?: string; image?: { asset?: { url?: string } } };
-          }>,
-        ) => {
-          const usernameCount: Record<string, number> = {};
-          data.forEach((doc) => {
-            doc.reviews?.forEach((r) => {
-              const u = r.username || "Anonymous";
-              usernameCount[u] = (usernameCount[u] || 0) + 1;
+      .fetch(productReviewsByIdQuery, { productId }) // 👈
+      .then((data: ReviewDoc[]) => {
+        const usernameCount: Record<string, number> = {};
+        data.forEach((doc) => {
+          doc.reviews?.forEach((r) => {
+            const u = r.username || "Anonymous";
+            usernameCount[u] = (usernameCount[u] || 0) + 1;
+          });
+        });
+
+        const reviews: ReviewItem[] = [];
+        data.forEach((doc) => {
+          doc.reviews?.forEach((r) => {
+            const u = r.username || "Anonymous";
+            reviews.push({
+              ...r,
+              product: doc.product as ReviewItem["product"],
+              category: doc.category?.title,
+              categoryImage: doc.category?.image?.asset?.url,
+              hasText: !!r.description?.trim(),
+              hasImages:
+                Array.isArray(r.productReviewImages) &&
+                r.productReviewImages.length > 0,
+              isRepeatCustomer: usernameCount[u] > 1,
             });
           });
+        });
 
-          const reviews: ReviewItem[] = [];
-          data.forEach((doc) => {
-            doc.reviews?.forEach((r) => {
-              const u = r.username || "Anonymous";
-              reviews.push({
-                ...r,
-                product: doc.product as ReviewItem["product"],
-                category: doc.category?.title,
-                categoryImage: doc.category?.image?.asset?.url,
-                hasText: !!r.description?.trim(),
-                hasImages:
-                  Array.isArray(r.productReviewImages) &&
-                  r.productReviewImages.length > 0,
-                isRepeatCustomer: usernameCount[u] > 1,
-              });
-            });
-          });
-
-          setProductReviews(reviews);
-          setLoading(false);
-        },
-      )
+        setProductReviews(reviews);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, [productId]);
 
@@ -163,6 +144,7 @@ const ProductReviewSection = ({
 
   const getFilteredAndSorted = () => {
     let filtered = [...productReviews];
+
     if (filterBy === "withText") filtered = filtered.filter((r) => r.hasText);
     if (filterBy === "withImages")
       filtered = filtered.filter((r) => r.hasImages);
@@ -185,6 +167,7 @@ const ProductReviewSection = ({
       filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     if (sortBy === "lowest")
       filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+
     return filtered;
   };
 

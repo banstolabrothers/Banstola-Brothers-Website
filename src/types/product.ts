@@ -1,3 +1,5 @@
+import type { ReviewDoc } from "./review";
+
 export interface SanityImageAsset {
   _id: string;
   url: string;
@@ -27,6 +29,17 @@ export interface VariantGroup {
   groupName: string;
   groupType?: string;
   options: VariantOption[];
+}
+
+export interface ProductReviewData {
+  totalReviews: number;
+  ratingSum: number;
+  reviews: {
+    username?: string;
+    rating?: number;
+    reviewDate?: string;
+    description?: string;
+  }[];
 }
 
 export interface Product {
@@ -63,21 +76,10 @@ export interface GalleryImage {
   variantGroup?: string;
   variantOption?: string;
 }
+
 export interface ProductImageGallerySectionProps {
   product: Product;
   selectedOptions?: SelectedOptions;
-}
-export interface ReviewEntry {
-  username: string;
-  rating: number;
-  reviewDate?: string; // ISO string from Sanity
-  description?: string;
-}
-
-export interface ProductReviewData {
-  totalReviews: number;
-  ratingSum: number;
-  reviews: ReviewEntry[];
 }
 
 export type SelectedOptions = Record<string, string>;
