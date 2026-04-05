@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import ReviewHeader from "@/components/review/ReviewHeader";
 import ReviewList from "@/components/review/ReviewList";
-import type { ReviewDoc, ReviewItem, ProductFilter } from "@/types/review";
+import type { ReviewDoc, ProductFilter } from "@/types/review";
 import {
   flattenReviews,
   calculateRatingStats,
@@ -16,6 +16,15 @@ import {
 interface ReviewPageClientProps {
   allReviews: ReviewDoc[];
 }
+
+// ── Type guard ───────────────────────────────────────────────────────────────
+
+type DocWithProduct = ReviewDoc & {
+  product: NonNullable<ReviewDoc["product"]> & { _id: string };
+};
+
+const hasProduct = (d: ReviewDoc): d is DocWithProduct =>
+  typeof d.product?._id === "string";
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -33,17 +42,15 @@ const ReviewPageClient = ({ allReviews }: ReviewPageClientProps) => {
   // ── Unique products list for the filter ──
   const products: ProductFilter[] = Array.from(
     new Map(
-      allReviews
-        .filter((d) => d.product?._id)
-        .map((d) => [
-          d.product!._id,
-          {
-            id: d.product!._id,
-            name: d.product!.title,
-            slug: d.product!.slug,
-            image: d.product!.primaryImage?.asset?.url,
-          },
-        ]),
+      allReviews.filter(hasProduct).map((d) => [
+        d.product._id,
+        {
+          id: d.product._id,
+          name: d.product.title,
+          slug: d.product.slug,
+          image: d.product.primaryImage?.asset?.url,
+        },
+      ]),
     ).values(),
   ).sort((a, b) => a.name.localeCompare(b.name));
 
