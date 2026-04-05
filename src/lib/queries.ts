@@ -35,6 +35,7 @@ export const productBySlugQuery = `
 
 export const allCategoriesQuery = `
   *[_type == "category"] | order(_createdAt asc) {
+    _id,
     title,
     slug,
     description,

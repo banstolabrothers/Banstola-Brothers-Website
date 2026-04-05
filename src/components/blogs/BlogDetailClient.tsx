@@ -34,7 +34,7 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
   const imageUrl = blog.primaryImage?.asset?.url;
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 ">
+    <div className="w-full max-w-2xl mx-auto px-4 ">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className=" pt-16 pb-0">
         {/* Breadcrumb */}
