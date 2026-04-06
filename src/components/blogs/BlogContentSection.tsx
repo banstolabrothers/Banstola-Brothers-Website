@@ -1,5 +1,6 @@
 import { PortableText } from "@portabletext/react";
 import { portableTextComponents } from "@/components/ui/portableTextComponents"; // 👈
+import ScrollProgressMinimap from "../ui/ScrollProgressMinimap";
 
 interface BlogContentSectionProps {
   content: unknown[];
@@ -8,22 +9,22 @@ interface BlogContentSectionProps {
 const BlogContentSection = ({ content }: BlogContentSectionProps) => {
   return (
     <section className="py-10">
-      <div className="">
-        {content.map((block, index) => {
-          const b = block as { _type?: string; _key?: string };
+      {content.map((block, index) => {
+        const b = block as { _type?: string; _key?: string };
 
-          return (
-            <div key={b._key ?? index} className={`mx-auto`}>
-              <div className="prose prose-lg max-w-none">
-                <PortableText
-                  value={[block] as Parameters<typeof PortableText>[0]["value"]}
-                  components={portableTextComponents}
-                />
-              </div>
+        return (
+          <div key={b._key ?? index} className={`mx-auto`}>
+            <ScrollProgressMinimap showMinimap={false} />
+
+            <div className="prose prose-lg max-w-none">
+              <PortableText
+                value={[block] as Parameters<typeof PortableText>[0]["value"]}
+                components={portableTextComponents}
+              />
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </section>
   );
 };
