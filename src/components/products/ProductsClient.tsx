@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import shadow from "@/assets/svg/shadow.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface ReviewData {
@@ -53,13 +54,19 @@ const ProductCard = ({ product }: { product: Product }) => {
     >
       {/* Product image */}
       {product.primaryImage?.asset?.url && (
-        <div className="relative w-full aspect-square overflow-hidden">
+        <div className="relative w-full aspect-square">
           <Image
             src={product.primaryImage.asset.url}
             alt={product.primaryImage.alt ?? product.title}
             fill
-            className="object-cover group-hover:scale-105 transition-all ease-in-out duration-500"
+            className="object-cover group-hover:scale-105 transition-all ease-in-out duration-500 z-20"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
+          />
+          <Image
+            src={shadow}
+            alt="Product Showcase Shadow"
+            className="absolute bottom-0 left-0 right-0 min-h-16 z-10"
             loading="lazy"
           />
         </div>

@@ -47,7 +47,7 @@ const HomeReviewSection = async () => {
 
   return (
     <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
-      <div className="flex flex-col md:flex-row md:text-center items-center justify-center gap-4 mt-4">
+      <div className="flex flex-col md:flex-row md:text-center items-center justify-center gap-8">
         <h2 className="text-brand-900">
           {totalCount.toLocaleString()}+ reviews
         </h2>

@@ -48,7 +48,7 @@ const ProductDetailClient = ({ product }: Props) => {
   }
 
   return (
-    <div className="w-full">
+    <section className="w-full ">
       <ProductStickyNav
         productName={product.title}
         selectedOptions={selectedOptions}
@@ -66,7 +66,7 @@ const ProductDetailClient = ({ product }: Props) => {
         productId={product._id}
         productSlug={product.slug?.current}
       />
-    </div>
+    </section>
   );
 };
 

@@ -83,25 +83,23 @@ const ProductReviewSection = ({
   const customerImages = extractCustomerImages(reviews);
 
   return (
-    <section className="py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <ReviewHeader
-          ratingStats={ratingStats}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          setFilterBy={setFilterBy}
-          customerImages={customerImages}
-          reviewLink={reviewLink}
-          showFilters
-          showCustomerImages
-        />
-        <ReviewList
-          reviews={filtered.slice(0, displayCount)}
-          showLoadMore={displayCount < filtered.length}
-          onLoadMore={() => setDisplayCount((p) => p + 10)}
-          totalReviews={filtered.length}
-        />
-      </div>
+    <section className="flex flex-col w-full max-w-[1440] mx-auto my-20 px-4 ">
+      <ReviewHeader
+        ratingStats={ratingStats}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        setFilterBy={setFilterBy}
+        customerImages={customerImages}
+        reviewLink={reviewLink}
+        showFilters
+        showCustomerImages
+      />
+      <ReviewList
+        reviews={filtered.slice(0, displayCount)}
+        showLoadMore={displayCount < filtered.length}
+        onLoadMore={() => setDisplayCount((p) => p + 10)}
+        totalReviews={filtered.length}
+      />
     </section>
   );
 };

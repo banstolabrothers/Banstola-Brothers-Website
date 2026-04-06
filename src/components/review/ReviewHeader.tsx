@@ -88,7 +88,7 @@ const ReviewHeader = ({
       {/* ── Row 1: Rating summary + customer images ── */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mb-6">
         {/* Rating bars */}
-        <div className="flex flex-col w-full gap-4">
+        <div className="flex flex-col w-full lg:w-4/12 gap-4">
           <div className="flex items-center gap-4">
             <h3 className="text-brand-900">
               {ratingStats.averageRating.toFixed(1)}
@@ -138,9 +138,9 @@ const ReviewHeader = ({
 
         {/* Customer images */}
         {showCustomerImages && customerImages.length > 0 && (
-          <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-col w-full lg:w-8/12  gap-4">
             <div className="flex gap-1 pb-1 scroll-smooth flex-wrap">
-              {customerImages.slice(0, 18).map((img, index) => (
+              {customerImages.slice(0, 30).map((img, index) => (
                 <div key={index} className="bg-brand-100/50">
                   <Image
                     src={img.url}
