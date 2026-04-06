@@ -245,3 +245,21 @@ export const relatedBlogsQuery = groq`
 export const blogSlugsQuery = groq`
   *[_type == "blogs"] { "slug": slug.current }
 `;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FAQ QUERIES
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** All topics with their FAQs nested inside */
+export const allFaqsQuery = `
+  *[_type == "faqTopic"] | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    "faqs": *[_type == "faqs" && topic._ref == ^._id] | order(_createdAt asc) {
+      _id,
+      question,
+      answer
+    }
+  }
+`;

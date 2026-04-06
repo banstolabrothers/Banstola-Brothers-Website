@@ -46,21 +46,19 @@ const HomeReviewSection = async () => {
   if (!shuffled.length) return null;
 
   return (
-    <section className="py-32 px-4 h-fit overflow-hidden">
-      <div className="w-full mx-auto">
-        <div className="flex items-center justify-between max-w-7xl mx-auto mb-16">
-          <h2 className="text-brand-900">
-            {totalCount.toLocaleString()}+ reviews
-          </h2>
-          <MyButton
-            type="primarybutton"
-            text="View all reviews"
-            link="/all-reviews"
-            trailicon={<MoveRightIcon size={32} />}
-          />
-        </div>
-        <ReviewCarousel reviews={shuffled} />
+    <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
+      <div className="flex flex-col md:flex-row md:text-center items-center justify-center gap-4 mt-4">
+        <h2 className="text-brand-900">
+          {totalCount.toLocaleString()}+ reviews
+        </h2>
+        <MyButton
+          type="primarybutton"
+          text="View all reviews"
+          link="/all-reviews"
+          trailicon={<MoveRightIcon size={32} />}
+        />
       </div>
+      <ReviewCarousel reviews={shuffled} />
     </section>
   );
 };

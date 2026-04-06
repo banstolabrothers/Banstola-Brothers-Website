@@ -151,6 +151,22 @@ export const pageMeta = {
       "Chhurpi recipes",
     ],
   ),
+
+  // Add this inside the pageMeta object in /lib/metadata.ts
+
+  faqs: buildMeta(
+    "Frequently Asked Questions",
+    "Got questions about Chhurpi, Khattu, Dog Chew or ordering from Banstola Brothers? Find answers to the most common questions here.",
+    "/faqs",
+    [
+      "Banstola Brothers FAQ",
+      "Chhurpi FAQ",
+      "Khattu questions",
+      "Dog Chew questions",
+      "Banstola Brothers help",
+      "Chhurpi shipping Nepal",
+    ],
+  ),
 } satisfies Record<string, Metadata>;
 
 // ─────────────────────────────────────────────────────────────────────────────

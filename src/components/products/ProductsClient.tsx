@@ -92,8 +92,8 @@ const ProductCard = ({ product }: { product: Product }) => {
 // ─── Main client component ────────────────────────────────────────────────────
 const ProductsClient = ({ allProducts }: { allProducts: Product[] }) => {
   return (
-    <div className="flex flex-col mx-auto max-w-[1280px] px-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 my-20">
+    <section className="max-w-[1440px] w-full mx-auto p-4 pt-16 pb-24">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {allProducts.length === 0 ? (
           <div className="col-span-full text-center text-neutral-600">
             <p className="text-lg">No products available at the moment.</p>
@@ -104,7 +104,7 @@ const ProductsClient = ({ allProducts }: { allProducts: Product[] }) => {
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

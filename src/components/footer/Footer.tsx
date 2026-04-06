@@ -43,7 +43,7 @@ const Footer = () => {
 
   return (
     <div className="flex bg-brand-100 pt-40 pb-20 px-4">
-      <div className="max-w-6xl w-full mx-auto my-auto flex flex-col lg:flex-row gap-12 lg:gap-16">
+      <div className="max-w-[1440] w-full mx-auto my-auto flex flex-col lg:flex-row gap-12 lg:gap-16">
         {/* Logo */}
         <div className="w-full lg:w-1/2">
           <Link href="/">

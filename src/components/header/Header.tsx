@@ -33,14 +33,14 @@ const LOGO_CONFIGS = {
         yPercent: 40,
         width: "100%",
         height: "auto",
-        maxWidth: "1800px",
+        maxWidth: "1440px",
         scale: 1,
         zIndex: 10,
       },
       final: {
         top: "50%",
         yPercent: -90,
-        scale: 0.3,
+        scale: 0.25,
         zIndex: 99,
       },
     },
@@ -50,7 +50,7 @@ const LOGO_CONFIGS = {
       left: "50%",
       xPercent: -50,
       yPercent: -50,
-      scale: 2.8,
+      scale: 2.5,
       zIndex: 99,
     },
   },
@@ -256,8 +256,8 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
   const rightNavItems = headerData.slice(3);
 
   return (
-    <section className="flex w-full justify-between uppercase">
-      <nav className="hidden lg:flex items-center justify-start px-1 gap-4">
+    <section className="flex w-full max-w-[1440] mx-auto uppercase">
+      <nav className="hidden lg:flex items-center w-full justify-start px-1 gap-4">
         {leftNavItems.map((item) => (
           <Link
             key={item.id}
@@ -273,7 +273,7 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
         ))}
       </nav>
 
-      <nav className="hidden lg:flex items-center justify-end px-1 gap-4">
+      <nav className="hidden lg:flex items-center w-full justify-end px-1 gap-4">
         {rightNavItems.map((item) => (
           <Link
             key={item.id}
@@ -338,7 +338,7 @@ const Header = () => {
         style={{ minHeight: "100px" }}
         role="banner"
       >
-        <div className="mx-4 lg:mx-8">
+        <div className="mx-4 lg:mx-16">
           <div className="flex items-center justify-between h-24">
             <Logo logoRef={logoRef} />
             <DesktopNav currentPath={pathname} />
@@ -357,6 +357,7 @@ const Header = () => {
               <Drawer.Portal>
                 <Drawer.Overlay className="fixed inset-0 bg-white/5 z-50 backdrop-blur-3xl" />
                 <Drawer.Content className="fixed top-0 bottom-0 left-0 right-0 z-50">
+                  <Drawer.Title />
                   <section className="absolute top-2 bottom-2 left-2 right-2 z-50 flex flex-col gap-2">
                     {/* Nav links */}
                     <section className="flex flex-col h-full rounded-[32px] p-8 justify-center items-center gap-4 bg-brand-500">

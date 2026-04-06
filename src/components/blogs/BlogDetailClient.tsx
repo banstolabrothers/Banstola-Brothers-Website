@@ -36,22 +36,22 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
   return (
     <section className="w-full mx-auto">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="flex flex-col md:flex-row md:min-h-screen h-full">
+      <section className="flex flex-col md:flex-row md:max-h-screen h-full">
         {/* Hero Image */}
         {imageUrl && (
           <div className="flex w-full bg-neutral-100">
             <Image
               src={imageUrl}
               alt={blog.primaryImage?.alt ?? blog.title}
-              width="1000"
-              height="1000"
-              className="object-cover"
+              width="2000"
+              height="10"
+              className="object-cover overflow-hidden w-full max-h-[50vh] md:max-h-full"
               priority
             />
           </div>
         )}
 
-        <section className="flex flex-col w-full md:h-screen text-center px-10 pt-20 pb-24 md:pt-64 lg:pt-80 items-center justify-start gap-6 bg-brand-500">
+        <section className="flex flex-col w-full md:h-screen text-center px-10 pt-20 pb-24 md:pt-64 lg:pt-[20vh] items-center justify-start gap-6 bg-brand-500">
           {/* Breadcrumb */}
           {/* <p className="flex items-center gap-2 text-brand-900/65">
             <Link href="/" className="hover:text-brand-900 transition-colors">

@@ -29,37 +29,33 @@ export default function BlogsClient({ blogs, tags }: Props) {
   }, [activeTag, blogs]);
 
   return (
-    <main className="min-h-screen py-20">
-      <div className="max-w-[1280px] mx-auto px-4">
-        <h1 className="text-brand-900 mb-12 text-center">Blog & Insights</h1>
+    <section className="flex flex-col w-full max-w-[1440] mx-auto my-20 px-4 ">
+      <h1 className="text-brand-900 mb-8 text-center">Blog & Insights</h1>
 
-        {tags.length > 0 && (
-          <TagFilter
-            tags={tags}
-            activeTag={activeTag}
-            onTagChange={setActiveTag}
+      {tags.length > 0 && (
+        <TagFilter
+          tags={tags}
+          activeTag={activeTag}
+          onTagChange={setActiveTag}
+        />
+      )}
+
+      {filtered.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
+          {filtered.map((blog) => (
+            <BlogCard key={blog._id} blog={blog} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <p className="text-neutral-500 mb-4">No blogs found for this tag.</p>
+          <MyButton
+            onClick={() => setActiveTag(null)}
+            text="Clear Filter"
+            type="secondarybutton"
           />
-        )}
-
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
-            {filtered.map((blog) => (
-              <BlogCard key={blog._id} blog={blog} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="text-neutral-500 mb-4">
-              No blogs found for this tag.
-            </p>
-            <MyButton
-              onClick={() => setActiveTag(null)}
-              text="Clear Filter"
-              type="secondarybutton"
-            />
-          </div>
-        )}
-      </div>
-    </main>
+        </div>
+      )}
+    </section>
   );
 }

@@ -40,7 +40,7 @@ const FollowUsSection = async () => {
   if (!allImages.length) return null;
 
   return (
-    <div className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
+    <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
       <div className="flex flex-col md:flex-row md:text-center items-center gap-4">
         <h2 className="mr-4">Follow Us</h2>
 
@@ -53,7 +53,7 @@ const FollowUsSection = async () => {
 
       {/* Client component handles the RAF animation */}
       <InstagramCarousel images={allImages} />
-    </div>
+    </section>
   );
 };
 

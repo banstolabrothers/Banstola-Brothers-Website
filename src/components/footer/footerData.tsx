@@ -32,6 +32,7 @@ export const footerData: FooterGroup[] = [
       { label: "About Us", href: "/story" },
       { label: "Find in Store", href: "/store" },
       { label: "Blogs", href: "/blogs" },
+      { label: "FAQs", href: "/faqs" },
     ],
   },
   {

@@ -6,9 +6,9 @@ export const metadata = pageMeta.store;
 
 const page = () => {
   return (
-    <section className="flex flex-col w-full  px-4 items-center justify-center">
+    <section className="max-w-[1440px] w-full mx-auto p-4 pt-16 pb-24">
       {/* Image Hero Section */}
-      <div className=" flex flex-col w-full gap-8 my-32  max-w-[1240px]">
+      <div className=" flex flex-col w-full gap-8">
         <h1>Our Store in Pokhara</h1>
         <div className="flex flex-col md:flex-row w-full gap-16">
           <div className="flex flex-col gap-4 w-full md:w-6/12">
