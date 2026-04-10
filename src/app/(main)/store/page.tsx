@@ -15,7 +15,8 @@ const page = () => {
             <p>Grab product whatever you need.</p>
             <p>
               This is also our click and collect address which is 24/7 open.
-              Just give a call and will open store for you.
+              <br />
+              If closed just give a call and will open store for you.
             </p>
           </div>
           <div className="flex w-full md:w-6/12">

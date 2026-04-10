@@ -40,7 +40,7 @@ const LOGO_CONFIGS = {
       final: {
         top: "50%",
         yPercent: -78,
-        scale: 0.25,
+        scale: 0.3,
         zIndex: 99,
       },
     },
@@ -347,10 +347,10 @@ const Header = () => {
             <Drawer.Root open={isOpen} onOpenChange={setIsOpen} direction="top">
               <Drawer.Trigger asChild>
                 <button
-                  className="lg:hidden flex items-center justify-center p-2 rounded-lg hover:bg-neutral-100 transition-colors duration-200"
+                  className="lg:hidden flex items-center text-white justify-center p-2 rounded-lg hover:bg-neutral-100 transition-colors duration-200"
                   aria-label="Open navigation menu"
                 >
-                  <Menu size={24} />
+                  <Menu size={32} />
                 </button>
               </Drawer.Trigger>
 
@@ -379,7 +379,12 @@ const Header = () => {
                     </section>
 
                     {/* Social links */}
-                    <section className="flex flex-col rounded-[32px] text-center items-center justify-center bg-brand-100 p-6 gap-8">
+                    <section className="flex flex-col rounded-[32px] text-center items-center justify-center bg-brand-50 p-6 gap-8">
+                      <MyButton
+                        type="whatsapp"
+                        className="flex items-center justify-center w-full gap-2"
+                      />
+
                       <div className="flex flex-wrap items-center justify-center gap-6">
                         {linksData.map((link) => {
                           const IconComponent = link.icon;
@@ -391,7 +396,7 @@ const Header = () => {
                               }
                               className="group cursor-pointer"
                             >
-                              <div className="p-4 bg-white/60 rounded-full flex items-center justify-center">
+                              <div className="p-4 bg-brand-100 rounded-full flex items-center justify-center">
                                 <IconComponent size={24} />
                               </div>
                             </div>
@@ -399,17 +404,18 @@ const Header = () => {
                         })}
                       </div>
                       <p className="text-neutral-600">
-                        All rights reserved © {new Date().getFullYear()}{" "}
-                        Banstola Brothers
+                        © {new Date().getFullYear()} Banstola Brothers
                       </p>
                     </section>
 
-                    {/* Close */}
+                    {/* CTA */}
                     <Drawer.Close asChild>
-                      <div className="flex items-center justify-end m-4">
-                        <button className="px-5 py-3 rounded-full border-2 border-brand-900 text-brand-900">
-                          Close
-                        </button>
+                      <div className="flex flex-col items-center gap-2 justify-end m-4">
+                        <MyButton
+                          type="secondarybutton"
+                          text="Close"
+                          className="w-full"
+                        />
                       </div>
                     </Drawer.Close>
                   </section>

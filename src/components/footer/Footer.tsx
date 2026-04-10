@@ -45,7 +45,7 @@ const Footer = () => {
     <div className="flex bg-brand-100 pt-40 pb-20 px-4">
       <div className="max-w-[1440] w-full mx-auto my-auto flex flex-col lg:flex-row gap-12 lg:gap-16">
         {/* Logo */}
-        <div className="w-full lg:w-1/2">
+        <div className="w-full lg:w-3/8 ">
           <Link href="/">
             <Image
               src={logo}
@@ -56,7 +56,7 @@ const Footer = () => {
         </div>
 
         {/* Link groups — grid splits equally based on group count */}
-        <div className="flex w-full lg:w-1/2 flex-col gap-8">
+        <div className="flex w-full lg:w-5/8 flex-col gap-8">
           <div
             className="grid gap-4 w-full"
             style={{
@@ -89,7 +89,7 @@ const Footer = () => {
             })}
           </div>
 
-          <p className="text-brand-900">
+          <p className="text-brand-900 text-center lg:text-left">
             © {new Date().getFullYear()} Banstola Brothers. All Right Reserved.
           </p>
         </div>
