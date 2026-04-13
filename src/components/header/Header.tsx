@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { gsap } from "gsap";
@@ -11,6 +10,8 @@ import Image from "next/image";
 import { linksData } from "./linksData";
 import MyButton from "@/components/ui/MyButton";
 import logo from "@/assets/svg/BanstolaBrothers White.svg";
+// ── NEW: use TransitionLink instead of next/link for nav items ────────────────
+import { TransitionLink } from "@/components/transition/TransitionLink";
 
 // ── Register GSAP plugin ─────────────────────────────────────────────────────
 gsap.registerPlugin(ScrollTrigger);
@@ -232,12 +233,13 @@ const setupLogoAnimation = (
 };
 
 // ── Logo sub-component ───────────────────────────────────────────────────────
+// Logo still uses TransitionLink so clicking it also triggers the dissolve
 const Logo = ({
   logoRef,
 }: {
   logoRef: React.RefObject<HTMLImageElement | null>;
 }) => (
-  <Link href="/" className="flex-shrink-0 z-50">
+  <TransitionLink href="/" className="flex-shrink-0 z-50">
     <Image
       ref={logoRef as React.RefObject<HTMLImageElement>}
       src={logo}
@@ -247,7 +249,7 @@ const Logo = ({
       className="h-auto max-w-full px-8 z-50"
       priority
     />
-  </Link>
+  </TransitionLink>
 );
 
 // ── Desktop nav sub-component ────────────────────────────────────────────────
@@ -259,7 +261,7 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
     <section className="flex w-full max-w-[1440] mx-auto uppercase">
       <nav className="hidden lg:flex items-center w-full justify-start px-1 gap-4">
         {leftNavItems.map((item) => (
-          <Link
+          <TransitionLink
             key={item.id}
             href={item.link}
             className={`transition-colors duration-300 py-4 ${
@@ -269,13 +271,13 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
             }`}
           >
             <p>{item.title}</p>
-          </Link>
+          </TransitionLink>
         ))}
       </nav>
 
       <nav className="hidden lg:flex items-center w-full justify-end px-1 gap-4">
         {rightNavItems.map((item) => (
-          <Link
+          <TransitionLink
             key={item.id}
             href={item.link}
             className={`transition-colors duration-300 py-4 ${
@@ -285,9 +287,9 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
             }`}
           >
             <p>{item.title}</p>
-          </Link>
+          </TransitionLink>
         ))}
-        <MyButton type="whatsapp" />
+        {/* <MyButton type="whatsapp" /> */}
       </nav>
     </section>
   );
@@ -295,7 +297,7 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
 
 // ── Main Header component ────────────────────────────────────────────────────
 const Header = () => {
-  const pathname = usePathname(); // ← replaces useLocation()
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const headerRef = useRef<HTMLElement>(null);
@@ -359,11 +361,11 @@ const Header = () => {
                 <Drawer.Content className="fixed top-0 bottom-0 left-0 right-0 z-50">
                   <Drawer.Title />
                   <section className="absolute top-2 bottom-2 left-2 right-2 z-50 flex flex-col gap-2">
-                    {/* Nav links */}
+                    {/* Nav links — TransitionLink closes the drawer then navigates */}
                     <section className="flex flex-col h-full rounded-[32px] p-8 justify-center items-center gap-4 bg-brand-500">
                       {headerData.map((item) => (
                         <Drawer.Close key={item.id} asChild>
-                          <Link
+                          <TransitionLink
                             href={item.link}
                             className={`block text-center ${
                               pathname === item.link
@@ -373,12 +375,12 @@ const Header = () => {
                             onClick={handleNavigate}
                           >
                             <h1 className="text-6xl">{item.title}</h1>
-                          </Link>
+                          </TransitionLink>
                         </Drawer.Close>
                       ))}
                     </section>
 
-                    {/* Social links */}
+                    {/* Social links — external, keep as plain <a> / handled below */}
                     <section className="flex flex-col rounded-[32px] text-center items-center justify-center bg-brand-50 p-6 gap-8">
                       <MyButton
                         type="whatsapp"

@@ -12,7 +12,7 @@ interface CarouselImage {
 const CARD_WIDTH = 240;
 const CARD_GAP = 16;
 const CARD_STEP = CARD_WIDTH + CARD_GAP;
-const SCROLL_SPEED = 1;
+const SCROLL_SPEED = 1.5;
 
 const ImageCard = ({ image }: { image: CarouselImage }) => (
   <div

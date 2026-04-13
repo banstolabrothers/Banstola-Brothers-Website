@@ -1,5 +1,6 @@
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import { ClientWrapper } from "@/components/transition/ClientWrapper";
 
 export default function MainLayout({
   children,
@@ -8,9 +9,11 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <Header />
-      <main>{children}</main>
-      <Footer />
+      <ClientWrapper>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </ClientWrapper>
     </>
   );
 }

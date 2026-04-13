@@ -116,7 +116,7 @@ const ReviewHeader = ({
             {[5, 4, 3, 2, 1].map((s, index) => (
               <div key={s} className="flex items-center w-full gap-3">
                 <label className="text-brand-900 w-2">{s}</label>
-                <span className="text-brand-900">★</span>
+                <Image src={star} alt="Review Star Icon" className=" w-5 h-5" />
                 <div className="flex-1 h-3 bg-brand-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-brand-900 rounded-full transition-all duration-300"
@@ -128,7 +128,7 @@ const ReviewHeader = ({
                     }}
                   />
                 </div>
-                <label className="text-brand-900 w-4 text-right">
+                <label className="text-brand-900 w-10 text-right">
                   {ratingStats.ratingCounts[index]}
                 </label>
               </div>
