@@ -85,7 +85,7 @@ export function LocalBusinessSchema() {
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14061.556005867795!2d83.98500705!3d28.225870399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399595eb31663f9f%3A0xeb2b74dd8de8beea!2sBanstola%20Brothers!5e0!3m2!1sen!2snp",
 
     telephone: ["+977-9856041086", "+977-9806512036"],
-    whatsapp_number: "+977-9762554136",
+    whatsapp_number: "+977-9846054755",
     email: "banstolabrothers@gmail.com",
 
     openingHoursSpecification: {

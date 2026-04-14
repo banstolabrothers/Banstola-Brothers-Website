@@ -289,7 +289,7 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
             <p>{item.title}</p>
           </TransitionLink>
         ))}
-        {/* <MyButton type="whatsapp" /> */}
+        <MyButton type="whatsapp" />
       </nav>
     </section>
   );
