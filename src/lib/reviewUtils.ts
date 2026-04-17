@@ -47,6 +47,13 @@ export const getInitials = (name?: string): string => {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 };
 
+export const getDisplayName = (name?: string): string => {
+  if (!name) return "Anonymous";
+  const words = name.trim().split(" ");
+  if (words.length === 1) return words[0];
+  return `${words[0]} ${words[words.length - 1][0].toUpperCase()}.`;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // REVIEW TRANSFORM
 // ─────────────────────────────────────────────────────────────────────────────

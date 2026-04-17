@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MoveRightIcon } from "lucide-react";
 import MyButton from "@/components/ui/MyButton";
 import type { Product, Category } from "@/types/product";
+import shadow from "@/assets/svg/shadow.svg";
 
 interface Props {
   allProducts: Product[];
@@ -55,7 +56,13 @@ const ProductByCategoryClient = ({ allProducts, allCategories }: Props) => {
                     alt={product.primaryImage.alt ?? product.title}
                     width={800}
                     height={560}
-                    className="mx-auto h-[560px] w-auto object-cover rounded-lg"
+                    className="mx-auto h-[680] w-auto object-cover rounded-lg"
+                    loading="lazy"
+                  />
+                  <Image
+                    src={shadow}
+                    alt="Product Showcase Shadow"
+                    className="absolute bottom-0 left-0 right-0 min-h-16 z-10"
                     loading="lazy"
                   />
                 </div>

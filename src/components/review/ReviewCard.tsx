@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import type { ReviewItem } from "@/types/review";
-import { getInitials, getTimeAgo } from "@/lib/reviewUtils";
+import { getInitials, getTimeAgo, getDisplayName } from "@/lib/reviewUtils";
 import RenderStars from "@/components/review/RenderStars";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ const ReviewCard = ({ review, onProductClick }: ReviewCardProps) => {
           <div className="flex flex-col gap-1 w-full">
             <span className="flex flex-wrap gap-4 w-full">
               <h5 className="text-brand-900">
-                {review.username || "Anonymous"}
+                {getDisplayName(review.username)}
               </h5>
               <label className="inline-flex items-center gap-1 rounded-full">
                 <span className="flex items-center bg-brand-500 p-1 rounded-full">
