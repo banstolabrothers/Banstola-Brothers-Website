@@ -1,5 +1,8 @@
 import LegalLayout, { Section } from "@/components/ui/LegalLayout";
 
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.cookiesPolicy;
+
 const sections: Section[] = [
   { id: "what-are-cookies", label: "1. What Are Cookies?" },
   { id: "cookies-we-use", label: "2. Cookies We Use" },

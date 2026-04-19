@@ -1,5 +1,8 @@
 import LegalLayout, { Section } from "@/components/ui/LegalLayout";
 
+import { pageMeta } from "@/lib/metadata";
+export const metadata = pageMeta.privacyPolicy;
+
 const sections: Section[] = [
   { id: "who-we-are", label: "1. Who We Are" },
   { id: "info-we-collect", label: "2. Information We Collect" },

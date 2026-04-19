@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { BlogDetail } from "@/types/blog";
 
 // ── Site-wide constants ───────────────────────────────────────────────────────
 const SITE_NAME = "Banstola Brothers";
@@ -22,6 +21,7 @@ const buildMeta = (
   path: string,
   keywords: string[] = [],
   ogImage = DEFAULT_OG_IMAGE,
+  noIndex = false,
 ): Metadata => ({
   title,
   description,
@@ -44,17 +44,16 @@ const buildMeta = (
   alternates: {
     canonical: `${SITE_URL}${path}`,
   },
-  robots: { index: true, follow: true },
+  robots: noIndex
+    ? { index: false, follow: false }
+    : { index: true, follow: true },
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. STATIC PAGE METADATA
-//
-//    Usage:
-//    import { pageMeta } from "@/lib/metadata";
-//    export const metadata = pageMeta.home;
 // ─────────────────────────────────────────────────────────────────────────────
 export const pageMeta = {
+  // ── Core pages ─────────────────────────────────────────────────────────────
   home: buildMeta(
     "Original Chhurpi Since 1999",
     "Buy authentic handcrafted Chhurpi from Banstola Brothers. Smoked, White & Coffee Chhurpi sourced from Ilam, Dolakha & Palpa. Shop in Pokhara since 1999.",
@@ -116,7 +115,7 @@ export const pageMeta = {
 
   allReviews: buildMeta(
     "Customer Reviews",
-    "262+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
+    "267+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
     "/all-reviews",
     [
       "Banstola Brothers reviews",
@@ -138,7 +137,6 @@ export const pageMeta = {
     ],
   ),
 
-  // ── Blog list page (static) ───────────────────────────────────────────────
   blogs: buildMeta(
     "Blog & Insights",
     "Explore articles, tips, and insights from the Banstola Brothers team — from Chhurpi traditions to Himalayan food culture.",
@@ -151,8 +149,6 @@ export const pageMeta = {
       "Chhurpi recipes",
     ],
   ),
-
-  // Add this inside the pageMeta object in /lib/metadata.ts
 
   faqs: buildMeta(
     "Frequently Asked Questions",
@@ -167,6 +163,48 @@ export const pageMeta = {
       "Chhurpi shipping Nepal",
     ],
   ),
+
+  // ── Legal pages ────────────────────────────────────────────────────────────
+  // noIndex = true — legal pages should not appear in search results
+  privacyPolicy: buildMeta(
+    "Privacy Policy",
+    "Read the Banstola Brothers Privacy Policy. Learn how we collect, use, and protect your personal data when you shop with us.",
+    "/privacy-policy",
+    ["Banstola Brothers privacy policy", "data protection Nepal"],
+    DEFAULT_OG_IMAGE,
+    true, // noIndex
+  ),
+
+  termsAndConditions: buildMeta(
+    "Terms & Conditions",
+    "Review the Terms and Conditions for using the Banstola Brothers website and purchasing our products.",
+    "/terms-and-conditions",
+    ["Banstola Brothers terms", "terms of service Nepal"],
+    DEFAULT_OG_IMAGE,
+    true, // noIndex
+  ),
+
+  shippingPolicy: buildMeta(
+    "Shipping Policy",
+    "Banstola Brothers shipping policy — delivery timelines, areas covered, and order handling for Chhurpi and other products.",
+    "/shipping-policy",
+    [
+      "Banstola Brothers shipping",
+      "Chhurpi delivery Nepal",
+      "Pokhara delivery policy",
+    ],
+    DEFAULT_OG_IMAGE,
+    true, // noIndex
+  ),
+
+  cookiesPolicy: buildMeta(
+    "Cookies Policy",
+    "Learn how Banstola Brothers uses cookies to improve your browsing experience on our website.",
+    "/cookies-policy",
+    ["Banstola Brothers cookies", "cookie policy Nepal"],
+    DEFAULT_OG_IMAGE,
+    true, // noIndex
+  ),
 } satisfies Record<string, Metadata>;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -174,12 +212,12 @@ export const pageMeta = {
 //
 //    Usage in app/products/[slug]/page.tsx:
 //
-//    import { buildProductMeta, productMetaQuery } from "@/lib/metadata";
+//    import { buildProductMeta } from "@/lib/metadata";
 //
 //    export async function generateMetadata({ params }): Promise<Metadata> {
-//      const product = await client.fetch(productMetaQuery, { slug: params.slug });
-//      if (!product) return {};
-//      return buildProductMeta(product, params.slug);
+//      const product = await client.fetch(productBySlugQuery, { slug });
+//      if (!product) return { title: "Product Not Found" };
+//      return buildProductMeta(product, slug);
 //    }
 // ─────────────────────────────────────────────────────────────────────────────
 interface SanityImageAsset {
@@ -200,6 +238,41 @@ export interface SanityProductMeta {
   };
 }
 
+// Product-specific keyword seeds — improves SEO for known products
+const PRODUCT_KEYWORD_SEEDS: Record<string, string[]> = {
+  chhurpi: [
+    "buy Chhurpi Pokhara",
+    "Smoked Chhurpi Nepal",
+    "White Chhurpi online",
+    "Coffee Chhurpi",
+    "hard cheese Nepal",
+    "Chhurpi from Ilam",
+    "authentic Chhurpi",
+    "Banstola Brothers Chhurpi",
+  ],
+  "dog-chew": [
+    "Himalayan dog chew Nepal",
+    "yak cheese dog chew",
+    "natural dog chew Pokhara",
+    "Chhurpi dog treat",
+    "buy dog chew Nepal",
+    "Banstola Brothers dog chew",
+  ],
+  khattu: [
+    "Khattu Nepal",
+    "buy Khattu Pokhara",
+    "sour dried mango Nepal",
+    "traditional Nepali snack",
+    "Banstola Brothers Khattu",
+  ],
+  papaya: [
+    "Papaya snack Nepal",
+    "dried papaya Pokhara",
+    "natural papaya Nepal",
+    "Banstola Brothers Papaya",
+  ],
+};
+
 export const buildProductMeta = (
   product: SanityProductMeta,
   slug: string,
@@ -209,11 +282,11 @@ export const buildProductMeta = (
   const description =
     product.seo?.metaDescription ??
     product.shortDescription ??
-    `Buy ${product.title} from Banstola Brothers. Authentic Nepali product from Pokhara.`;
+    `Buy ${product.title} from Banstola Brothers. Authentic Nepali product from Pokhara, Nepal. 100% natural and traditionally processed.`;
 
   const keywords = product.seo?.keywords?.length
     ? product.seo.keywords
-    : [
+    : (PRODUCT_KEYWORD_SEEDS[slug] ?? [
         product.title,
         `${product.title} Nepal`,
         `${product.title} Pokhara`,
@@ -221,7 +294,7 @@ export const buildProductMeta = (
         "Banstola Brothers",
         "authentic Nepali snacks",
         "buy Pokhara Nepal",
-      ];
+      ]);
 
   const imageUrl =
     product.seo?.ogImage?.asset?.url ??
@@ -291,12 +364,12 @@ export const productMetaQuery = `
 //
 //    Usage in app/blogs/[slug]/page.tsx:
 //
-//    import { buildBlogMeta, blogMetaQuery } from "@/lib/metadata";
+//    import { buildBlogMeta } from "@/lib/metadata";
 //
 //    export async function generateMetadata({ params }): Promise<Metadata> {
-//      const blog = await client.fetch(blogMetaQuery, { slug: params.slug });
+//      const blog = await client.fetch(blogMetaQuery, { slug });
 //      if (!blog) return { title: "Blog Not Found" };
-//      return buildBlogMeta(blog, params.slug);
+//      return buildBlogMeta(blog, slug);
 //    }
 // ─────────────────────────────────────────────────────────────────────────────
 export interface SanityBlogMeta {
@@ -329,6 +402,7 @@ export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
         "Banstola Brothers blog",
         "Chhurpi articles",
         "Nepali food culture",
+        "Himalayan cheese",
       ];
 
   const imageUrl =
@@ -352,15 +426,13 @@ export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
       siteName: SITE_NAME,
       ...(blog.publishedAt && { publishedTime: blog.publishedAt }),
       ...(blog.author && { authors: [blog.author] }),
-      images: imageUrl
-        ? [{ url: imageUrl, width: 1200, height: 630, alt: blog.title }]
-        : [DEFAULT_OG_IMAGE[0]],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: blog.title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [imageUrl || OG_IMAGE],
+      images: [imageUrl],
     },
     alternates: { canonical },
   };
@@ -389,3 +461,30 @@ export const blogMetaQuery = `
     }
   }
 `;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. USAGE REFERENCE
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// app/page.tsx                    → export const metadata = pageMeta.home;
+// app/products/page.tsx           → export const metadata = pageMeta.products;
+// app/story/page.tsx              → export const metadata = pageMeta.story;
+// app/store/page.tsx              → export const metadata = pageMeta.store;
+// app/all-reviews/page.tsx        → export const metadata = pageMeta.allReviews;
+// app/submit-reviews/page.tsx     → export const metadata = pageMeta.submitReview;
+// app/blogs/page.tsx              → export const metadata = pageMeta.blogs;
+// app/faqs/page.tsx               → export const metadata = pageMeta.faqs;
+// app/privacy-policy/page.tsx     → export const metadata = pageMeta.privacyPolicy;
+// app/terms-and-conditions/page.tsx → export const metadata = pageMeta.termsAndConditions;
+// app/shipping-policy/page.tsx    → export const metadata = pageMeta.shippingPolicy;
+// app/cookies-policy/page.tsx     → export const metadata = pageMeta.cookiesPolicy;
+//
+// app/products/[slug]/page.tsx    → export async function generateMetadata({ params }) {
+//                                     const product = await client.fetch(...);
+//                                     return buildProductMeta(product, slug);
+//                                   }
+//
+// app/blogs/[slug]/page.tsx       → export async function generateMetadata({ params }) {
+//                                     const blog = await client.fetch(...);
+//                                     return buildBlogMeta(blog, slug);
+//                                   }
