@@ -1,5 +1,23 @@
 "use client";
 
+/**
+ * TransitionContext
+ *
+ * ── Initial load transition ───────────────────────────────────────────────────
+ *
+ *  Phase starts as "covering" (not "idle") so the curtain is already covering
+ *  the screen on first paint. PageTransition sees this, runs the title reveal
+ *  sequence, then calls beginReveal() to slide the curtain off.
+ *
+ *  This means every hard navigation (URL entry, refresh, new tab) gets the
+ *  same curtain-wipe experience as clicking a TransitionLink.
+ *
+ * ── Phase flow ────────────────────────────────────────────────────────────────
+ *
+ *  Initial load:  covering → (title reads) → revealing → idle
+ *  Link click:    idle → covering → (title reads) → revealing → idle
+ */
+
 import {
   createContext,
   useCallback,
@@ -21,14 +39,13 @@ interface TransitionContextValue {
   beginReveal: () => void;
 }
 
-// Exported so consumers can use useContext(TransitionContext) directly,
-// allowing safe optional access without throwing.
+// Named export so LenisProvider can use useContext(TransitionContext) safely
+// without throwing if nesting is wrong
 export const TransitionContext = createContext<TransitionContextValue | null>(
   null,
 );
 
-// Strict hook — throws if used outside provider. Use for components that
-// REQUIRE the transition system (PageTransition, TransitionLink).
+// Strict hook for components that require the transition system
 export function useTransitionContext() {
   const ctx = useContext(TransitionContext);
   if (!ctx)
@@ -38,7 +55,11 @@ export function useTransitionContext() {
 
 export function TransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("idle");
+
+  // ── Start in "covering" — curtain is already down on first paint ───────────
+  // PageTransition reads this immediately and starts the initial reveal sequence.
+  const [phase, setPhase] = useState<Phase>("covering");
+
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearTimer = () => {
@@ -50,6 +71,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
 
   const startTransition = useCallback(
     (href: string) => {
+      // Block mid-transition clicks
       if (phase !== "idle") return;
       clearTimer();
       setPhase("covering");

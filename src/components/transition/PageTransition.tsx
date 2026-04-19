@@ -1,18 +1,34 @@
 "use client";
 
 /**
- * PageTransition — single-direction curtain wipe, top → bottom → off screen
+ * PageTransition — curtain wipe for both initial load and link-click navigation
  *
- * NOTE: The prefers-reduced-motion styles have been moved to globals.css.
- * React 19 throws a warning when <style> tags are rendered inside client
- * components. Add this to your globals.css:
+ * ── Initial load (first paint) ────────────────────────────────────────────────
  *
- *   @media (prefers-reduced-motion: reduce) {
- *     [data-pt-curtain],
- *     [data-pt-content] {
- *       transition-duration: 0ms !important;
- *     }
- *   }
+ *  TransitionContext starts with phase = "covering", so the curtain is already
+ *  covering the screen before React even renders the page. On first mount,
+ *  PageTransition detects isFirstMount + phase = "covering" and immediately
+ *  starts the title-read → reveal sequence WITHOUT waiting for a pathname change.
+ *
+ *  Flow:
+ *    Mount → step = "covering" (curtain already down) → poll document.title
+ *    → title found → chars animate in → hold → chars exit
+ *    → onCharsExited → beginReveal() → curtain falls off bottom → idle
+ *
+ * ── Link-click navigation (subsequent) ───────────────────────────────────────
+ *
+ *  Same as before: phase goes covering → route pushes → pathname changes
+ *  → new page mounts → title poll → chars → reveal → idle
+ *
+ * ── globals.css ───────────────────────────────────────────────────────────────
+ *
+ *  Add this to avoid React 19 <style> tag warning:
+ *
+ *    @media (prefers-reduced-motion: reduce) {
+ *      [data-pt-curtain], [data-pt-content] {
+ *        transition-duration: 0ms !important;
+ *      }
+ *    }
  */
 
 import { usePathname } from "next/navigation";
@@ -20,6 +36,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, cubicBezier } from "motion/react";
 import { useTransitionContext, COVER_MS, REVEAL_MS } from "./TransitionContext";
 
+// ─── Timing ───────────────────────────────────────────────────────────────────
 const CHAR_EASE_IN = cubicBezier(0.22, 1, 0.36, 1);
 const CHAR_EASE_OUT: [number, number, number, number] = [0.4, 0, 1, 1];
 
@@ -48,6 +65,7 @@ const readTitle = (): string => {
   return document.title.split(/\s*[|–—]\s*/)[0].trim();
 };
 
+// ─── Variants ─────────────────────────────────────────────────────────────────
 const containerVariants = {
   hidden: {},
   visible: {
@@ -73,6 +91,7 @@ const charVariants = {
 
 type Step = "idle" | "covering" | "waiting" | "reading" | "exiting";
 
+// ─── TitleChars ───────────────────────────────────────────────────────────────
 function TitleChars({ title }: { title: string }) {
   return (
     <motion.h1
@@ -105,6 +124,7 @@ function TitleChars({ title }: { title: string }) {
   );
 }
 
+// ─── PageTransition ───────────────────────────────────────────────────────────
 export default function PageTransition({
   children,
 }: {
@@ -115,17 +135,22 @@ export default function PageTransition({
 
   const [displayChildren, setDisplayChildren] = useState(children);
   const pendingChildren = useRef(children);
+
+  // Tracks whether we are in the very first mount
   const isFirstMount = useRef(true);
 
   useEffect(() => {
     pendingChildren.current = children;
   }, [children]);
 
-  const [step, setStep] = useState<Step>("idle");
+  const [step, setStep] = useState<Step>(
+    // Mirror initial phase — if context starts covering, curtain is already down
+    "covering",
+  );
   const [overlayTitle, setOverlayTitle] = useState("");
   const [showTitle, setShowTitle] = useState(false);
 
-  const stepRef = useRef<Step>("idle");
+  const stepRef = useRef<Step>("covering");
   const titleWasShown = useRef(false);
 
   const go = useCallback((s: Step) => {
@@ -147,26 +172,8 @@ export default function PageTransition({
     }
   }, []);
 
-  useEffect(() => {
-    if (phase === "covering" && step === "idle") {
-      go("covering");
-    }
-    if (phase === "idle") {
-      stopAll();
-      setShowTitle(false);
-      setOverlayTitle("");
-      titleWasShown.current = false;
-      go("idle");
-    }
-  }, [phase, step, go, stopAll]);
-
-  useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
-
-    setDisplayChildren(pendingChildren.current);
+  // ── Title poll + read sequence (shared by initial load and link-click) ────
+  const startTitleSequence = useCallback(() => {
     stopAll();
     setOverlayTitle("");
     setShowTitle(false);
@@ -199,10 +206,51 @@ export default function PageTransition({
     };
 
     pollTimer.current = setTimeout(poll, POLL_FIRST_MS);
+  }, [go, stopAll]);
+
+  // ── Initial load: curtain is already down, start title sequence immediately ─
+  useEffect(() => {
+    // Only runs once on first mount
+    if (!isFirstMount.current) return;
+    isFirstMount.current = false;
+
+    // Context starts as "covering" — curtain is already covering the screen.
+    // Start reading the title immediately, no need to wait for pathname change.
+    startTitleSequence();
+
+    return stopAll;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty deps — runs exactly once on mount
+
+  // ── Subsequent navigations: phase changes from link clicks ────────────────
+  useEffect(() => {
+    if (phase === "covering" && !isFirstMount.current && step === "idle") {
+      // Link-click transition: curtain has just covered, step needs to catch up
+      go("covering");
+    }
+    if (phase === "idle") {
+      stopAll();
+      setShowTitle(false);
+      setOverlayTitle("");
+      titleWasShown.current = false;
+      go("idle");
+    }
+  }, [phase, step, go, stopAll]);
+
+  // ── Pathname change: new page mounted behind curtain ─────────────────────
+  useEffect(() => {
+    // Skip the very first pathname — handled by the initial mount effect above
+    if (isFirstMount.current) return;
+
+    // Swap children while curtain is closed
+    setDisplayChildren(pendingChildren.current);
+    startTitleSequence();
+
     return stopAll;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  // ── ACT 3 gate: fires after all chars have exited ────────────────────────
   const onCharsExited = useCallback(() => {
     if (!titleWasShown.current) return;
     stopAll();
@@ -210,6 +258,12 @@ export default function PageTransition({
     beginReveal();
   }, [beginReveal, go, stopAll]);
 
+  // ── Curtain position ──────────────────────────────────────────────────────
+  //  idle      → translateY(-100%) parked above viewport
+  //  covering  → translateY(0%)    fully covers screen
+  //  waiting   → translateY(0%)    held while reading title
+  //  reading   → translateY(0%)    chars animating
+  //  exiting   → translateY(100%)  falls off bottom
   const curtainY =
     step === "idle"
       ? "-100%"
@@ -217,11 +271,12 @@ export default function PageTransition({
         ? "100%"
         : "0%";
 
+  // Content is hidden while curtain is covering or revealing
   const contentHidden = phase !== "idle";
 
   return (
     <div className="relative min-h-dvh">
-      {/* Page content */}
+      {/* ── Page content ───────────────────────────────────────────────────── */}
       <div
         data-pt-content
         style={{
@@ -238,7 +293,14 @@ export default function PageTransition({
         {displayChildren}
       </div>
 
-      {/* Curtain — parked above viewport, slides down to cover, continues off bottom */}
+      {/* ── Curtain ──────────────────────────────────────────────────────────
+          Starts at translateY(0%) on first paint — already covering the screen.
+          Falls to translateY(100%) during reveal — slides off the bottom.
+          Returns to translateY(-100%) at idle — parked above viewport.
+
+          On initial load: no transition on the initial cover position
+          (it's already there). Only the reveal gets an animated transition.
+      ─────────────────────────────────────────────────────────────────────── */}
       <div
         data-pt-curtain
         aria-hidden="true"
@@ -246,7 +308,7 @@ export default function PageTransition({
         style={{
           transform: `translateY(${curtainY})`,
           transition:
-            step === "idle"
+            step === "idle" || (step === "covering" && isFirstMount.current)
               ? "none"
               : `transform ${
                   step === "exiting" || phase === "revealing"
