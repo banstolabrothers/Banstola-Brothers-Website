@@ -1,6 +1,6 @@
 import { PortableText } from "@portabletext/react";
 import { portableTextComponents } from "@/components/ui/portableTextComponents"; // 👈
-import ScrollProgressMinimap from "../ui/ScrollProgressMinimap";
+// import ScrollProgressMinimap from "../ui/ScrollProgressMinimap";
 
 interface BlogContentSectionProps {
   content: unknown[];
@@ -14,7 +14,7 @@ const BlogContentSection = ({ content }: BlogContentSectionProps) => {
 
         return (
           <div key={b._key ?? index} className={`mx-auto`}>
-            <ScrollProgressMinimap showMinimap={false} />
+            {/* <ScrollProgressMinimap showMinimap={false} /> */}
 
             <div className="prose prose-lg max-w-none">
               <PortableText

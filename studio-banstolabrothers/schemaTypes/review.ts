@@ -18,6 +18,9 @@ export const review = defineType({
       name: 'reviews',
       title: 'Reviews',
       type: 'array',
+      options: {
+        sortable: true,
+      },
       of: [
         {
           type: 'object',
@@ -140,10 +143,10 @@ export const review = defineType({
               date: 'reviewDate',
               description: 'description',
             },
-            prepare({username, rating, date, description}) {
+            prepare({username, date, description}) {
               return {
-                title: `${description}`,
-                subtitle: `${username} • ${rating} • ${date}`,
+                title: `${username}`,
+                subtitle: `${date} • ${description}`,
               }
             },
           },

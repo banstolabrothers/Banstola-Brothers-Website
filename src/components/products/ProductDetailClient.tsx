@@ -4,10 +4,7 @@ import MyButton from "@/components/ui/MyButton";
 import ProductHeroSection from "@/components/products/ProductHeroSection";
 import ProductContentSection from "@/components/products/ProductContentSection";
 import ProductReviewSection from "@/components/review/ProductReviewSection";
-import ProductStickyNav from "@/components/header/ProductStickyNav";
 import type { Product, SelectedOptions } from "@/types/product";
-
-// ✅ ProductSchema removed — it now lives in page.tsx (server component)
 
 interface Props {
   product: Product | null;
@@ -48,12 +45,7 @@ const ProductDetailClient = ({ product }: Props) => {
   }
 
   return (
-    <section className="w-full ">
-      <ProductStickyNav
-        productName={product.title}
-        selectedOptions={selectedOptions}
-        product={product}
-      />
+    <section className="relative w-full">
       <ProductHeroSection
         product={product}
         selectedOptions={selectedOptions}

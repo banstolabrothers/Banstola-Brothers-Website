@@ -1,7 +1,8 @@
 "use client";
 
-import { usePageTransition } from "@/lib/TransitionProvider";
 import { CSSProperties, MouseEventHandler, ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useTransitionContext } from "./TransitionContext";
 
 type TransitionLinkProps = {
   href: string;
@@ -24,12 +25,21 @@ export function TransitionLink({
   onClick,
   "aria-label": ariaLabel,
 }: TransitionLinkProps) {
-  const { triggerTransition } = usePageTransition();
+  const pathname = usePathname();
+  const { phase, startTransition } = useTransitionContext();
+
+  const isActive = pathname === href;
+  // Belt-and-suspenders guard — TransitionContext also blocks mid-transition calls
+  const isBusy = phase !== "idle";
 
   const handleClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
     onClick?.(e);
-    triggerTransition(href);
+
+    // Already here, or transition in progress — do nothing
+    if (isActive || isBusy) return;
+
+    startTransition(href);
   };
 
   return (
@@ -41,6 +51,8 @@ export function TransitionLink({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       aria-label={ariaLabel}
+      aria-current={isActive ? "page" : undefined}
+      aria-disabled={isActive || isBusy ? true : undefined}
     >
       {children}
     </a>

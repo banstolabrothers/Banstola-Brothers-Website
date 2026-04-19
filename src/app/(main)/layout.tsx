@@ -1,6 +1,8 @@
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import { ClientWrapper } from "@/components/transition/ClientWrapper";
+import PageTransition from "@/components/transition/PageTransition";
+import { TransitionProvider } from "@/components/transition/TransitionContext";
+import LenisProvider from "@/components/ui/LenisProvider";
 
 export default function MainLayout({
   children,
@@ -8,12 +10,15 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <ClientWrapper>
+    // TransitionProvider must be outermost — LenisProvider reads from it
+    <TransitionProvider>
+      <LenisProvider>
         <Header />
-        <main>{children}</main>
+        <PageTransition>
+          <main>{children}</main>
+        </PageTransition>
         <Footer />
-      </ClientWrapper>
-    </>
+      </LenisProvider>
+    </TransitionProvider>
   );
 }

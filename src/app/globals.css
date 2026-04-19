@@ -309,3 +309,10 @@
     opacity: 1 !important;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pt-curtain],
+  [data-pt-content] {
+    transition-duration: 0ms !important;
+  }
+}
