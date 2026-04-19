@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
-import { productReviewsByIdQuery } from "@/lib/queries";
+import { productReviewsByIdQuery, allReviewsFullQuery } from "@/lib/queries"; // ← add allReviewsFullQuery
 import MyButton from "@/components/ui/MyButton";
 import ReviewList from "@/components/review/ReviewList";
 import ReviewHeader from "@/components/review/ReviewHeader";
@@ -13,20 +13,17 @@ import {
   extractCustomerImages,
 } from "@/lib/reviewUtils";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
 interface ProductReviewSectionProps {
   productId: string;
   productSlug?: string;
 }
-
-// ── Component ────────────────────────────────────────────────────────────────
 
 const ProductReviewSection = ({
   productId,
   productSlug,
 }: ProductReviewSectionProps) => {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [allReviews, setAllReviews] = useState<ReviewItem[]>([]); // ← add
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("newest");
   const [filterBy, setFilterBy] = useState("all");
@@ -38,16 +35,20 @@ const ProductReviewSection = ({
 
   useEffect(() => {
     if (!productId) return;
-    client
-      .fetch(productReviewsByIdQuery, { productId })
-      .then((data: ReviewDoc[]) => {
-        setReviews(flattenReviews(data));
+
+    // ← fetch both in parallel
+    Promise.all([
+      client.fetch<ReviewDoc[]>(productReviewsByIdQuery, { productId }),
+      client.fetch<ReviewDoc[]>(allReviewsFullQuery),
+    ])
+      .then(([productDocs, allDocs]) => {
+        setReviews(flattenReviews(productDocs));
+        setAllReviews(flattenReviews(allDocs)); // ← all reviews for modal lookup
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [productId]);
 
-  // Reset display count when filters/sort change
   useEffect(() => {
     setDisplayCount(5);
   }, [sortBy, filterBy]);
@@ -83,7 +84,7 @@ const ProductReviewSection = ({
   const customerImages = extractCustomerImages(reviews);
 
   return (
-    <section className="flex flex-col w-full max-w-[1440] mx-auto my-20 px-4 ">
+    <section className="flex flex-col w-full max-w-[1440] mx-auto my-20 px-4">
       <ReviewHeader
         ratingStats={ratingStats}
         sortBy={sortBy}
@@ -96,6 +97,7 @@ const ProductReviewSection = ({
       />
       <ReviewList
         reviews={filtered.slice(0, displayCount)}
+        allReviews={allReviews} // ← pass full cross-product reviews
         showLoadMore={displayCount < filtered.length}
         onLoadMore={() => setDisplayCount((p) => p + 10)}
         totalReviews={filtered.length}

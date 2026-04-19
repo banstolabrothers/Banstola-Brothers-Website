@@ -2,19 +2,17 @@ import MyButton from "@/components/ui/MyButton";
 import ReviewCard from "@/components/review/ReviewCard";
 import type { ReviewItem } from "@/types/review";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
 interface ReviewListProps {
   reviews: ReviewItem[];
+  allReviews?: ReviewItem[]; // ← add
   showLoadMore?: boolean;
   onLoadMore?: () => void;
   totalReviews?: number;
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
-
 const ReviewList = ({
   reviews,
+  allReviews = [], // ← add
   showLoadMore = false,
   onLoadMore,
   totalReviews = 0,
@@ -33,7 +31,11 @@ const ReviewList = ({
     <>
       <div className="flex flex-col gap-2">
         {reviews.map((review, index) => (
-          <ReviewCard key={index} review={review} />
+          <ReviewCard
+            key={index}
+            review={review}
+            allReviews={allReviews} // ← pass down
+          />
         ))}
       </div>
 

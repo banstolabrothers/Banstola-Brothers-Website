@@ -96,6 +96,7 @@ const ReviewPageClient = ({ allReviews }: ReviewPageClientProps) => {
       />
       <ReviewList
         reviews={reviewsData.slice(0, displayCount)}
+        allReviews={allFlatReviews} // ← add this line
         showLoadMore={displayCount < reviewsData.length}
         onLoadMore={() => setDisplayCount((p) => p + 10)}
         totalReviews={reviewsData.length}
