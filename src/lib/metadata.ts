@@ -89,7 +89,7 @@ export const pageMeta = {
   ),
 
   story: buildMeta(
-    "Our Story – Since 1999",
+    "Our Story - Since 1999",
     "Pokhara's first Chhurpi & Pau shop, founded by Muktinath Banstola in the late 1990s. 25 years of authentic Himalayan taste.",
     "/story",
     [
@@ -103,7 +103,7 @@ export const pageMeta = {
   ),
 
   store: buildMeta(
-    "Find Our Store in Pokhara",
+    "Find Our Store",
     "Visit Banstola Brothers in Pokhara, Nepal. Find our store location, opening hours, and get authentic Chhurpi near you.",
     "/store",
     [
@@ -140,7 +140,7 @@ export const pageMeta = {
 
   // ── Blog list page (static) ───────────────────────────────────────────────
   blogs: buildMeta(
-    "Blog",
+    "Blog & Insights",
     "Explore articles, tips, and insights from the Banstola Brothers team — from Chhurpi traditions to Himalayan food culture.",
     "/blogs",
     [

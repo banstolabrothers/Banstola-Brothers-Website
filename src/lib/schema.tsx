@@ -54,7 +54,7 @@ export function LocalBusinessSchema() {
     name: "Banstola Brothers",
     alternateName: "Banstola Brothers Chhurpi & Khattu",
     description:
-      "Pokhara's original Chhurpi and Khattu shop, founded in 1999 by Muktinath Banstola. Authentic Himalayan Chhurpi sourced from Illam, Khattu, natural Dog Chew, and Papaya snacks — available in-store and delivered across Nepal.",
+      "Pokhara's original Chhurpi and Khattu shop, founded in 1999 by Muktinath Banstola. Authentic Himalayan Chhurpi sourced from Ilam, Khattu, natural Dog Chew, and Papaya snacks — available in-store and delivered across Nepal.",
 
     url: BASE_URL,
     logo: `${BASE_URL}/og-image.png`,

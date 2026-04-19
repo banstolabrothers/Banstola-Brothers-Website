@@ -11,7 +11,7 @@ const HistorySection = () => {
           <p>
             by <span className="text-brand-500">Muktinath Banstola,</span>
             <br />
-            Introducing Chhurpi from Illam, Paun from Kathmandu
+            Introducing Chhurpi from Ilam, Paun from Kathmandu
             <br />— establishing Pokhara&apos;s
           </p>
           <h4>FIRST CHURPI & PAUN SHOP</h4>

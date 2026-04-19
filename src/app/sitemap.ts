@@ -29,6 +29,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
       changeFrequency: "yearly",
     },
+    {
+      url: `${BASE_URL}/privacy-policy`,
+      priority: 0.4,
+      changeFrequency: "monthly",
+    },
+    {
+      url: `${BASE_URL}/terms-and-conditions`,
+      priority: 0.4,
+      changeFrequency: "monthly",
+    },
+    {
+      url: `${BASE_URL}/cookies-policy`,
+      priority: 0.4,
+      changeFrequency: "monthly",
+    },
+    {
+      url: `${BASE_URL}/terms-and-conditions`,
+      priority: 0.4,
+      changeFrequency: "monthly",
+    },
   ];
 
   const productRoutes: MetadataRoute.Sitemap = productSlugs.map(({ slug }) => ({
