@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import type { ReviewItem } from "@/types/review";
 import { getInitials, getTimeAgo, getDisplayName } from "@/lib/reviewUtils";
 import RenderStars from "@/components/review/RenderStars";
@@ -10,14 +10,16 @@ import RepeatCustomerModal from "@/components/review/RepeatCustomerModal";
 
 interface ReviewCardProps {
   review: ReviewItem;
-  allReviews?: ReviewItem[]; // ← add
+  allReviews?: ReviewItem[];
   onProductClick?: (slug: string) => void;
+  disableRepeatCustomer?: boolean; // ← add
 }
 
 const ReviewCard = ({
   review,
   allReviews = [],
   onProductClick,
+  disableRepeatCustomer = false, // ← add
 }: ReviewCardProps) => {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -45,7 +47,7 @@ const ReviewCard = ({
             <span className="flex w-16 h-16 aspect-square rounded-full bg-yellow-500 items-center justify-center text-brand-900 flex-shrink-0">
               <h5>{getInitials(review.username)}</h5>
             </span>
-            <div className="flex flex-col gap-1 w-full">
+            <div className="flex flex-col gap-2 w-full">
               <span className="flex flex-wrap gap-4 w-full">
                 <h5 className="text-brand-900">
                   {getDisplayName(review.username)}
@@ -59,13 +61,16 @@ const ReviewCard = ({
               </span>
 
               {/* ── Repeat Customer badge — now a button ── */}
-              {review.isRepeatCustomer && (
-                <label
+              {review.isRepeatCustomer && !disableRepeatCustomer && (
+                <div
                   onClick={() => setShowModal(true)}
-                  className="bg-brand-100 text-amber-700 px-2 py-1 rounded-full w-fit  hover:bg-amber-100 transition-colors cursor-pointer"
+                  className="bg-brand-500/10 px-3 pt-1 pb-1 rounded-full w-fit hover:bg-brand-500/15 cursor-pointer "
                 >
-                  Repeat Customer
-                </label>
+                  <label className="text-brand-900 cursor-pointer ">
+                    {" "}
+                    Repeat Customer
+                  </label>
+                </div>
               )}
             </div>
           </div>

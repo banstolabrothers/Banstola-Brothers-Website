@@ -2,6 +2,8 @@
 import { useState } from "react";
 import MyButton from "@/components/ui/MyButton";
 import ProductHeroSection from "@/components/products/ProductHeroSection";
+// import ProductHeroSectionVersion2 from "@/components/products/ProductHeroSectionVersion2";
+
 import ProductContentSection from "@/components/products/ProductContentSection";
 import ProductReviewSection from "@/components/review/ProductReviewSection";
 import type { Product, SelectedOptions } from "@/types/product";
@@ -51,6 +53,11 @@ const ProductDetailClient = ({ product }: Props) => {
         selectedOptions={selectedOptions}
         onOptionSelect={handleOptionSelect}
       />
+      {/* <ProductHeroSectionVersion2
+        product={product}
+        selectedOptions={selectedOptions}
+        onOptionSelect={handleOptionSelect}
+      /> */}
       {(product.content?.length ?? 0) > 0 && (
         <ProductContentSection content={product.content!} />
       )}

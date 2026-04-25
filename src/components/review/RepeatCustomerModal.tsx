@@ -87,7 +87,11 @@ const RepeatCustomerModal = ({
 
         {/* ── Scrollable body — wheel events captured here, never reach backdrop ── */}
         <div ref={bodyRef} className="flex-1 overflow-y-auto p-4">
-          <ReviewList reviews={reviews} totalReviews={reviews.length} />
+          <ReviewList
+            reviews={reviews}
+            totalReviews={reviews.length}
+            disableRepeatCustomer={true}
+          />
         </div>
       </div>
     </div>

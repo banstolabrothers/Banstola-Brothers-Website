@@ -8,6 +8,7 @@ interface ReviewListProps {
   showLoadMore?: boolean;
   onLoadMore?: () => void;
   totalReviews?: number;
+  disableRepeatCustomer?: boolean; // ← add
 }
 
 const ReviewList = ({
@@ -16,6 +17,7 @@ const ReviewList = ({
   showLoadMore = false,
   onLoadMore,
   totalReviews = 0,
+  disableRepeatCustomer = false, // ← add
 }: ReviewListProps) => {
   if (reviews.length === 0) {
     return (
@@ -35,6 +37,7 @@ const ReviewList = ({
             key={index}
             review={review}
             allReviews={allReviews} // ← pass down
+            disableRepeatCustomer={disableRepeatCustomer} // ← pass down
           />
         ))}
       </div>
