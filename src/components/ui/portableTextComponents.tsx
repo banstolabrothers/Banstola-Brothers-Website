@@ -1,5 +1,8 @@
+"use client";
+
 import { PortableTextComponents } from "@portabletext/react";
 import { urlFor } from "@/lib/sanity";
+import MyButton from "@/components/ui/MyButton";
 
 interface ImageValue {
   asset?: { _ref?: string; url?: string };
@@ -17,7 +20,15 @@ interface LinkValue {
   blank?: boolean;
 }
 
+// Shared shape for both button annotations.
+// `children` is the selected text the editor highlighted — it becomes the label.
+interface ButtonValue {
+  href?: string;
+  blank?: boolean;
+}
+
 export const portableTextComponents: PortableTextComponents = {
+  // ── Block-level elements ────────────────────────────────────────────────────
   block: {
     h1: ({ children }) => (
       <h2 className="text-brand-900 mb-6 mt-8">{children}</h2>
@@ -26,13 +37,13 @@ export const portableTextComponents: PortableTextComponents = {
       <h3 className="text-brand-900 mb-5 mt-8">{children}</h3>
     ),
     h3: ({ children }) => (
-      <h4 className=" text-brand-900 mb-4 mt-6">{children}</h4>
+      <h4 className="text-brand-900 mb-4 mt-6">{children}</h4>
     ),
     h4: ({ children }) => (
-      <h5 className=" text-brand-900 mb-3 mt-4">{children}</h5>
+      <h5 className="text-brand-900 mb-3 mt-4">{children}</h5>
     ),
     h5: ({ children }) => (
-      <h6 className=" text-brand-900 mb-2 mt-2">{children}</h6>
+      <h6 className="text-brand-900 mb-2 mt-2">{children}</h6>
     ),
     normal: ({ children }) => (
       <p className="text-brand-900 leading-relaxed mb-6">{children}</p>
@@ -43,6 +54,8 @@ export const portableTextComponents: PortableTextComponents = {
       </blockquote>
     ),
   },
+
+  // ── Lists ───────────────────────────────────────────────────────────────────
   list: {
     bullet: ({ children }) => (
       <ul className="list-disc list-inside space-y-2 mb-6 text-neutral-700 text-left">
@@ -59,6 +72,8 @@ export const portableTextComponents: PortableTextComponents = {
     bullet: ({ children }) => <li className="text-lg text-left">{children}</li>,
     number: ({ children }) => <li className="text-lg text-left">{children}</li>,
   },
+
+  // ── Inline marks ────────────────────────────────────────────────────────────
   marks: {
     strong: ({ children }) => (
       <strong className="font-bold text-brand-900">{children}</strong>
@@ -87,6 +102,8 @@ export const portableTextComponents: PortableTextComponents = {
     "align-justify": ({ children }) => (
       <span className="block text-justify">{children}</span>
     ),
+
+    // ── Plain hyperlink (unchanged) ───────────────────────────────────────────
     link: ({ children, value }) => {
       const { href, blank } = (value ?? {}) as LinkValue;
       return (
@@ -100,7 +117,57 @@ export const portableTextComponents: PortableTextComponents = {
         </a>
       );
     },
+
+    // ── Primary Button ────────────────────────────────────────────────────────
+    buttonPrimary: ({ children, value }) => {
+      const { href, blank } = (value ?? {}) as ButtonValue;
+      const label =
+        typeof children === "string"
+          ? children
+          : Array.isArray(children)
+            ? children.join("")
+            : String(children ?? "");
+
+      return (
+        <MyButton
+          type="primarybutton"
+          text={label}
+          link={href}
+          onClick={
+            blank && href
+              ? () => window.open(href, "_blank", "noopener,noreferrer")
+              : undefined
+          }
+        />
+      );
+    },
+
+    // ── Secondary Button ──────────────────────────────────────────────────────
+    buttonSecondary: ({ children, value }) => {
+      const { href, blank } = (value ?? {}) as ButtonValue;
+      const label =
+        typeof children === "string"
+          ? children
+          : Array.isArray(children)
+            ? children.join("")
+            : String(children ?? "");
+
+      return (
+        <MyButton
+          type="secondarybutton"
+          text={label}
+          link={href}
+          onClick={
+            blank && href
+              ? () => window.open(href, "_blank", "noopener,noreferrer")
+              : undefined
+          }
+        />
+      );
+    },
   },
+
+  // ── Block-level custom types ─────────────────────────────────────────────────
   types: {
     image: ({ value }) => {
       const v = value as ImageValue;
@@ -115,7 +182,7 @@ export const portableTextComponents: PortableTextComponents = {
             className="w-full rounded-4xl shadow-sm"
           />
           {v?.caption && (
-            <figcaption className=" text-neutral-600 mt-3">
+            <figcaption className="text-neutral-600 mt-3">
               {v.caption}
             </figcaption>
           )}

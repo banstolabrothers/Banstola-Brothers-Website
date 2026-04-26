@@ -1,7 +1,7 @@
 import Image from "next/image";
 import bgImage from "@/assets/image/photo.webp";
 import map from "@/assets/svg/nepal.svg";
-import stick2 from "@/assets/image/stick2.jpeg";
+import stick2 from "@/assets/image/stick2.png";
 import store from "@/assets/image/Store.png";
 
 import { pageMeta } from "@/lib/metadata";
@@ -102,7 +102,7 @@ const page = () => {
             src={stick2}
             alt="Banstola Brothers Chhurpi Image"
             // sizes="(max-width: 768px) 40vw, 33vw"
-            className="w-full md:w-8/12 mx-auto mix-blend-multiply z-0 "
+            className="w-full md:w-8/12 mx-auto z-10 "
             quality={100}
             priority
           />
@@ -124,14 +124,13 @@ const page = () => {
             quality={100}
             priority
           />
-          <div className="flex flex-col gap-2 justify-center">
+          <div className="flex flex-col gap-2 justify-center items-center mx-auto ">
             <h4>Tersapatti Rd, Pokhara 33700 </h4>
             <p> (Opposite side of Pokhara Central Oasis) </p>
             <MyButton
               type="primarybutton"
               text="Get Direction"
               link="https://www.google.com/maps/dir//Banstola+Brothers"
-              className="mx-auto"
             />
           </div>
         </div>

@@ -7,6 +7,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
+  InlineElementIcon,
 } from '@sanity/icons'
 
 export const portableTextContent = [
@@ -37,6 +38,7 @@ export const portableTextContent = [
         {title: 'Right align', value: 'align-right', icon: ArrowRightIcon},
       ],
       annotations: [
+        // ── Plain hyperlink (existing) ──────────────────────────────────────
         {
           title: 'URL',
           name: 'link',
@@ -56,9 +58,59 @@ export const portableTextContent = [
             },
           ],
         },
+
+        // ── Primary Button ──────────────────────────────────────────────────
+        // Select any text → click this annotation → paste a URL.
+        // The selected text becomes the button label; the URL is the destination.
+        {
+          title: 'Primary Button',
+          name: 'buttonPrimary',
+          type: 'object',
+          icon: InlineElementIcon,
+          fields: [
+            {
+              title: 'URL',
+              name: 'href',
+              type: 'url',
+              description: 'Where this button links to',
+              validation: (rule: any) => rule.required(),
+            },
+            {
+              title: 'Open in new tab',
+              name: 'blank',
+              type: 'boolean',
+              initialValue: false,
+            },
+          ],
+        },
+
+        // ── Secondary Button ────────────────────────────────────────────────
+        {
+          title: 'Secondary Button',
+          name: 'buttonSecondary',
+          type: 'object',
+          icon: InlineElementIcon,
+          fields: [
+            {
+              title: 'URL',
+              name: 'href',
+              type: 'url',
+              description: 'Where this button links to',
+              validation: (rule: any) => rule.required(),
+            },
+            {
+              title: 'Open in new tab',
+              name: 'blank',
+              type: 'boolean',
+              initialValue: false,
+            },
+          ],
+        },
       ],
     },
   },
+
+  // ── Inline image ────────────────────────────────────────────────────────────
   {
     type: 'image',
     options: {hotspot: true},
@@ -78,6 +130,8 @@ export const portableTextContent = [
       },
     ],
   },
+
+  // ── YouTube embed ────────────────────────────────────────────────────────────
   {
     type: 'object',
     name: 'youtube',
