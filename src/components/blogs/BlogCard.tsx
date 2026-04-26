@@ -18,22 +18,22 @@ export default function BlogCard({ blog }: Props) {
   const imageUrl = blog.primaryImage?.asset?.url;
 
   return (
-    <Link href={`/blogs/${blog.slug}`} className="group flex flex-col">
-      {/* Image */}
+    <Link
+      href={`/blogs/${blog.slug}`}
+      className="group flex flex-col hover:cursor-pointer "
+    >
       {imageUrl && (
         <Image
           src={imageUrl}
           alt={blog.primaryImage?.alt ?? blog.title}
-          width={320}
+          width={400}
           height={160}
           quality={100}
-          className="h-64 w-full object-cover rounded-3xl border-2 border-brand-900/4"
+          className="md:h-160 h-80 w-full object-cover rounded-3xl border-2  hover:cursor-pointer border-brand-900/4 group-hover:opacity-50 transition-opacity"
         />
       )}
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 py-2 gap-3">
-        {/* Title */}
+      <div className="flex flex-col flex-1 py-2 gap-3  hover:cursor-pointer">
         <p className=" text-brand-900 group-hover:opacity-50 transition-opacity">
           {blog.title}
         </p>

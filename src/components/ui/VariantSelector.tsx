@@ -110,7 +110,7 @@ const VariantOption = ({
   return (
     <div
       onClick={isOutOfStock ? undefined : onSelect}
-      className={`relative rounded-3xl px-6 py-4 transition-all duration-300 border-2 w-fit ${
+      className={`relative rounded-3xl px-5 py-3 transition-all duration-300 border-2 w-fit ${
         isOutOfStock
           ? "bg-neutral-50 opacity-40 text-neutral-400 cursor-not-allowed border-neutral-200 pointer-events-none"
           : isSelected
