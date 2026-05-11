@@ -107,7 +107,7 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
         </section>
       </section>
 
-      <section className="w-full max-w-2xl mx-auto px-4">
+      <section className="w-full max-w-3xl mx-auto px-4">
         {/* ── Content ──────────────────────────────────────────────────────── */}
         {(blog.content?.length ?? 0) > 0 && (
           <BlogContentSection content={blog.content!} />

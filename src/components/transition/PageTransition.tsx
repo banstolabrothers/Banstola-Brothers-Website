@@ -44,9 +44,9 @@ const COVER_S = COVER_MS / 1000;
 const REVEAL_S = REVEAL_MS / 1000;
 
 const CHAR = {
-  duration: 0.38,
-  stagger: 0.042,
-  delayFirst: 0.1,
+  duration: 0.24,
+  stagger: 0.016,
+  delayFirst: 0.08,
   exitDuration: 0.16,
 } as const;
 
