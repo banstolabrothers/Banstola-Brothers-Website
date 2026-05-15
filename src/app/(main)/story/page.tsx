@@ -1,58 +1,18 @@
 import Image from "next/image";
-import bgImage from "@/assets/image/photo.webp";
-import map from "@/assets/svg/nepal.svg";
-import stick2 from "@/assets/image/stick2.png";
 import store from "@/assets/image/Store.png";
-
 import { pageMeta } from "@/lib/metadata";
 import MyButton from "@/components/ui/MyButton";
+import SourceSection from "@/components/story/SourceSection";
+import HeroSection from "@/components/story/HeroSection";
 export const metadata = pageMeta.story;
 
 const page = () => {
-  const startYear = 1999;
-  const yearsActive = new Date().getFullYear() - startYear;
   return (
     <section className="flex flex-col w-full">
-      {/* Hero Section */}
-      <section className="relative flex flex-col w-full bg-brand-500 text-brand-100 mx-auto text-center items-center justify-center py-16 md:py-56 gap-4">
-        <Image
-          src={bgImage}
-          alt="Background Image"
-          fill
-          sizes="100vw"
-          style={{ objectFit: "cover" }}
-          priority
-          className="opacity-30 2xl:object-top"
-        />
-        <h1 className="text-brand-100 z-10 drop-shadow-2xl">
-          Celebrating {yearsActive}+ years
-        </h1>
-        <p className="text-2xl sm:text-3xl lg:text-4xl leading-[140%] max-w-5xl px-4 z-10 drop-shadow-2xl">
-          Since the late 1990s, we've carried one simple promise — bringing the
-          pure, authentic taste of Ilam's handcrafted Chhurpi all the way to
-          Pokhara. Founded by Muktinath Banstola, our journey began with a love
-          for original taste and an uncompromising belief in quality.
-        </p>
-      </section>
+      <HeroSection />
 
-      {/* Source Section */}
       <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
-        <div className="flex flex-col md:flex-row max-w-[860] mx-auto gap-4 w-full items-center ">
-          <h2 className="w-full">Straight from the hills of Nepal to You.</h2>
-          <p className="w-full">
-            We have partnered directly with farmers from the regions where the
-            finest Chhurpi has always been made — so you receive it fresh,
-            original, and at its true quality.
-          </p>
-        </div>
-
-        <Image
-          src={map}
-          alt="Background Image"
-          sizes="(max-width: 768px) 40vw, 33vw"
-          className="w-10/12 md:w-8/12 mx-auto "
-          priority
-        />
+        <SourceSection />
       </section>
 
       {/* Our Chhurpi Journey */}
@@ -82,7 +42,7 @@ const page = () => {
       </section> */}
 
       {/* Chhurpi Photo */}
-      <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
+      {/* <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
         <div className="flex flex-col  max-w-[860] mx-auto gap-4 w-full text-center ">
           <h2>
             Our Original Chhurpi <br />
@@ -107,7 +67,7 @@ const page = () => {
             priority
           />
         </div>
-      </section>
+      </section> */}
 
       {/* Store Photo */}
       <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
@@ -127,11 +87,18 @@ const page = () => {
           <div className="flex flex-col gap-2 justify-center items-center mx-auto ">
             <h4>Tersapatti Rd, Pokhara 33700 </h4>
             <p> (Opposite side of Pokhara Central Oasis) </p>
-            <MyButton
-              type="primarybutton"
-              text="Get Direction"
-              link="https://www.google.com/maps/dir//Banstola+Brothers"
-            />
+            <div className="w-full flex items-center justify-center gap-4 ">
+              <MyButton
+                type="primarybutton"
+                text="Get Direction"
+                link="https://www.google.com/maps/dir//Banstola+Brothers"
+              />
+              <MyButton
+                type="primarybutton"
+                text="Call Now"
+                link="tel:+9779824119665"
+              />
+            </div>
           </div>
         </div>
       </section>

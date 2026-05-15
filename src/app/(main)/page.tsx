@@ -8,6 +8,7 @@ import FollowUsSection from "@/components/home/FollowUsSection";
 
 import { pageMeta } from "@/lib/metadata";
 import { LocalBusinessSchema } from "@/lib/schema"; // ← import from central file
+import SourceSection from "@/components/story/SourceSection";
 
 export const metadata: Metadata = pageMeta.home;
 
@@ -22,6 +23,11 @@ export default function HomePage() {
         <IntroSection />
         <HistorySection />
         <ProductByCategory />
+
+        <section className="max-w-full flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center bg-brand-100">
+          <SourceSection />
+        </section>
+
         <HomeReviewSection />
         <FollowUsSection />
 
