@@ -73,3 +73,11 @@ export interface ProductFilter {
   slug?: { current: string };
   image?: string;
 }
+
+export interface HomeReviewItem {
+  description: string;
+  username: string;
+  rating: number;
+  productTitle?: string;
+  productImage?: string;
+}

@@ -4,29 +4,24 @@ import { allReviewsQuery } from "@/lib/queries";
 import { shuffleArray } from "@/lib/reviewUtils";
 import ReviewCarousel from "./ReviewCarousel";
 import MyButton from "@/components/ui/MyButton";
-import type { ReviewDoc } from "@/types/review";
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-export interface HomeReviewItem {
-  description: string;
-  username: string;
-  rating: number;
-  productTitle?: string;
-  productImage?: string;
-}
-
-// ── Component ────────────────────────────────────────────────────────────────
+import type { ReviewDoc, HomeReviewItem } from "@/types/review";
 
 const HomeReviewSection = async () => {
-  const allReviews = await client.fetch<ReviewDoc[]>(allReviewsQuery);
+  const allReviews = await client.fetch<ReviewDoc[]>(
+    allReviewsQuery,
+    {},
+    {
+      next: { revalidate: 60 },
+    },
+  );
 
-  const totalCount = allReviews.reduce(
+  const totalReviews = allReviews.reduce(
     (acc, doc) => acc + (doc.reviews?.length ?? 0),
     0,
   );
 
   const reviewsWithDescriptions: HomeReviewItem[] = [];
+
   allReviews.forEach((doc) => {
     doc.reviews?.forEach((review) => {
       if (review.description?.trim()) {
@@ -49,7 +44,7 @@ const HomeReviewSection = async () => {
     <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
       <div className="flex flex-col md:flex-row md:text-center items-center justify-center gap-8">
         <h2 className="text-brand-900">
-          {totalCount.toLocaleString()}+ reviews
+          {totalReviews.toLocaleString()}+ reviews
         </h2>
         <MyButton
           type="primarybutton"

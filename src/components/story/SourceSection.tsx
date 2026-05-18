@@ -5,7 +5,7 @@ const SourceSection = () => {
   return (
     <section className="flex flex-col w-full gap-24">
       {/* Source Section */}
-      <div className="flex flex-col md:flex-row max-w-4xl mx-auto gap-8 w-full items-center ">
+      <div className="flex flex-col md:flex-row max-w-4xl text-center mx-auto gap-8 w-full items-center ">
         <h2 className="w-full">Straight from the hills of Nepal to you.</h2>
         <p className="w-full">
           We have partnered directly with farmers from the regions where the
