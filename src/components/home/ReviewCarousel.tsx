@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import RenderStars from "@/components/review/RenderStars";
-import type { HomeReviewItem } from "@/components/home/HomeReviewSection";
+import type { HomeReviewItem } from "@/types/review";
 import { getDisplayName } from "@/lib/reviewUtils";
 
 // ── TestimonialCard ───────────────────────────────────────────────────────────
