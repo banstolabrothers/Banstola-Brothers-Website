@@ -6,6 +6,7 @@ import shadow from "@/assets/svg/shadow.svg";
 import { client } from "@/lib/sanity";
 import { productReviewsByIdQuery } from "@/lib/queries";
 import { flattenReviews, calculateRatingStats } from "@/lib/reviewUtils";
+import RenderStars from "@/components/review/RenderStars";
 import type { ReviewDoc, RatingStats } from "@/types/review";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -18,25 +19,6 @@ interface Product {
   primaryImage?: { asset: { _id: string; url: string }; alt?: string };
   brand?: string;
 }
-
-// ─── Star renderer ────────────────────────────────────────────────────────────
-
-const renderStars = (rating: number) => (
-  <div className="flex gap-0.5">
-    {Array.from({ length: 5 }, (_, i) => (
-      <span
-        key={i}
-        className={`text-lg ${
-          i < Math.round(rating)
-            ? "opacity-100 text-brand-500"
-            : "opacity-30 text-neutral-400"
-        }`}
-      >
-        ★
-      </span>
-    ))}
-  </div>
-);
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -61,8 +43,6 @@ const ProductCard = ({ product }: { product: Product }) => {
   const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch live review data using the same Sanity client + query pattern
-  // as ProductReviewSection — no redeploy needed when reviews are published
   useEffect(() => {
     if (!product._id) {
       setLoading(false);
@@ -104,7 +84,6 @@ const ProductCard = ({ product }: { product: Product }) => {
       className="group flex flex-col cursor-pointer relative"
       onClick={handleCardClick}
     >
-      {/* Product image */}
       {product.primaryImage?.asset?.url && (
         <div className="relative w-full aspect-square">
           <Image
@@ -124,7 +103,6 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       )}
 
-      {/* Product info */}
       <div className="flex flex-col items-center gap-2 mt-4">
         <h3 className="text-brand-900 text-center duration-300 ease-in-out">
           {product.title}
@@ -136,14 +114,13 @@ const ProductCard = ({ product }: { product: Product }) => {
           </p>
         )}
 
-        {/* Live rating — skeleton → stars */}
         {loading ? (
           <StarsSkeleton />
         ) : hasReviews && ratingStats ? (
           <div className="flex items-center gap-2 text-neutral-600">
-            {renderStars(ratingStats.averageRating)}
-            <label>{ratingStats.averageRating.toFixed(1)}</label>
-            <label>({ratingStats.totalReviews} reviews)</label>
+            <RenderStars rating={ratingStats.averageRating} size={20} />
+            <p>{ratingStats.averageRating.toFixed(1)}</p>
+            <p>({ratingStats.totalReviews} reviews)</p>
           </div>
         ) : null}
       </div>
