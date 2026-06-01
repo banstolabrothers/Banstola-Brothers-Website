@@ -66,19 +66,16 @@ export const productBySlugQuery = `
   }
 `;
 
+// ─── _id is required so ProductsClient can fetch live review stats ───────────
 export const productListQuery = `
   *[_type == "product"] | order(_createdAt asc) {
+    _id,
     title,
     slug,
     shortDescription,
     primaryImage{ ${imageFragment}, alt },
     brand,
-    "category": category->{ title, slug },
-    "reviewData": *[_type == "review" && references(^._id)][0]{
-      "totalReviews": count(reviews),
-      "averageRating": math::avg(reviews[].rating),
-      "ratings": reviews[].rating
-    }
+    "category": category->{ title, slug }
   }
 `;
 

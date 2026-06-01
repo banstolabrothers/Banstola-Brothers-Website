@@ -1,31 +1,36 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import shadow from "@/assets/svg/shadow.svg";
+import { client } from "@/lib/sanity";
+import { productReviewsByIdQuery } from "@/lib/queries";
+import { flattenReviews, calculateRatingStats } from "@/lib/reviewUtils";
+import type { ReviewDoc, RatingStats } from "@/types/review";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-interface ReviewData {
-  totalReviews: number;
-  averageRating: number | null;
-  ratings: number[];
-}
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Product {
+  _id: string;
   title: string;
   slug: { current: string };
   shortDescription?: string;
   primaryImage?: { asset: { _id: string; url: string }; alt?: string };
   brand?: string;
-  reviewData?: ReviewData;
 }
 
 // ─── Star renderer ────────────────────────────────────────────────────────────
-const renderStars = (rating: number, size = "w-4 h-4") => (
+
+const renderStars = (rating: number) => (
   <div className="flex gap-0.5">
     {Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-lg ${i < Math.round(rating) ? "opacity-100 text-brand-500" : "opacity-30 text-neutral-400"}`}
+        className={`text-lg ${
+          i < Math.round(rating)
+            ? "opacity-100 text-brand-500"
+            : "opacity-30 text-neutral-400"
+        }`}
       >
         ★
       </span>
@@ -33,19 +38,66 @@ const renderStars = (rating: number, size = "w-4 h-4") => (
   </div>
 );
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+const StarsSkeleton = () => (
+  <div className="flex items-center gap-2 animate-pulse">
+    {Array.from({ length: 5 }, (_, i) => (
+      <span key={i} className="text-lg text-neutral-200">
+        ★
+      </span>
+    ))}
+    <span className="inline-block w-8 h-3 bg-neutral-200 rounded" />
+    <span className="inline-block w-20 h-3 bg-neutral-200 rounded" />
+  </div>
+);
+
 // ─── Product Card ─────────────────────────────────────────────────────────────
+
 const ProductCard = ({ product }: { product: Product }) => {
   const router = useRouter();
   const productUrl = `/products/${product.slug?.current}`;
-  const hasReviews =
-    (product.reviewData?.totalReviews ?? 0) > 0 &&
-    product.reviewData?.averageRating != null;
+
+  const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch live review data using the same Sanity client + query pattern
+  // as ProductReviewSection — no redeploy needed when reviews are published
+  useEffect(() => {
+    if (!product._id) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    client
+      .fetch<ReviewDoc[]>(productReviewsByIdQuery, { productId: product._id })
+      .then((docs) => {
+        if (cancelled) return;
+        const items = flattenReviews(docs);
+        setRatingStats(items.length > 0 ? calculateRatingStats(items) : null);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [product._id]);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.closest("button") || target.closest("a")) return;
     router.push(productUrl);
   };
+
+  const hasReviews =
+    ratingStats !== null &&
+    ratingStats.totalReviews > 0 &&
+    ratingStats.averageRating != null;
 
   return (
     <div
@@ -84,19 +136,23 @@ const ProductCard = ({ product }: { product: Product }) => {
           </p>
         )}
 
-        {hasReviews && product.reviewData?.averageRating != null && (
+        {/* Live rating — skeleton → stars */}
+        {loading ? (
+          <StarsSkeleton />
+        ) : hasReviews && ratingStats ? (
           <div className="flex items-center gap-2 text-neutral-600">
-            {renderStars(product.reviewData.averageRating)}
-            <label>{product.reviewData.averageRating.toFixed(1)}</label>
-            <label>({product.reviewData.totalReviews} reviews)</label>
+            {renderStars(ratingStats.averageRating)}
+            <label>{ratingStats.averageRating.toFixed(1)}</label>
+            <label>({ratingStats.totalReviews} reviews)</label>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
 };
 
 // ─── Main client component ────────────────────────────────────────────────────
+
 const ProductsClient = ({ allProducts }: { allProducts: Product[] }) => {
   return (
     <section className="max-w-[1440px] w-full mx-auto p-4 pt-16 pb-24">
