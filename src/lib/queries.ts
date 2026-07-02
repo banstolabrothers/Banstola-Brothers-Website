@@ -68,14 +68,14 @@ export const productBySlugQuery = `
 
 // ─── _id is required so ProductsClient can fetch live review stats ───────────
 export const productListQuery = `
-  *[_type == "product"] | order(_createdAt asc) {
+  *[_type == "product"] | order(category->id asc) {
     _id,
     title,
     slug,
     shortDescription,
     primaryImage{ ${imageFragment}, alt },
     brand,
-    "category": category->{ title, slug }
+    "category": category->{ _id, title, slug }
   }
 `;
 
@@ -125,7 +125,7 @@ export const productSlugsQuery = `
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const allCategoriesQuery = `
-  *[_type == "category"] | order(_createdAt asc) {
+  *[_type == "category"] | order(id asc) {
     _id,
     title,
     slug,

@@ -1,22 +1,19 @@
-import Link from "next/link";
 import { client } from "@/lib/sanity";
-import InstagramCarousel from "./InstagramCarousel";
 import MyButton from "@/components/ui/MyButton";
+import SectionCarousel, { CarouselImage } from "../ui/SectionCarousel";
 
-interface SanityImage {
-  _key: string;
-  asset: { _id: string; url: string };
-  alt?: string;
-  link?: string;
-}
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface SocialMediaDoc {
   _id: string;
   title: string;
-  images?: SanityImage[];
+  images?: CarouselImage[];
 }
 
-// ✅ Server component — replaces useEffect fetch
+// ── FollowUsSection (server component) ───────────────────────────────────────
+// Fetches image data, then hands a plain serialisable array to the client
+// carousel. No functions or JSX cross the server/client boundary.
+
 const FollowUsSection = async () => {
   const data = await client.fetch<SocialMediaDoc[]>(
     `*[_type == "socialmedia"] | order(_createdAt desc) {
@@ -31,8 +28,7 @@ const FollowUsSection = async () => {
     }`,
   );
 
-  // Flatten all images from all docs
-  const allImages: SanityImage[] = [];
+  const allImages: CarouselImage[] = [];
   data.forEach((doc) => {
     doc.images?.forEach((img) => allImages.push(img));
   });
@@ -43,7 +39,6 @@ const FollowUsSection = async () => {
     <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
       <div className="flex flex-col md:flex-row md:text-center items-center gap-8">
         <h2>Follow Us</h2>
-
         <MyButton
           type="secondarybutton"
           text="@banstolabrothers"
@@ -51,8 +46,8 @@ const FollowUsSection = async () => {
         />
       </div>
 
-      {/* Client component handles the RAF animation */}
-      <InstagramCarousel images={allImages} />
+      {/* Client component — receives only plain data */}
+      <SectionCarousel variant="images" items={allImages} />
     </section>
   );
 };

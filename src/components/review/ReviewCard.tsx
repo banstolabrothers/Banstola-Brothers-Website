@@ -39,7 +39,7 @@ const ReviewCard = ({
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row w-full bg-brand-100/50 hover:bg-brand-100/80 rounded-3xl p-6 transition-all duration-150 gap-10 text-left">
+      <div className="flex flex-col lg:flex-row w-full gap-10 text-left py-8">
         {/* ── Left: User + Product ── */}
         <div className="w-full lg:w-4/12 gap-4">
           {/* User info */}
@@ -49,9 +49,9 @@ const ReviewCard = ({
             </span>
             <div className="flex flex-col gap-2 w-full">
               <span className="flex flex-wrap gap-4 w-full">
-                <h5 className="text-brand-900">
+                <p className="text-brand-900">
                   {getDisplayName(review.username)}
-                </h5>
+                </p>
                 <label className="inline-flex items-center gap-1 rounded-full">
                   <span className="flex items-center bg-brand-500 p-1 rounded-full">
                     <Check size={10} strokeWidth={5} className="text-white" />
@@ -80,7 +80,7 @@ const ReviewCard = ({
           {/* Product info */}
           {review.product && (
             <div
-              className="flex items-center gap-3 w-full text-left hover:bg-white/50 p-2 rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-3 w-full text-left hover:bg-brand-100/50 p-2 rounded-2xl transition-colors cursor-pointer"
               onClick={handleProductClick}
             >
               {review.product.primaryImage?.asset?.url && (
@@ -94,11 +94,11 @@ const ReviewCard = ({
               )}
               <div className="flex flex-col">
                 <label className="text-neutral-500 pointer-events-none">
-                  Purchased item
+                  Review for
                 </label>
-                <h5 className="text-brand-900 hover:text-brand-500 transition-colors pointer-events-none">
+                <p className="text-brand-900 hover:text-brand-500 transition-colors pointer-events-none">
                   {review.product.title}
-                </h5>
+                </p>
               </div>
             </div>
           )}
@@ -162,6 +162,7 @@ const ReviewCard = ({
           onClose={() => setShowModal(false)}
         />
       )}
+      <hr className="border-brand-900/20" />
     </>
   );
 };

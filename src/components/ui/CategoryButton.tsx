@@ -49,7 +49,9 @@ export const CategoryButton = ({
         />
       )}
 
-      {isSelected && <h5 className="pl-1 pr-2">{category.title ?? text}</h5>}
+      {isSelected && (
+        <p className="pl-1 text-2xl pr-2">{category.title ?? text}</p>
+      )}
 
       {children}
     </button>

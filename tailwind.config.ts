@@ -23,7 +23,7 @@ const config: Config = {
           600: "#D6001C",
           500: "#E73226",
           100: "#ffdca7",
-          50: "#f8f4ed",
+          50: "#F9F0D6",
         },
         base: {
           white: "#ffffff",

@@ -2,17 +2,19 @@ import { MoveRightIcon } from "lucide-react";
 import { client } from "@/lib/sanity";
 import { allReviewsQuery } from "@/lib/queries";
 import { shuffleArray } from "@/lib/reviewUtils";
-import ReviewCarousel from "./ReviewCarousel";
 import MyButton from "@/components/ui/MyButton";
 import type { ReviewDoc, HomeReviewItem } from "@/types/review";
+import SectionCarousel from "../ui/SectionCarousel";
+
+// ── HomeReviewSection (server component) ─────────────────────────────────────
+// Fetches + shapes data, then hands plain serialisable arrays to the client
+// carousel. No functions or JSX cross the server/client boundary.
 
 const HomeReviewSection = async () => {
   const allReviews = await client.fetch<ReviewDoc[]>(
     allReviewsQuery,
     {},
-    {
-      next: { revalidate: 60 },
-    },
+    { next: { revalidate: 60 } },
   );
 
   const totalReviews = allReviews.reduce(
@@ -21,7 +23,6 @@ const HomeReviewSection = async () => {
   );
 
   const reviewsWithDescriptions: HomeReviewItem[] = [];
-
   allReviews.forEach((doc) => {
     doc.reviews?.forEach((review) => {
       if (review.description?.trim()) {
@@ -37,8 +38,9 @@ const HomeReviewSection = async () => {
   });
 
   const shuffled = shuffleArray(reviewsWithDescriptions);
+  const row = shuffled.slice(0, Math.ceil(shuffled.length / 2));
 
-  if (!shuffled.length) return null;
+  if (!row.length) return null;
 
   return (
     <section className="h-fit flex flex-col gap-12 py-32 justify-center items-center overflow-hidden">
@@ -53,7 +55,9 @@ const HomeReviewSection = async () => {
           trailicon={<MoveRightIcon size={32} />}
         />
       </div>
-      <ReviewCarousel reviews={shuffled} />
+
+      {/* Client component — receives only plain data */}
+      <SectionCarousel variant="reviews" items={row} />
     </section>
   );
 };
