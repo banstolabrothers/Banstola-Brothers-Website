@@ -95,6 +95,13 @@ export const pageMeta = {
       "Nepali snacks Kathmandu",
       "Banstola Brothers",
       "Banstola",
+      "churpi paun",
+      "Churpi paun Bhandar",
+      "Bastola Churpi",
+      "Bastola bhai ko Churpi paun bhandar",
+      "paun bhandar",
+      "ratna paun",
+      "Ratnapark Paun ",
     ],
   ),
 
