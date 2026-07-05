@@ -66,8 +66,8 @@ const buildMeta = (
 export const pageMeta = {
   // ── Core pages ─────────────────────────────────────────────────────────────
   home: buildMeta(
-    "Chhurpi & Titaura Since 1999 in Pokhara",
-    "Pokhara's first churpi & paun shop, since 1999. Authentic chhurpi from Ilam, khattu, titaura (paun), amala & dog chew — 492+ verified reviews. Order across Nepal, including Kathmandu delivery.",
+    "Chhurpi (Churpi), Khattu & Titaura (Paun) Shop in Pokhara",
+    "Pokhara's first churpi & paun shop, since 1999. Chhurpi from Ilam, paun from Kathmandu, plus khattu, amala & dog chew — 492+ verified reviews. Order across Nepal.",
     "/",
     [
       "chhurpi Pokhara",
@@ -81,6 +81,7 @@ export const pageMeta = {
       "khattu Pokhara",
       "titaura Pokhara",
       "paun Pokhara",
+      "paun from Kathmandu",
       "titaura paun Pokhara",
       "amala Pokhara",
       "Nepali snacks Pokhara",
@@ -91,17 +92,9 @@ export const pageMeta = {
       "chhurpi delivery Kathmandu",
       "khattu Kathmandu",
       "titaura Kathmandu",
-      "paun Kathmandu",
       "Nepali snacks Kathmandu",
       "Banstola Brothers",
       "Banstola",
-      "churpi paun",
-      "Churpi paun Bhandar",
-      "Bastola Churpi",
-      "Bastola bhai ko Churpi paun bhandar",
-      "paun bhandar",
-      "ratna paun",
-      "Ratnapark Paun ",
     ],
   ),
 
@@ -326,17 +319,21 @@ const PRODUCT_KEYWORD_SEEDS: Record<string, string[]> = {
     "traditional Nepali snack",
     "Banstola Brothers Khattu",
   ],
-  // NOTE: assumed slug "titaura" — your homepage copy mentions titaura/paun
-  // and amala as products, but no product.ts slug was confirmed for these.
-  // Update this key to match the real Sanity slug if it differs.
+  // NOTE: verified against the live site (Jul 2026) — there is NO
+  // /products/titaura page. Only chhurpi, dog-chew, khattu, and papaya
+  // exist as real product pages (confirmed via the site footer). Titaura/
+  // paun/amala are mentioned in the homepage hero copy and in customer
+  // reviews, but aren't sold as a standalone SKU yet. This seed is inert
+  // until/unless a titaura product page is actually created — remove this
+  // comment and the seed key stays ready to fire the moment that page
+  // exists (just confirm the real slug matches "titaura" first).
   titaura: [
     "titaura Pokhara",
     "paun Pokhara",
-    "buy titaura Nepal",
-    "titaura paun online",
-    "khattu titaura",
+    "paun from Kathmandu",
     "titaura Kathmandu",
-    "paun Kathmandu",
+    "buy titaura Nepal",
+    "khattu titaura",
     "Nepali spicy candy",
     "lapsi titaura",
     "Banstola Brothers titaura",
@@ -604,7 +601,54 @@ export const blogMetaQuery = `
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. SUGGESTED FIRST BLOG POSTS (as of Jul 2026 — /blogs has 0 posts live)
+// 6. DYNAMIC "ALL REVIEWS" PAGE METADATA
+//
+//    Replaces the static pageMeta.allReviews export for app/all-reviews/page.tsx.
+//    Computes the real review count server-side instead of hand-typing a
+//    number that will drift out of date (previously hardcoded as "267+").
+//
+//    Usage in app/all-reviews/page.tsx:
+//
+//    import { buildAllReviewsMeta } from "@/lib/metadata";
+//
+//    export async function generateMetadata(): Promise<Metadata> {
+//      return buildAllReviewsMeta();
+//    }
+// ─────────────────────────────────────────────────────────────────────────────
+export const buildAllReviewsMeta = async (): Promise<Metadata> => {
+  const path = "/all-reviews";
+  const keywords = [
+    "Banstola Brothers reviews",
+    "Chhurpi reviews Nepal",
+    "Churpi reviews",
+    "Khattu reviews",
+    "Dog Chew reviews",
+    "customer feedback Chhurpi",
+  ];
+
+  let totalReviews = 0;
+  try {
+    // Lazy imports to avoid pulling the Sanity client into every page that
+    // imports this file — only loaded when this function actually runs.
+    const { client } = await import("@/lib/sanity");
+    const { allReviewsQuery } = await import("@/lib/queries");
+    const docs = await client.fetch<{ reviews?: unknown[] }[]>(allReviewsQuery);
+    totalReviews = docs.reduce((sum, d) => sum + (d.reviews?.length ?? 0), 0);
+  } catch {
+    totalReviews = 0; // fail safe — fall back to a count-free description below
+  }
+
+  const title = "Customer Reviews";
+  const description =
+    totalReviews > 0
+      ? `${totalReviews}+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.`
+      : "Verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.";
+
+  return buildMeta(title, description, path, keywords);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. SUGGESTED FIRST BLOG POSTS (as of Jul 2026 — /blogs has 0 posts live)
 // ─────────────────────────────────────────────────────────────────────────────
 //
 // These slugs match BLOG_KEYWORD_SEEDS above, and are picked based on real
@@ -628,13 +672,14 @@ export const blogMetaQuery = `
 //   5. "history-of-chhurpi-ilam"       — ties into your Story page and
 //                                         founding narrative, good for
 //                                         brand + "chhurpi from Ilam" terms.
-//   6. "order-chhurpi-kathmandu"       — Kathmandu is Nepal's chhurpi trade/
-//                                         export hub even though production
-//                                         is in the eastern hills, so there's
-//                                         real buyer intent there for online
-//                                         ordering/delivery — targets that
-//                                         without falsely implying a
-//                                         Kathmandu storefront.
+//   6. "order-chhurpi-kathmandu"       — verified via live site hero copy:
+//                                         "Chhurpi from Ilam, Paun from
+//                                         Kathmandu" — paun/titaura is
+//                                         actually sourced from Kathmandu,
+//                                         not just delivered there. This is
+//                                         a stronger, more specific angle
+//                                         than generic delivery copy —
+//                                         tell the real sourcing story.
 //   7. "what-is-paun"                  — your own tagline already says
 //                                         "chhurpi & paun shop" but nothing
 //                                         on-site explains that "paun" is
