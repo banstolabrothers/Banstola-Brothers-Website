@@ -144,6 +144,17 @@ export function LocalBusinessSchema({
       "https://www.youtube.com/@banstolabrothers",
     ],
 
+    // NOTE: itemOffered entries intentionally omit "@type": "Product".
+    // These are lightweight menu-style references on the LocalBusiness
+    // entity, not standalone product rich-result candidates. Tagging them
+    // as "@type": "Product" makes Google's Rich Results Test validate each
+    // one as a full Product entity, which then fails with "Either offers,
+    // review, or aggregateRating should be specified" since these stubs
+    // only carry name/url. The real, fully-detailed Product markup (with
+    // offers/aggregateRating/review) lives in ProductSchema on each
+    // individual product page — that's what Google actually uses for
+    // product rich results. Leaving @type off here just stops these
+    // catalog stubs from being double-validated as incomplete products.
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Banstola Brothers Products",
@@ -151,7 +162,6 @@ export function LocalBusinessSchema({
         {
           "@type": "Offer",
           itemOffered: {
-            "@type": "Product",
             name: "Chhurpi",
             url: `${BASE_URL}/products/chhurpi`,
           },
@@ -159,7 +169,6 @@ export function LocalBusinessSchema({
         {
           "@type": "Offer",
           itemOffered: {
-            "@type": "Product",
             name: "Dog Chew",
             url: `${BASE_URL}/products/dog-chew`,
           },
@@ -167,7 +176,6 @@ export function LocalBusinessSchema({
         {
           "@type": "Offer",
           itemOffered: {
-            "@type": "Product",
             name: "Khattu",
             url: `${BASE_URL}/products/khattu`,
           },
@@ -175,7 +183,6 @@ export function LocalBusinessSchema({
         {
           "@type": "Offer",
           itemOffered: {
-            "@type": "Product",
             name: "Papaya Snack",
             url: `${BASE_URL}/products/papaya`,
           },
