@@ -66,7 +66,7 @@ const buildMeta = (
 export const pageMeta = {
   // ── Core pages ─────────────────────────────────────────────────────────────
   home: buildMeta(
-    "Chhurpi (Churpi), Khattu & Titaura (Paun) Shop in Pokhara",
+    "Chhurpi & Titaura since 1999 in Pokhara",
     "Pokhara's first churpi & paun shop, since 1999. Chhurpi from Ilam, paun from Kathmandu, plus khattu, amala & dog chew — 492+ verified reviews. Order across Nepal.",
     "/",
     [
