@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
 import LenisProvider from "@/components/ui/LenisProvider"; // 👈 import
-import { client } from "@/lib/sanity";
-import { allReviewsQuery } from "@/lib/queries";
-import { LocalBusinessSchema, type SiteAggregateStats } from "@/lib/schema";
+import { LocalBusinessSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.banstolabrothers.com.np"),
@@ -39,34 +37,14 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Real, computed sitewide aggregate rating — never hardcode this.
-// Reuses the same rating math as lib/reviewUtils.ts (calculateRatingStats),
-// just run server-side against every review document across all products.
+// NOTE: getSiteAggregateStats() / the sitewide aggregateRating computation
+// that used to live here has been removed. Google does not display review
+// rich results for LocalBusiness/Organization schema when the reviews are
+// "self-serving" (the business publishing reviews about itself on its own
+// site) — see lib/schema.tsx for the full explanation and doc link. The
+// Sanity review data is still fully used, just per-product via
+// ProductSchema on each product page, where this restriction doesn't apply.
 // ─────────────────────────────────────────────────────────────────────────────
-interface ReviewDocLite {
-  reviews?: { rating?: number }[];
-}
-
-async function getSiteAggregateStats(): Promise<SiteAggregateStats | null> {
-  try {
-    const docs = await client.fetch<ReviewDocLite[]>(allReviewsQuery);
-    const ratings = docs.flatMap(
-      (d) =>
-        d.reviews?.map((r) => r.rating).filter((r): r is number => !!r) ?? [],
-    );
-    if (ratings.length === 0) return null;
-
-    const sum = ratings.reduce((s, r) => s + r, 0);
-    return {
-      totalReviews: ratings.length,
-      averageRating: Math.round((sum / ratings.length) * 10) / 10,
-    };
-  } catch {
-    // If the fetch fails for any reason, fail safe by omitting aggregateRating
-    // rather than falling back to a hardcoded/fake number.
-    return null;
-  }
-}
 
 export default async function RootLayout({
   children,
@@ -74,7 +52,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const GTM_ID = "GTM-04011M7W45";
-  const aggregateStats = await getSiteAggregateStats();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -94,7 +71,7 @@ export default async function RootLayout({
             })(window,document,'script','dataLayer','${GTM_ID}');`,
           }}
         />
-        <LocalBusinessSchema aggregateStats={aggregateStats} />
+        <LocalBusinessSchema />
       </head>
       <body>
         <noscript>

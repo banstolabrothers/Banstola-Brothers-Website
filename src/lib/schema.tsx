@@ -43,23 +43,23 @@ interface BreadcrumbItem {
   url: string;
 }
 
-// Site-wide aggregate rating stats — must be computed from REAL review data,
-// never hardcoded. Pass this in from a server component that has fetched all
-// reviews (see notes at bottom of file for the query + computation).
-export interface SiteAggregateStats {
-  totalReviews: number;
-  averageRating: number; // already rounded, e.g. 4.8
-}
+// NOTE ON REVIEWS: LocalBusinessSchema intentionally does NOT accept or
+// render an aggregateRating. Google explicitly disallows star review rich
+// results for LocalBusiness/Organization schema when the reviews are
+// "self-serving" (i.e. the business is displaying reviews about itself,
+// on its own site) — see:
+// https://developers.google.com/search/docs/appearance/structured-data/review-snippet#self-serving
+// This applies even when the underlying rating data is 100% real and
+// correctly computed; Google will still mark it "invalid" in Search
+// Console/Rich Results Test and will never show stars for it. There's no
+// penalty for leaving it in, but it can never validate either, so we don't
+// bother computing or attaching it here. Site-level review data collected
+// via Sanity should instead be nested per-product inside ProductSchema
+// below, where the self-serving restriction does NOT apply.
 
 // ── 1. LocalBusiness ─────────────────────────────────────────────────────────
 
-interface LocalBusinessSchemaProps {
-  aggregateStats?: SiteAggregateStats | null;
-}
-
-export function LocalBusinessSchema({
-  aggregateStats,
-}: LocalBusinessSchemaProps = {}) {
+export function LocalBusinessSchema() {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -190,20 +190,6 @@ export function LocalBusinessSchema({
       ],
     },
   };
-
-  // Only attach aggregateRating if we have REAL, computed stats.
-  // Never hardcode a rating/count here — Google's structured data policy
-  // requires this to match what's actually verifiable on/around the site,
-  // and mismatches risk a manual action that suppresses rich results sitewide.
-  if (aggregateStats && aggregateStats.totalReviews > 0) {
-    schema.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: aggregateStats.averageRating,
-      bestRating: 5,
-      worstRating: 1,
-      reviewCount: aggregateStats.totalReviews,
-    };
-  }
 
   return (
     <script
@@ -439,35 +425,25 @@ export function FAQSchema({ faqs }: { faqs: FAQItem[] }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. WIRING NOTES — how to feed LocalBusinessSchema real data
+// 6. WIRING NOTES — LocalBusinessSchema no longer takes review data
 // ─────────────────────────────────────────────────────────────────────────────
 //
-// LocalBusinessSchema now takes an optional `aggregateStats` prop instead of
-// a hardcoded rating. Compute it once, server-side, wherever LocalBusinessSchema
-// is rendered (likely app/layout.tsx or app/page.tsx), using data you already
-// have query infrastructure for:
+// Previously, LocalBusinessSchema accepted an `aggregateStats` prop computed
+// server-side (in app/layout.tsx) from every review document across all
+// products, and attached it as `aggregateRating`. This was removed because
+// Google will never display star review rich results for LocalBusiness or
+// Organization schema when the reviews are "self-serving" — i.e. when the
+// business being reviewed is the one publishing the reviews about itself on
+// its own site. This is true regardless of how accurately the rating is
+// computed; Google's Rich Results Test / Search Console will flag it
+// "invalid" and it will never generate stars in search results. See:
+// https://developers.google.com/search/docs/appearance/structured-data/review-snippet#self-serving
 //
-//   import { client } from "@/lib/sanity";
-//   import { allReviewsQuery } from "@/lib/queries";
-//   import { LocalBusinessSchema, type SiteAggregateStats } from "@/lib/schema";
+// app/layout.tsx must be updated to match: remove the getSiteAggregateStats()
+// call and render <LocalBusinessSchema /> with no props.
 //
-//   async function getSiteAggregateStats(): Promise<SiteAggregateStats | null> {
-//     const docs = await client.fetch(allReviewsQuery); // reviews[]{ rating, ... } per product
-//     const ratings = docs.flatMap((d: any) =>
-//       (d.reviews ?? []).map((r: any) => r.rating).filter(Boolean)
-//     );
-//     if (ratings.length === 0) return null;
-//     const sum = ratings.reduce((s: number, r: number) => s + r, 0);
-//     return {
-//       totalReviews: ratings.length,
-//       averageRating: Math.round((sum / ratings.length) * 10) / 10,
-//     };
-//   }
-//
-//   // in the server component:
-//   const aggregateStats = await getSiteAggregateStats();
-//   <LocalBusinessSchema aggregateStats={aggregateStats} />
-//
-// This mirrors exactly the same math already used client-side in
-// lib/reviewUtils.ts (calculateRatingStats) — no new logic, just applied
-// server-side and fed into structured data instead of being hand-typed.
+// This restriction does NOT apply to Product schema. Real per-product
+// reviews collected via Sanity should keep flowing into ProductSchema
+// above (via `product.reviewData`) — that markup is fully eligible for
+// review rich results, since the "entity being reviewed" is the product,
+// not the business hosting the reviews.
