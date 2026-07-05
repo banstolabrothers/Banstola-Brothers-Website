@@ -6,6 +6,9 @@ import ProductDetailClient from "@/components/products/ProductDetailClient";
 import type { Metadata } from "next";
 import type { Product } from "@/types/product";
 
+// app/products/[slug]/page.tsx
+export const revalidate = 60; // add this line
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
