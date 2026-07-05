@@ -1,26 +1,19 @@
 // app/page.tsx
 import type { Metadata } from "next";
-import IntroSection from "@/components/home/IntroSection";
 import HistorySection from "@/components/home/HistorySection";
 import ProductByCategory from "@/components/products/ProductByCategory";
 import HomeReviewSection from "@/components/home/HomeReviewSection";
 import FollowUsSection from "@/components/home/FollowUsSection";
 
 import { pageMeta } from "@/lib/metadata";
-import { LocalBusinessSchema } from "@/lib/schema"; // ← import from central file
 import SourceSection from "@/components/story/SourceSection";
 
 export const metadata: Metadata = pageMeta.home;
 
-// ── Page ──────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   return (
     <>
-      {/* LocalBusiness JSON-LD — only on homepage, not repeated site-wide */}
-      <LocalBusinessSchema />
-
       <section>
-        <IntroSection />
         <HistorySection />
         <ProductByCategory />
 

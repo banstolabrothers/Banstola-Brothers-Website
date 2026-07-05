@@ -55,20 +55,19 @@ const buildMeta = (
 export const pageMeta = {
   // ── Core pages ─────────────────────────────────────────────────────────────
   home: buildMeta(
-    "Original Chhurpi Since 1999",
-    "Buy authentic handcrafted Chhurpi from Banstola Brothers. Smoked, White & Coffee Chhurpi sourced from Ilam, Dolakha & Palpa. Shop in Pokhara since 1999.",
+    "Chhurpi, Khattu & Titaura Shop in Pokhara",
+    "Pokhara's first chhurpi & paun shop, since 1999. Authentic churpi from Ilam, khattu, titaura, amala & dog chew. Visit us in Pokhara or order across Nepal.",
     "/",
     [
-      "Chhurpi Pokhara",
+      "chhurpi Pokhara",
+      "churpi shop Pokhara",
+      "khattu Pokhara",
+      "titaura Pokhara",
+      "amala Pokhara",
+      "paun Pokhara",
+      "Nepali snacks Pokhara",
+      "dog chew Nepal",
       "Banstola Brothers",
-      "Smoked Chhurpi",
-      "White Chhurpi",
-      "Coffee Chhurpi",
-      "Nepali hard cheese",
-      "Chhurpi from Ilam",
-      "traditional Nepali cheese",
-      "Chhurpi online Nepal",
-      "buy Chhurpi Pokhara",
     ],
   ),
 
@@ -113,9 +112,13 @@ export const pageMeta = {
     ],
   ),
 
+  // NOTE: static fallback only — used if buildAllReviewsMeta()'s fetch fails,
+  // or as a placeholder if you haven't wired up the dynamic version yet.
+  // Deliberately has no specific review count baked in — see
+  // buildAllReviewsMeta() below for the version with a real, computed count.
   allReviews: buildMeta(
     "Customer Reviews",
-    "267+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
+    "Verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
     "/all-reviews",
     [
       "Banstola Brothers reviews",
@@ -463,14 +466,65 @@ export const blogMetaQuery = `
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. USAGE REFERENCE
+// 6. DYNAMIC "ALL REVIEWS" PAGE METADATA
+//
+//    Replaces the static pageMeta.allReviews export for app/all-reviews/page.tsx.
+//    Computes the real review count server-side instead of hand-typing a
+//    number that will drift out of date (previously hardcoded as "267+").
+//
+//    Usage in app/all-reviews/page.tsx:
+//
+//    import { buildAllReviewsMeta } from "@/lib/metadata";
+//
+//    export async function generateMetadata(): Promise<Metadata> {
+//      return buildAllReviewsMeta();
+//    }
+// ─────────────────────────────────────────────────────────────────────────────
+export const buildAllReviewsMeta = async (): Promise<Metadata> => {
+  const path = "/all-reviews";
+  const keywords = [
+    "Banstola Brothers reviews",
+    "Chhurpi reviews Nepal",
+    "Khattu reviews",
+    "Dog Chew reviews",
+    "customer feedback Chhurpi",
+  ];
+
+  let totalReviews = 0;
+  try {
+    // Lazy imports to avoid pulling the Sanity client into every page that
+    // imports this file — only loaded when this function actually runs.
+    const { client } = await import("@/lib/sanity");
+    const { allReviewsQuery } = await import("@/lib/queries");
+    const docs = await client.fetch<{ reviews?: unknown[] }[]>(allReviewsQuery);
+    totalReviews = docs.reduce((sum, d) => sum + (d.reviews?.length ?? 0), 0);
+  } catch {
+    totalReviews = 0; // fail safe — fall back to a count-free description below
+  }
+
+  const title = "Customer Reviews";
+  const description =
+    totalReviews > 0
+      ? `${totalReviews}+ verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.`
+      : "Verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.";
+
+  return buildMeta(title, description, path, keywords);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. USAGE REFERENCE
 // ─────────────────────────────────────────────────────────────────────────────
 //
 // app/page.tsx                    → export const metadata = pageMeta.home;
 // app/products/page.tsx           → export const metadata = pageMeta.products;
 // app/story/page.tsx              → export const metadata = pageMeta.story;
 // app/store/page.tsx              → export const metadata = pageMeta.store;
-// app/all-reviews/page.tsx        → export const metadata = pageMeta.allReviews;
+// app/all-reviews/page.tsx        → export async function generateMetadata() {
+//                                     return buildAllReviewsMeta();
+//                                   }
+//                                   (previously: export const metadata = pageMeta.allReviews;
+//                                    — replace with the dynamic version above so the
+//                                    review count is never hand-typed / stale)
 // app/submit-reviews/page.tsx     → export const metadata = pageMeta.submitReview;
 // app/blogs/page.tsx              → export const metadata = pageMeta.blogs;
 // app/faqs/page.tsx               → export const metadata = pageMeta.faqs;

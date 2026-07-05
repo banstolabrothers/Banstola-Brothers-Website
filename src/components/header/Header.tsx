@@ -1,3 +1,4 @@
+// components/layout/Header.tsx
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
@@ -10,13 +11,10 @@ import Image from "next/image";
 import { linksData } from "./linksData";
 import MyButton from "@/components/ui/MyButton";
 import logo from "@/assets/svg/BanstolaBrothers White.svg";
-// ── NEW: use TransitionLink instead of next/link for nav items ────────────────
 import { TransitionLink } from "@/components/transition/TransitionLink";
 
-// ── Register GSAP plugin ─────────────────────────────────────────────────────
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Constants ────────────────────────────────────────────────────────────────
 const BREAKPOINTS = {
   mobile: 768,
   scroll_threshold: 250,
@@ -96,7 +94,10 @@ const LOGO_CONFIGS = {
   },
 };
 
-// ── Custom hook: scroll direction ────────────────────────────────────────────
+// Matches the old IntroSection's responsive bottom padding — this is the
+// "resting" space reserved for the oversized home-page logo before scroll.
+const HOME_SPACER_CLASSES = "pb-32 sm:pb-40 md:pb-56 xl:pb-78";
+
 const useScrollDirection = (threshold = BREAKPOINTS.scroll_threshold) => {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -129,7 +130,6 @@ const useScrollDirection = (threshold = BREAKPOINTS.scroll_threshold) => {
   return isVisible;
 };
 
-// ── Animation utilities ──────────────────────────────────────────────────────
 const animateHeader = (element: HTMLElement | null, isVisible: boolean) => {
   if (!element) return;
   gsap.to(element, {
@@ -140,13 +140,22 @@ const animateHeader = (element: HTMLElement | null, isVisible: boolean) => {
   });
 };
 
+// ── Logo + spacer animation ───────────────────────────────────────────────
+// The spacer collapses on the exact same scroll timeline that shrinks the
+// logo, so the "hole" IntroSection used to leave now lives here and stays
+// perfectly synced instead of being a hardcoded, separately-maintained value.
 const setupLogoAnimation = (
   logoElement: HTMLElement | null,
+  spacerElement: HTMLElement | null,
   isHomePage: boolean,
 ) => {
   if (!logoElement) return;
 
   const mm = gsap.matchMedia();
+
+  const initialSpacerPadding = spacerElement
+    ? parseFloat(getComputedStyle(spacerElement).paddingBottom) || 0
+    : 0;
 
   mm.add(`(min-width: ${BREAKPOINTS.mobile}px)`, () => {
     if (isHomePage) {
@@ -171,6 +180,15 @@ const setupLogoAnimation = (
               ease: "none",
               zIndex: final.zIndex,
             });
+            if (spacerElement) {
+              gsap.set(spacerElement, {
+                paddingBottom: gsap.utils.interpolate(
+                  initialSpacerPadding,
+                  0,
+                  progress,
+                ),
+              });
+            }
           },
         },
       });
@@ -221,6 +239,15 @@ const setupLogoAnimation = (
               duration: 0.1,
               ease: "none",
             });
+            if (spacerElement) {
+              gsap.set(spacerElement, {
+                paddingBottom: gsap.utils.interpolate(
+                  initialSpacerPadding,
+                  0,
+                  progress,
+                ),
+              });
+            }
           },
         },
       });
@@ -232,8 +259,6 @@ const setupLogoAnimation = (
   return mm;
 };
 
-// ── Logo sub-component ───────────────────────────────────────────────────────
-// Logo still uses TransitionLink so clicking it also triggers the dissolve
 const Logo = ({
   logoRef,
 }: {
@@ -252,7 +277,6 @@ const Logo = ({
   </TransitionLink>
 );
 
-// ── Desktop nav sub-component ────────────────────────────────────────────────
 const DesktopNav = ({ currentPath }: { currentPath: string }) => {
   const leftNavItems = headerData.slice(0, 3);
   const rightNavItems = headerData.slice(3);
@@ -295,13 +319,13 @@ const DesktopNav = ({ currentPath }: { currentPath: string }) => {
   );
 };
 
-// ── Main Header component ────────────────────────────────────────────────────
 const Header = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const headerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
 
   const isNavVisible = useScrollDirection();
   const isHomePage = pathname === "/" || pathname === "/home";
@@ -313,21 +337,22 @@ const Header = () => {
     console.log(`Clicked on ${name} link`);
   };
 
-  // Logo animation
   useEffect(() => {
-    const mm = setupLogoAnimation(logoRef.current, isHomePage);
+    const mm = setupLogoAnimation(
+      logoRef.current,
+      spacerRef.current,
+      isHomePage,
+    );
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
       mm?.revert();
     };
   }, [isHomePage]);
 
-  // Header show/hide on scroll
   useEffect(() => {
     animateHeader(headerRef.current, isNavVisible);
   }, [isNavVisible]);
 
-  // Close drawer on route change
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
@@ -345,7 +370,6 @@ const Header = () => {
             <Logo logoRef={logoRef} />
             <DesktopNav currentPath={pathname} />
 
-            {/* Mobile drawer */}
             <Drawer.Root open={isOpen} onOpenChange={setIsOpen} direction="top">
               <Drawer.Trigger asChild>
                 <button
@@ -361,7 +385,6 @@ const Header = () => {
                 <Drawer.Content className="fixed top-0 bottom-0 left-0 right-0 z-50">
                   <Drawer.Title />
                   <section className="absolute top-2 bottom-2 left-2 right-2 z-50 flex flex-col gap-2">
-                    {/* Nav links — TransitionLink closes the drawer then navigates */}
                     <section className="flex flex-col h-full rounded-[32px] p-8 justify-center items-center gap-4 bg-brand-500">
                       {headerData.map((item) => (
                         <Drawer.Close key={item.id} asChild>
@@ -380,13 +403,11 @@ const Header = () => {
                       ))}
                     </section>
 
-                    {/* Social links — external, keep as plain <a> / handled below */}
                     <section className="flex flex-col rounded-[32px] text-center items-center justify-center bg-brand-50 p-6 gap-8">
                       <MyButton
                         type="whatsapp"
                         className="flex items-center justify-center w-full gap-2"
                       />
-
                       <div className="flex flex-wrap items-center justify-center gap-6">
                         {linksData.map((link) => {
                           const IconComponent = link.icon;
@@ -410,7 +431,6 @@ const Header = () => {
                       </p>
                     </section>
 
-                    {/* CTA */}
                     <Drawer.Close asChild>
                       <div className="flex flex-col items-center gap-2 justify-end m-4">
                         <MyButton
@@ -427,6 +447,17 @@ const Header = () => {
           </div>
         </div>
       </header>
+
+      {/* Reserves room for the oversized home-page logo, collapsing on scroll
+          in sync with the logo animation above. Not sticky — takes up normal
+          flow space, same job IntroSection used to do. */}
+      {isHomePage && (
+        <div
+          ref={spacerRef}
+          aria-hidden="true"
+          className={`bg-brand-500 ${HOME_SPACER_CLASSES}`}
+        />
+      )}
     </>
   );
 };

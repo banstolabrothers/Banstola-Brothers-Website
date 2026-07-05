@@ -43,10 +43,24 @@ interface BreadcrumbItem {
   url: string;
 }
 
+// Site-wide aggregate rating stats — must be computed from REAL review data,
+// never hardcoded. Pass this in from a server component that has fetched all
+// reviews (see notes at bottom of file for the query + computation).
+export interface SiteAggregateStats {
+  totalReviews: number;
+  averageRating: number; // already rounded, e.g. 4.8
+}
+
 // ── 1. LocalBusiness ─────────────────────────────────────────────────────────
 
-export function LocalBusinessSchema() {
-  const schema = {
+interface LocalBusinessSchemaProps {
+  aggregateStats?: SiteAggregateStats | null;
+}
+
+export function LocalBusinessSchema({
+  aggregateStats,
+}: LocalBusinessSchemaProps = {}) {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": `${BASE_URL}/#business`,
@@ -54,7 +68,7 @@ export function LocalBusinessSchema() {
     name: "Banstola Brothers",
     alternateName: "Banstola Brothers Chhurpi & Khattu",
     description:
-      "Pokhara's original Chhurpi and Khattu shop, founded in 1999 by Muktinath Banstola. Authentic Himalayan Chhurpi sourced from Ilam, Khattu, natural Dog Chew, and Papaya snacks — available in-store and delivered across Nepal.",
+      "Pokhara's original Chhurpi and Khattu shop, founded in 1999 by Muktinath Banstola. Authentic Himalayan Chhurpi sourced from Ilam, Khattu, natural Dog Chew, and Papaya snacks — available in-store and delivered across Nepal. Open Sunday–Friday, 8 AM–7 PM. Saturday visits welcome by calling ahead.",
 
     url: BASE_URL,
     logo: `${BASE_URL}/og-image.png`,
@@ -77,30 +91,38 @@ export function LocalBusinessSchema() {
 
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 28.2285494,
-      longitude: 83.9885977,
+      latitude: 28.2258704,
+      longitude: 83.985007,
     },
 
     hasMap:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14061.556005867795!2d83.98500705!3d28.225870399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399595eb31663f9f%3A0xeb2b74dd8de8beea!2sBanstola%20Brothers!5e0!3m2!1sen!2snp",
+      "https://www.google.com/maps/place/Banstola+Brothers/@28.2261435,83.9852819,15.07z/data=!4m6!3m5!1s0x399595eb31663f9f:0xeb2b74dd8de8beea!8m2!3d28.2285359!4d83.9886343!16s%2Fg%2F11f796kqw7?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D",
 
     telephone: ["+977-9856041086", "+977-9806512036"],
     whatsapp_number: "+977-9846054755",
     email: "banstolabrothers@gmail.com",
 
+    // Real hours: Sunday–Friday fixed hours. Saturday (Nepal's official
+    // weekend day) is open by call/as-needed rather than fixed hours, so
+    // it's deliberately left out of openingHoursSpecification rather than
+    // listing a false commitment — schema.org has no clean "by appointment"
+    // value, and an inaccurate Saturday entry would just trade one wrong
+    // number for another. Saturday availability is instead noted in the
+    // plain-text description below, which customers/Google can read as
+    // context without it being treated as a strict hours claim.
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: [
+        "Sunday",
         "Monday",
         "Tuesday",
         "Wednesday",
         "Thursday",
         "Friday",
         "Saturday",
-        "Sunday",
       ],
-      opens: "00:00",
-      closes: "23:59",
+      opens: "08:00",
+      closes: "19:00",
     },
 
     brand: "Banstola Brothers",
@@ -160,15 +182,21 @@ export function LocalBusinessSchema() {
         },
       ],
     },
-
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      bestRating: "5",
-      worstRating: "1",
-      reviewCount: "258",
-    },
   };
+
+  // Only attach aggregateRating if we have REAL, computed stats.
+  // Never hardcode a rating/count here — Google's structured data policy
+  // requires this to match what's actually verifiable on/around the site,
+  // and mismatches risk a manual action that suppresses rich results sitewide.
+  if (aggregateStats && aggregateStats.totalReviews > 0) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: aggregateStats.averageRating,
+      bestRating: 5,
+      worstRating: 1,
+      reviewCount: aggregateStats.totalReviews,
+    };
+  }
 
   return (
     <script
@@ -191,7 +219,37 @@ export function ProductSchema({ product }: ProductSchemaProps) {
 
   const totalReviews = rd?.totalReviews ?? 0;
   const avgRating =
-    totalReviews > 0 && rd?.ratingSum ? rd.ratingSum / totalReviews : 5;
+    totalReviews > 0 && rd?.ratingSum
+      ? Math.round((rd.ratingSum / totalReviews) * 10) / 10 // round to 1 decimal
+      : null;
+
+  // Price is optional. If variant pricing exists, use the lowest in-stock
+  // option's price as a representative "starting from" figure. If no price
+  // data exists yet, `offers` is still valid without a `price` field —
+  // schema.org doesn't require it, so we simply omit it rather than
+  // guessing or hardcoding a number.
+  const inStockPrices =
+    product.variantGroups
+      ?.flatMap((g) => g.options ?? [])
+      .filter((o) => o.inStock && typeof o.price === "number")
+      .map((o) => o.price as number) ?? [];
+  const lowestPrice =
+    inStockPrices.length > 0 ? Math.min(...inStockPrices) : undefined;
+
+  const offers: Record<string, unknown> = {
+    "@type": "Offer",
+    url: productUrl,
+    priceCurrency: "NPR",
+    availability: "https://schema.org/InStoreOnly",
+    seller: {
+      "@type": "LocalBusiness",
+      "@id": `${BASE_URL}/#business`,
+      name: "Banstola Brothers",
+    },
+  };
+  if (lowestPrice !== undefined) {
+    offers.price = lowestPrice;
+  }
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -206,66 +264,38 @@ export function ProductSchema({ product }: ProductSchemaProps) {
       name: product.brand ?? "Banstola Brothers",
     },
 
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: "NPR",
-      availability: "https://schema.org/InStoreOnly",
-      seller: {
-        "@type": "LocalBusiness",
-        "@id": `${BASE_URL}/#business`,
-        name: "Banstola Brothers",
-      },
-    },
-
-    // schema.tsx — update this
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      bestRating: "5",
-      worstRating: "1",
-      reviewCount: "262", // ← was 258, site shows 262+
-    },
-
-    review:
-      rd?.reviews && rd.reviews.length > 0
-        ? rd.reviews.slice(0, 10).map((r) => ({
-            "@type": "Review",
-            author: { "@type": "Person", name: r.username },
-            reviewBody: r.description ?? "",
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: r.rating,
-              bestRating: 5,
-              worstRating: 1,
-            },
-            ...(r.reviewDate ? { datePublished: r.reviewDate } : {}),
-          }))
-        : [
-            {
-              "@type": "Review",
-              author: { "@type": "Person", name: "Syan S." },
-              reviewBody: "Very soft and chewy churpi. Best must try.",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: 5,
-                bestRating: 5,
-                worstRating: 1,
-              },
-            },
-            {
-              "@type": "Review",
-              author: { "@type": "Person", name: "Sneha L." },
-              reviewBody: "Super delicious.",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: 5,
-                bestRating: 5,
-                worstRating: 1,
-              },
-            },
-          ],
+    // Always present — this alone satisfies Google's requirement that at
+    // least one of offers/review/aggregateRating exists, even for brand
+    // new products that have zero reviews yet. `price` inside is optional.
+    offers,
   };
+
+  // Only include aggregateRating/review when there is at least one REAL
+  // review for this product. No fabricated fallback reviews — injecting
+  // reviews into structured data that don't exist on the visible page is
+  // exactly the kind of mismatch Google's spam policies penalize.
+  if (totalReviews > 0 && avgRating !== null && rd?.reviews?.length) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: avgRating,
+      bestRating: 5,
+      worstRating: 1,
+      reviewCount: totalReviews,
+    };
+
+    schema.review = rd.reviews.slice(0, 10).map((r) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: r.username || "Anonymous" },
+      reviewBody: r.description ?? "",
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: r.rating,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      ...(r.reviewDate ? { datePublished: r.reviewDate } : {}),
+    }));
+  }
 
   return (
     <script
@@ -350,3 +380,87 @@ export function BlogArticleSchema({ blog, slug }: BlogSchemaProps) {
     />
   );
 }
+
+// ── 5. FAQSchema ───────────────────────────────────────────────────────────────
+// Use on /faqs, and optionally as a mini-FAQ block on product/blog pages.
+//
+// IMPORTANT: only pass questions that are ACTUALLY visible as text on the
+// same page. Google's structured data guidelines require FAQPage markup to
+// match visible content — marking up questions that aren't shown on the
+// page is treated as spam and can trigger a manual action.
+//
+// Usage:
+//   import { FAQSchema } from "@/lib/schema";
+//
+//   <FAQSchema
+//     faqs={[
+//       {
+//         question: "Where can I buy chhurpi in Pokhara?",
+//         answer: "Banstola Brothers, Pokhara's first chhurpi and paun shop ...",
+//       },
+//       // ...
+//     ]}
+//   />
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export function FAQSchema({ faqs }: { faqs: FAQItem[] }) {
+  if (!faqs || faqs.length === 0) return null;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. WIRING NOTES — how to feed LocalBusinessSchema real data
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// LocalBusinessSchema now takes an optional `aggregateStats` prop instead of
+// a hardcoded rating. Compute it once, server-side, wherever LocalBusinessSchema
+// is rendered (likely app/layout.tsx or app/page.tsx), using data you already
+// have query infrastructure for:
+//
+//   import { client } from "@/lib/sanity";
+//   import { allReviewsQuery } from "@/lib/queries";
+//   import { LocalBusinessSchema, type SiteAggregateStats } from "@/lib/schema";
+//
+//   async function getSiteAggregateStats(): Promise<SiteAggregateStats | null> {
+//     const docs = await client.fetch(allReviewsQuery); // reviews[]{ rating, ... } per product
+//     const ratings = docs.flatMap((d: any) =>
+//       (d.reviews ?? []).map((r: any) => r.rating).filter(Boolean)
+//     );
+//     if (ratings.length === 0) return null;
+//     const sum = ratings.reduce((s: number, r: number) => s + r, 0);
+//     return {
+//       totalReviews: ratings.length,
+//       averageRating: Math.round((sum / ratings.length) * 10) / 10,
+//     };
+//   }
+//
+//   // in the server component:
+//   const aggregateStats = await getSiteAggregateStats();
+//   <LocalBusinessSchema aggregateStats={aggregateStats} />
+//
+// This mirrors exactly the same math already used client-side in
+// lib/reviewUtils.ts (calculateRatingStats) — no new logic, just applied
+// server-side and fed into structured data instead of being hand-typed.

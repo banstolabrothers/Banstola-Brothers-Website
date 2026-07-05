@@ -103,7 +103,7 @@ export const footerData: FooterGroup[] = [
       },
       {
         label: "Shipping Policy",
-        href: "shipping-policy",
+        href: "/shipping-policy",
       },
       {
         label: "Cookies",
