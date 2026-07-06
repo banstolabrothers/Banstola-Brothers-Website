@@ -7,7 +7,7 @@ import { LocalBusinessSchema } from "@/lib/schema";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.banstolabrothers.com.np"),
   title: {
-    default: "Banstola Brothers | Original Chhurpi (Churpi) Since 1999",
+    default: "Banstola Brothers | Original Chhurpi Since 1999",
     template: "%s | Banstola Brothers",
   },
   description:

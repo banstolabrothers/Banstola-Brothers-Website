@@ -14,6 +14,18 @@ const DEFAULT_OG_IMAGE = [
   },
 ];
 
+// ── Helper: strips an accidental "| Banstola Brothers" suffix from a title ──
+// The root layout's `title.template` ("%s | Banstola Brothers") already
+// appends the brand name to every page automatically. If a title coming
+// from Sanity (or this file) already ends with the brand name — usually
+// because someone typed it into a metaTitle field in Studio without
+// realizing the template does this for them — the rendered title doubles
+// up ("Chhurpi | Banstola Brothers | Banstola Brothers"). This strips that
+// trailing brand suffix (in a few common separator styles) so the template
+// is always the only thing adding it.
+const stripBrandSuffix = (title: string): string =>
+  title.replace(/\s*[|\-–—]\s*Banstola Brothers\s*$/i, "").trim();
+
 // ── Helper: builds full metadata object ──────────────────────────────────────
 const buildMeta = (
   title: string,
@@ -230,7 +242,7 @@ export async function buildStaticPageMeta(
     if (!doc?.seo) return fallback;
 
     return buildMeta(
-      doc.seo.metaTitle ?? (fallback.title as string),
+      stripBrandSuffix(doc.seo.metaTitle ?? (fallback.title as string)),
       doc.seo.metaDescription ?? (fallback.description as string),
       path,
       doc.seo.keywords?.length
@@ -323,7 +335,7 @@ export const buildProductMeta = (
   product: SanityProductMeta,
   slug: string,
 ): Metadata => {
-  const title = product.seo?.metaTitle ?? product.title;
+  const title = stripBrandSuffix(product.seo?.metaTitle ?? product.title);
 
   const description =
     product.seo?.metaDescription ??
@@ -365,7 +377,7 @@ export const buildProductMeta = (
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `${product.title}`,
+          alt: `${product.title} | Banstola Brothers`,
         },
       ],
     },
@@ -450,7 +462,7 @@ const BLOG_KEYWORD_SEEDS: Record<string, string[]> = {
 };
 
 export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
-  const title = blog.seo?.metaTitle ?? blog.title;
+  const title = stripBrandSuffix(blog.seo?.metaTitle ?? blog.title);
 
   const description =
     blog.seo?.metaDescription ??
