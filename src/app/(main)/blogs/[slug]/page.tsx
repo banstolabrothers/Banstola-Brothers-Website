@@ -32,14 +32,12 @@ export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
   const blog = await client.fetch<BlogDetail | null>(blogBySlugQuery, { slug });
 
-  // Fetch related blogs (same category or shared tags)
+  // Fetch related blogs (same category)
   let relatedBlogs: BlogCard[] = [];
   if (blog) {
-    const tagSlugs = blog.tags?.map((t) => t.slug) ?? [];
     relatedBlogs = await client.fetch<BlogCard[]>(relatedBlogsQuery, {
       slug,
       categorySlug: blog.category?.slug ?? "",
-      tagSlugs,
     });
   }
 
