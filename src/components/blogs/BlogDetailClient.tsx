@@ -78,7 +78,7 @@ export default function BlogDetailClient({ blog, relatedBlogs }: Props) {
 
         {relatedBlogs.length > 0 && (
           <div className="pb-16">
-            <h3 className="text-brand-900 mb-4">Related Articles</h3>
+            <h3 className="text-brand-900 mb-4">Related Blogs</h3>
             <div className="flex flex-col gap-4">
               {relatedBlogs.map((b) => (
                 <RelatedBlogCard key={b._id} blog={b} />
