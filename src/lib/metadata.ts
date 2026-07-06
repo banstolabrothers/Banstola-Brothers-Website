@@ -514,7 +514,7 @@ export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
 // 5. SANITY GROQ QUERY — BLOGS
 // ─────────────────────────────────────────────────────────────────────────────
 export const blogMetaQuery = `
-  *[_type == "blog" && slug.current == $slug][0]{
+  *[_type == "blogs" && slug.current == $slug][0]{
     title,
     shortDescription,
     publishedAt,
