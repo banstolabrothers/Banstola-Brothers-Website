@@ -7,7 +7,7 @@ import SourceSection from "@/components/story/SourceSection";
 import HeroSection from "@/components/story/HeroSection";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildStaticPageMeta("home");
+  return buildStaticPageMeta("story");
 }
 
 const page = () => {
