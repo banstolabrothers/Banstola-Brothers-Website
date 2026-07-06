@@ -1,5 +1,5 @@
 import type { Product } from "@/types/product";
-import type { BlogDetail } from "@/types/blog";
+import type { BlogDetail } from "@/types/blogs";
 
 // lib/schema.tsx
 // ─────────────────────────────────────────────────────────────────────────────

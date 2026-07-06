@@ -8,7 +8,7 @@ import {
 import { buildBlogMeta } from "@/lib/metadata";
 import { BlogArticleSchema, BreadcrumbSchema } from "@/lib/schema";
 import BlogDetailClient from "@/components/blogs/BlogDetailClient";
-import type { BlogDetail, BlogCard } from "@/types/blog";
+import type { BlogDetail, BlogCard } from "@/types/blogs";
 
 const BASE_URL = "https://www.banstolabrothers.com.np";
 

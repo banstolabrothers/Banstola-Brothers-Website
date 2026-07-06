@@ -3,7 +3,7 @@
 import Image from "next/image";
 import BlogContentSection from "@/components/blogs/BlogContentSection";
 import MyButton from "@/components/ui/MyButton";
-import type { BlogDetail, BlogCard as BlogCardType } from "@/types/blog";
+import type { BlogDetail, BlogCard as BlogCardType } from "@/types/blogs";
 import RelatedBlogCard from "@/components/blogs/RelatedBlogCard";
 
 interface Props {

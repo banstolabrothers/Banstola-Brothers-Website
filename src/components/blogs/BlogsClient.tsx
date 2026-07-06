@@ -1,7 +1,7 @@
 "use client";
 
 import BlogCard from "@/components/blogs/BlogCard";
-import type { BlogCard as BlogCardType } from "@/types/blog";
+import type { BlogCard as BlogCardType } from "@/types/blogs";
 
 interface Props {
   blogs: BlogCardType[];

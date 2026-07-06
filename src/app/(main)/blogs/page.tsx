@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { client } from "@/lib/sanity";
 import BlogsClient from "@/components/blogs/BlogsClient";
-import type { BlogCard } from "@/types/blog";
+import type { BlogCard } from "@/types/blogs";
 import { blogListQuery } from "@/lib/queries";
 
 import { buildStaticPageMeta } from "@/lib/metadata";

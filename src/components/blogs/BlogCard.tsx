@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { BlogCard as BlogCardType } from "@/types/blog";
+import type { BlogCard as BlogCardType } from "@/types/blogs";
 
 interface Props {
   blog: BlogCardType;
