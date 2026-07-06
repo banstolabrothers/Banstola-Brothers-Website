@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { client } from "@/lib/sanity";
 import { buildAllReviewsMeta } from "@/lib/metadata";
 import { allReviewsFullQuery } from "@/lib/queries";
@@ -8,7 +10,6 @@ export async function generateMetadata() {
   return buildAllReviewsMeta();
 }
 
-// export const metadata = pageMeta.allReviews;
 export const revalidate = 60;
 
 const ReviewPage = async () => {

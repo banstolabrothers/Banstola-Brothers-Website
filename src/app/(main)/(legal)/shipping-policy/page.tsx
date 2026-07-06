@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
+
 import LegalLayout, { Section } from "@/components/ui/LegalLayout";
-import { pageMeta } from "@/lib/metadata";
-export const metadata = pageMeta.shippingPolicy;
+
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("shippingPolicy");
+}
 
 const sections: Section[] = [
   { id: "delivery-areas", label: "1. Delivery Areas" },

@@ -4,11 +4,13 @@ import HistorySection from "@/components/home/HistorySection";
 import ProductByCategory from "@/components/products/ProductByCategory";
 import HomeReviewSection from "@/components/home/HomeReviewSection";
 import FollowUsSection from "@/components/home/FollowUsSection";
-
-import { pageMeta } from "@/lib/metadata";
 import SourceSection from "@/components/story/SourceSection";
 
-export const metadata: Metadata = pageMeta.home;
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("home");
+}
 
 export default function HomePage() {
   return (

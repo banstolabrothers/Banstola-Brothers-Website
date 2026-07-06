@@ -1,10 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import store from "@/assets/image/Store.png";
-import { pageMeta } from "@/lib/metadata";
+import { buildStaticPageMeta } from "@/lib/metadata";
 import MyButton from "@/components/ui/MyButton";
 import SourceSection from "@/components/story/SourceSection";
 import HeroSection from "@/components/story/HeroSection";
-export const metadata = pageMeta.story;
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("home");
+}
 
 const page = () => {
   return (

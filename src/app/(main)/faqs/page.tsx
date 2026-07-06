@@ -1,13 +1,18 @@
+import type { Metadata } from "next";
+
 import { client } from "@/lib/sanity";
 import { allFaqsQuery } from "@/lib/queries";
-import { pageMeta } from "@/lib/metadata";
 import FaqPageClient from "@/components/faqs/FaqPageClient";
 import { FAQSchema } from "@/lib/schema";
 import { portableTextToPlainText } from "@/components/ui/portableTextToPlainText";
 import type { FaqTopic } from "@/types/faqs";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = pageMeta.faqs;
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("faqs");
+}
+
 export const revalidate = 60;
 
 const FaqPage = async () => {

@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
+
 import LegalLayout, { Section } from "@/components/ui/LegalLayout";
 
-import { pageMeta } from "@/lib/metadata";
-export const metadata = pageMeta.privacyPolicy;
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("privacyPolicy");
+}
 
 const sections: Section[] = [
   { id: "who-we-are", label: "1. Who We Are" },

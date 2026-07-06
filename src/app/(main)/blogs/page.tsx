@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
+
 import { Suspense } from "react"; // 👈
 import { client } from "@/lib/sanity";
 import BlogsClient from "@/components/blogs/BlogsClient";
 import type { BlogCard, Tag } from "@/types/blog";
 import { blogListQuery, allTagsQuery } from "@/lib/queries";
-import { pageMeta } from "@/lib/metadata";
-export const metadata = pageMeta.blogs;
+
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("blogs");
+}
 
 export default async function BlogsPage() {
   const [blogs, tags] = await Promise.all([

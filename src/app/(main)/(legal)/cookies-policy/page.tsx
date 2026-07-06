@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
+
 import LegalLayout, { Section } from "@/components/ui/LegalLayout";
 
-import { pageMeta } from "@/lib/metadata";
-export const metadata = pageMeta.cookiesPolicy;
+import { buildStaticPageMeta } from "@/lib/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildStaticPageMeta("cookiesPolicy");
+}
 
 const sections: Section[] = [
   { id: "what-are-cookies", label: "1. What Are Cookies?" },
