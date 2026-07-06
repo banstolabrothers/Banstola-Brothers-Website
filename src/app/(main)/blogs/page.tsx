@@ -11,6 +11,7 @@ import { buildStaticPageMeta } from "@/lib/metadata";
 export async function generateMetadata(): Promise<Metadata> {
   return buildStaticPageMeta("blogs");
 }
+export const revalidate = 60;
 
 export default async function BlogsPage() {
   const [blogs, tags] = await Promise.all([
@@ -20,8 +21,6 @@ export default async function BlogsPage() {
 
   return (
     <Suspense fallback={null}>
-      {" "}
-      {/* 👈 */}
       <BlogsClient blogs={blogs} tags={tags} />
     </Suspense>
   );

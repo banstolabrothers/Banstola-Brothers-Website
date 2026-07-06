@@ -1,14 +1,14 @@
+import type { Metadata } from "next";
 import { client } from "@/lib/sanity";
 import {
   blogBySlugQuery,
   blogSlugsQuery,
   relatedBlogsQuery,
 } from "@/lib/queries";
-import { buildBlogMeta, blogMetaQuery } from "@/lib/metadata";
+import { buildBlogMeta } from "@/lib/metadata";
 import { BlogArticleSchema, BreadcrumbSchema } from "@/lib/schema";
 import BlogDetailClient from "@/components/blogs/BlogDetailClient";
 import type { BlogDetail, BlogCard } from "@/types/blog";
-import type { Metadata } from "next";
 
 const BASE_URL = "https://www.banstolabrothers.com.np";
 
