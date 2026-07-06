@@ -1,13 +1,3 @@
-// ─── Tag ──────────────────────────────────────────────────────────────────────
-
-export interface Tag {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  color?: string;
-}
-
 // ─── Blog Card (list view) ────────────────────────────────────────────────────
 
 export interface BlogCard {
@@ -26,7 +16,6 @@ export interface BlogCard {
     title: string;
     slug: string;
   };
-  tags: Tag[];
 }
 
 // ─── Blog Detail ──────────────────────────────────────────────────────────────

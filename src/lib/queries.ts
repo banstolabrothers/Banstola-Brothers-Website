@@ -21,17 +21,17 @@ const reviewDocFragment = `
   ${reviewEntriesFragment}
 `;
 
-const blogCardFragment = groq`
-  _id,
-  title,
-  "slug": slug.current,
-  shortDescription,
-  publishedAt,
-  author,
-  primaryImage { asset->{ url }, alt },
-  category->{ _id, title, "slug": slug.current },
-  tags[]->{ _id, name, "slug": slug.current, color }
-`;
+// const blogCardFragment = groq`
+//   _id,
+//   title,
+//   "slug": slug.current,
+//   shortDescription,
+//   publishedAt,
+//   author,
+//   primaryImage { asset->{ url }, alt },
+//   category->{ _id, title, "slug": slug.current },
+//   tags[]->{ _id, name, "slug": slug.current, color }
+// `;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRODUCT QUERIES
@@ -189,24 +189,19 @@ export const socialMediaQuery = `
 // BLOG QUERIES
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const allTagsQuery = groq`
-  *[_type == "tags"] | order(name asc) {
-    _id,
-    name,
-    "slug": slug.current,
-    description,
-    color
-  }
+const blogCardFragment = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  shortDescription,
+  publishedAt,
+  author,
+  primaryImage { asset->{ url }, alt },
+  category->{ _id, title, "slug": slug.current }
 `;
 
 export const blogListQuery = groq`
   *[_type == "blogs"] | order(publishedAt desc) { ${blogCardFragment} }
-`;
-
-export const blogListByTagQuery = groq`
-  *[_type == "blogs" && $tagSlug in tags[]->slug.current] | order(publishedAt desc) {
-    ${blogCardFragment}
-  }
 `;
 
 export const blogBySlugQuery = groq`
@@ -230,10 +225,7 @@ export const relatedBlogsQuery = groq`
   *[
     _type == "blogs" &&
     slug.current != $slug &&
-    (
-      category->slug.current == $categorySlug ||
-      count((tags[]->slug.current)[@ in $tagSlugs]) > 0
-    )
+    category->slug.current == $categorySlug
   ] | order(publishedAt desc) [0...3] {
     ${blogCardFragment}
   }
