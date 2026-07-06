@@ -20,7 +20,7 @@ export default function BlogCard({ blog }: Props) {
   return (
     <Link
       href={`/blogs/${blog.slug}`}
-      className="group flex flex-col hover:cursor-pointer "
+      className="group flex flex-col hover:cursor-pointer"
     >
       {imageUrl && (
         <Image
@@ -28,15 +28,23 @@ export default function BlogCard({ blog }: Props) {
           alt={blog.primaryImage?.alt ?? blog.title}
           width={400}
           height={160}
-          quality={100}
-          className="md:h-160 h-80 w-full object-cover rounded-3xl border-2  hover:cursor-pointer border-brand-900/4 group-hover:opacity-50 transition-opacity"
+          quality={85}
+          className="md:h-160 h-80 w-full object-cover rounded-3xl border-2 border-brand-900/4 group-hover:opacity-50 transition-opacity"
         />
       )}
 
-      <div className="flex flex-col flex-1 py-2 gap-3  hover:cursor-pointer">
-        <p className=" text-brand-900 group-hover:opacity-50 transition-opacity">
+      <div className="flex flex-col flex-1 py-2 gap-1">
+        <p className="text-brand-900 group-hover:opacity-50 transition-opacity">
           {blog.title}
         </p>
+        {blog.publishedAt && (
+          <time
+            dateTime={blog.publishedAt}
+            className="text-sm text-neutral-500"
+          >
+            {formatDate(blog.publishedAt)}
+          </time>
+        )}
       </div>
     </Link>
   );

@@ -511,30 +511,6 @@ export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. SANITY GROQ QUERY — BLOGS
-// ─────────────────────────────────────────────────────────────────────────────
-export const blogMetaQuery = `
-  *[_type == "blogs" && slug.current == $slug][0]{
-    title,
-    shortDescription,
-    publishedAt,
-    "author": author->name,
-    "primaryImage": {
-      "asset": { "url": primaryImage.asset->url }
-    },
-    seo {
-      metaTitle,
-      metaDescription,
-      keywords,
-      noIndex,
-      "ogImage": {
-        "asset": { "url": ogImage.asset->url }
-      }
-    }
-  }
-`;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // 6. DYNAMIC "ALL REVIEWS" PAGE METADATA
 //
 //    Computes the real review count server-side instead of hardcoding one.

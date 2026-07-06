@@ -21,18 +21,6 @@ const reviewDocFragment = `
   ${reviewEntriesFragment}
 `;
 
-// const blogCardFragment = groq`
-//   _id,
-//   title,
-//   "slug": slug.current,
-//   shortDescription,
-//   publishedAt,
-//   author,
-//   primaryImage { asset->{ url }, alt },
-//   category->{ _id, title, "slug": slug.current },
-//   tags[]->{ _id, name, "slug": slug.current, color }
-// `;
-
 // ─────────────────────────────────────────────────────────────────────────────
 // PRODUCT QUERIES
 // ─────────────────────────────────────────────────────────────────────────────

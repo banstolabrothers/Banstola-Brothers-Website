@@ -22,22 +22,30 @@ export default function RelatedBlogCard({ blog }: Props) {
       href={`/blogs/${blog.slug}`}
       className="group flex items-center gap-4 flex-row"
     >
-      {/* Image */}
       {imageUrl && (
         <Image
           src={imageUrl}
           alt={blog.primaryImage?.alt ?? blog.title}
           width={320}
           height={160}
-          quality={100}
+          quality={85}
           className="h-32 max-w-4/12 w-full object-cover rounded-3xl border-2 border-brand-900/4"
         />
       )}
 
-      {/* Title */}
-      <p className="text-brand-900 w-8/12 group-hover:opacity-50 transition-opacity">
-        {blog.title}
-      </p>
+      <div className="flex flex-col w-8/12 gap-1">
+        <p className="text-brand-900 group-hover:opacity-50 transition-opacity">
+          {blog.title}
+        </p>
+        {blog.publishedAt && (
+          <time
+            dateTime={blog.publishedAt}
+            className="text-xs text-neutral-500"
+          >
+            {formatDate(blog.publishedAt)}
+          </time>
+        )}
+      </div>
     </Link>
   );
 }
