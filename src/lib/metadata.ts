@@ -365,7 +365,7 @@ export const buildProductMeta = (
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `${product.title} | Banstola Brothers`,
+          alt: `${product.title}`,
         },
       ],
     },
