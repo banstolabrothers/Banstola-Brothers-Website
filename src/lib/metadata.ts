@@ -49,22 +49,22 @@ const buildMeta = (
     : { index: true, follow: true },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// NOTE ON KEYWORDS: the <meta name="keywords"> tag has had no effect on
-// Google's ranking algorithm since ~2009 (Google has confirmed this
-// directly). It's kept here because it's harmless and a couple of smaller
-// engines/directories still read it, but it should never be treated as the
-// lever that moves rankings. The keyword lists below were tightened based
-// on real Google Search Console query data (as of Jul 2026) — notably,
-// searchers use BOTH "chhurpi" and "churpi" (single h) roughly as often as
-// each other, so both spellings are now represented across titles,
-// descriptions, and keyword arrays rather than only the double-h spelling.
-// The actual ranking lever is title + description + on-page content
-// matching these terms naturally — not this array.
-// ─────────────────────────────────────────────────────────────────────────────
+interface SanityImageAsset {
+  asset?: { url?: string };
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. STATIC PAGE METADATA — hardcoded fallback only.
+//
+//    As of this update, the real content for these pages lives in Sanity
+//    `pageMeta` documents (see schemaTypes/pageMeta.ts + schemaTypes/seo.ts)
+//    and is fetched via buildStaticPageMeta() below. This object is what
+//    renders ONLY if that fetch fails or a page's Sanity doc doesn't exist
+//    yet — so keyword lists here are intentionally kept short, not the full
+//    SEO-tuned lists (those live in Studio now, where they can be edited
+//    without a redeploy).
+// ─────────────────────────────────────────────────────────────────────────────
 export const pageMeta = {
-  // ── Core pages ─────────────────────────────────────────────────────────────
   home: buildMeta(
     "Chhurpi & Titaura since 1999 in Pokhara",
     "Pokhara's first churpi & paun shop, since 1999. Chhurpi from Ilam, paun from Kathmandu, plus khattu, amala & dog chew — 492+ verified reviews. Order across Nepal.",
@@ -72,36 +72,8 @@ export const pageMeta = {
     [
       "chhurpi Pokhara",
       "churpi Pokhara",
-      "churpi shop Pokhara",
-      "churpi near me",
-      "chhurpi near me",
-      "churpi shop near me",
-      "dairy shop Pokhara",
-      "dairy shop near me",
-      "khattu Pokhara",
-      "titaura Pokhara",
-      "paun Pokhara",
-      "paun from Kathmandu",
-      "titaura paun Pokhara",
-      "amala Pokhara",
-      "Nepali snacks Pokhara",
-      "dog chew Nepal",
-      "chhurpi Kathmandu",
-      "churpi Kathmandu",
-      "buy chhurpi Kathmandu",
-      "chhurpi delivery Kathmandu",
-      "khattu Kathmandu",
-      "titaura Kathmandu",
-      "Nepali snacks Kathmandu",
       "Banstola Brothers",
-      "Banstola",
-      "churpi paun",
-      "Churpi paun Bhandar",
-      "Bastola Churpi",
-      "Bastola bhai ko Churpi paun bhandar",
-      "paun bhandar",
-      "ratna paun",
-      "Ratnapark Paun ",
+      "churpi near me",
     ],
   ),
 
@@ -111,18 +83,9 @@ export const pageMeta = {
     "/products",
     [
       "buy chhurpi Pokhara",
-      "buy churpi Pokhara",
-      "churpi online Nepal",
-      "buy chhurpi Kathmandu",
-      "chhurpi delivery Kathmandu",
-      "churpi delivery Nepal",
       "Khattu Nepal",
-      "Khattu Kathmandu",
       "Dog Chew Nepal",
-      "Papaya snack Nepal",
-      "Nepali traditional snacks",
       "Banstola Brothers products",
-      "natural Nepali food online",
     ],
   ),
 
@@ -130,14 +93,7 @@ export const pageMeta = {
     "Our Story - Since 1999",
     "Pokhara's first Chhurpi & Pau shop, founded by Muktinath Banstola in the late 1990s. 25 years of authentic Himalayan taste.",
     "/story",
-    [
-      "Banstola Brothers history",
-      "Chhurpi since 1999",
-      "Pokhara first Chhurpi shop",
-      "Muktinath Banstola",
-      "Chhurpi from Ilam",
-      "authentic Nepali food brand",
-    ],
+    ["Banstola Brothers history", "Chhurpi since 1999", "Muktinath Banstola"],
   ),
 
   store: buildMeta(
@@ -148,67 +104,37 @@ export const pageMeta = {
       "Banstola Brothers Pokhara store",
       "chhurpi shop Pokhara",
       "churpi shop near me",
-      "where to buy chhurpi Pokhara",
-      "chhurpi store location Nepal",
     ],
   ),
 
   // NOTE: static fallback only — used if buildAllReviewsMeta()'s fetch fails,
   // or as a placeholder if you haven't wired up the dynamic version yet.
-  // Deliberately has no specific review count baked in — see
-  // buildAllReviewsMeta() below for the version with a real, computed count.
   allReviews: buildMeta(
     "Customer Reviews",
     "Verified customer reviews for Chhurpi, Khattu & Dog Chew from Banstola Brothers. See what customers love about our products.",
     "/all-reviews",
-    [
-      "Banstola Brothers reviews",
-      "Chhurpi reviews Nepal",
-      "Churpi reviews",
-      "Khattu reviews",
-      "Dog Chew reviews",
-      "customer feedback Chhurpi",
-    ],
+    ["Banstola Brothers reviews", "Chhurpi reviews Nepal", "Khattu reviews"],
   ),
 
   submitReview: buildMeta(
     "Write a Review",
     "Share your experience with Banstola Brothers products. Submit your review for Chhurpi, Khattu, Dog Chew and more.",
     "/submit-reviews",
-    [
-      "review Banstola Brothers",
-      "submit Chhurpi review",
-      "Banstola Brothers feedback",
-    ],
+    ["review Banstola Brothers", "submit Chhurpi review"],
   ),
 
   blogs: buildMeta(
     "Blog & Insights",
     "Explore articles, tips, and insights from the Banstola Brothers team — from chhurpi (churpi) traditions to Himalayan food culture.",
     "/blogs",
-    [
-      "Banstola Brothers blog",
-      "Chhurpi articles",
-      "Churpi articles",
-      "Nepali food culture",
-      "Himalayan cheese blog",
-      "Chhurpi recipes",
-    ],
+    ["Banstola Brothers blog", "Chhurpi articles", "Nepali food culture"],
   ),
 
   faqs: buildMeta(
     "Frequently Asked Questions",
     "Got questions about chhurpi (churpi), Khattu, Dog Chew or ordering from Banstola Brothers? Find answers to the most common questions here.",
     "/faqs",
-    [
-      "Banstola Brothers FAQ",
-      "Chhurpi FAQ",
-      "Churpi FAQ",
-      "Khattu questions",
-      "Dog Chew questions",
-      "Banstola Brothers help",
-      "Chhurpi shipping Nepal",
-    ],
+    ["Banstola Brothers FAQ", "Chhurpi FAQ", "Khattu questions"],
   ),
 
   // ── Legal pages ────────────────────────────────────────────────────────────
@@ -235,11 +161,7 @@ export const pageMeta = {
     "Shipping Policy",
     "Banstola Brothers shipping policy — delivery timelines, areas covered, and order handling for Chhurpi and other products.",
     "/shipping-policy",
-    [
-      "Banstola Brothers shipping",
-      "Chhurpi delivery Nepal",
-      "Pokhara delivery policy",
-    ],
+    ["Banstola Brothers shipping", "Chhurpi delivery Nepal"],
     DEFAULT_OG_IMAGE,
     true, // noIndex
   ),
@@ -255,6 +177,83 @@ export const pageMeta = {
 } satisfies Record<string, Metadata>;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 1b. STATIC PAGE METADATA — LIVE FROM SANITY
+//
+//    Fetches the pageMeta{ page, seo{...} } document for a given static
+//    page and merges it, field by field, over the hardcoded fallback above.
+//    If a field is left empty in Studio, that one field falls back — not
+//    the whole page. If the fetch throws entirely, the full static
+//    fallback is returned so metadata never breaks the build.
+//
+//    Usage in app/faqs/page.tsx:
+//
+//    import { buildStaticPageMeta } from "@/lib/metadata";
+//
+//    export async function generateMetadata(): Promise<Metadata> {
+//      return buildStaticPageMeta("faqs");
+//    }
+// ─────────────────────────────────────────────────────────────────────────────
+export const pageMetaQuery = `
+  *[_type == "pageMeta" && page == $page][0]{
+    seo {
+      metaTitle,
+      metaDescription,
+      keywords,
+      noIndex,
+      "ogImage": { "asset": { "url": ogImage.asset->url } }
+    }
+  }
+`;
+
+interface SanityPageSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  noIndex?: boolean;
+  ogImage?: SanityImageAsset;
+}
+
+export async function buildStaticPageMeta(
+  page: keyof typeof pageMeta,
+): Promise<Metadata> {
+  const fallback = pageMeta[page];
+  const path = `${fallback.alternates?.canonical}`.replace(SITE_URL, "");
+
+  try {
+    // Lazy imports — same pattern as buildAllReviewsMeta below — so pages
+    // that don't call this function don't pull the Sanity client in.
+    const { client } = await import("@/lib/sanity");
+    const doc = await client.fetch<{ seo?: SanityPageSeo } | null>(
+      pageMetaQuery,
+      { page },
+    );
+    if (!doc?.seo) return fallback;
+
+    return buildMeta(
+      doc.seo.metaTitle ?? (fallback.title as string),
+      doc.seo.metaDescription ?? (fallback.description as string),
+      path,
+      doc.seo.keywords?.length
+        ? doc.seo.keywords
+        : (fallback.keywords as string[]),
+      doc.seo.ogImage?.asset?.url
+        ? [
+            {
+              url: doc.seo.ogImage.asset.url,
+              width: 1200,
+              height: 630,
+              alt: fallback.title as string,
+            },
+          ]
+        : DEFAULT_OG_IMAGE,
+      doc.seo.noIndex ?? false,
+    );
+  } catch {
+    return fallback;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 2. DYNAMIC PRODUCT PAGE METADATA
 //
 //    Usage in app/products/[slug]/page.tsx:
@@ -267,10 +266,6 @@ export const pageMeta = {
 //      return buildProductMeta(product, slug);
 //    }
 // ─────────────────────────────────────────────────────────────────────────────
-interface SanityImageAsset {
-  asset?: { url?: string };
-}
-
 export interface SanityProductMeta {
   title: string;
   shortDescription?: string;
@@ -285,70 +280,41 @@ export interface SanityProductMeta {
   };
 }
 
-// Product-specific keyword seeds — improves SEO for known products.
-// Both "chhurpi" and "churpi" spellings included since real searchers use
-// both (confirmed via Search Console — e.g. "churpi near me" ranks #1,
-// "churpi" ranks #3, alongside "chhurpi Pokhara" terms).
-// NOTE: these are only used as a fallback when a product's `seo.keywords`
-// field is empty in Sanity — fill that in per-product in Studio for full
-// control, this is just the safety net.
+// Product-specific keyword seeds — fallback only, used when a product's
+// `seo.keywords` field is empty in Sanity. Fill that in per-product in
+// Studio for full control.
 const PRODUCT_KEYWORD_SEEDS: Record<string, string[]> = {
   chhurpi: [
     "buy chhurpi Pokhara",
     "buy churpi Pokhara",
     "churpi near me",
-    "chhurpi near me",
-    "churpi shop near me",
-    "Smoked Chhurpi Nepal",
-    "White Chhurpi online",
-    "Coffee Chhurpi",
-    "hard cheese Nepal",
     "Chhurpi from Ilam",
-    "authentic churpi",
     "chhurpi Kathmandu",
-    "buy chhurpi Kathmandu",
-    "chhurpi delivery Kathmandu",
     "Banstola Brothers Chhurpi",
   ],
   "dog-chew": [
     "Himalayan dog chew Nepal",
-    "yak cheese dog chew",
     "chhurpi dog chew",
-    "churpi dog chew",
     "natural dog chew Pokhara",
-    "buy dog chew Nepal",
     "Banstola Brothers dog chew",
   ],
   khattu: [
     "Khattu Nepal",
     "buy Khattu Pokhara",
-    "sour dried mango Nepal",
     "traditional Nepali snack",
     "Banstola Brothers Khattu",
   ],
-  // NOTE: verified against the live site (Jul 2026) — there is NO
-  // /products/titaura page. Only chhurpi, dog-chew, khattu, and papaya
-  // exist as real product pages (confirmed via the site footer). Titaura/
-  // paun/amala are mentioned in the homepage hero copy and in customer
-  // reviews, but aren't sold as a standalone SKU yet. This seed is inert
-  // until/unless a titaura product page is actually created — remove this
-  // comment and the seed key stays ready to fire the moment that page
-  // exists (just confirm the real slug matches "titaura" first).
+  // NOTE: no /products/titaura page exists yet (confirmed via live site
+  // footer, Jul 2026) — this seed is inert until that page is created.
   titaura: [
     "titaura Pokhara",
     "paun Pokhara",
     "paun from Kathmandu",
-    "titaura Kathmandu",
-    "buy titaura Nepal",
-    "khattu titaura",
-    "Nepali spicy candy",
-    "lapsi titaura",
     "Banstola Brothers titaura",
   ],
   papaya: [
     "Papaya snack Nepal",
     "dried papaya Pokhara",
-    "natural papaya Nepal",
     "Banstola Brothers Papaya",
   ],
 };
@@ -369,11 +335,8 @@ export const buildProductMeta = (
     : (PRODUCT_KEYWORD_SEEDS[slug] ?? [
         product.title,
         `${product.title} Nepal`,
-        `${product.title} Pokhara`,
         `buy ${product.title}`,
         "Banstola Brothers",
-        "authentic Nepali snacks",
-        "buy Pokhara Nepal",
       ]);
 
   const imageUrl =
@@ -467,68 +430,23 @@ export interface SanityBlogMeta {
   };
 }
 
-// Fallback keyword seeds by topic, matched against a blog's slug the same
-// way PRODUCT_KEYWORD_SEEDS works for products. This only fires when a
-// blog post's own `seo.keywords` field is empty in Sanity — always prefer
-// filling that in per-post, since it can be far more specific than a
-// generic topic match. See section 6 below for suggested first posts to
-// write, since /blogs currently has zero published posts.
+// Fallback keyword seeds by topic slug — only fires when a blog post's own
+// `seo.keywords` field is empty in Sanity.
 const BLOG_KEYWORD_SEEDS: Record<string, string[]> = {
-  "what-is-chhurpi": [
-    "what is chhurpi",
-    "what is churpi",
-    "chhurpi meaning",
-    "Nepali hard cheese",
-    "yak cheese Nepal",
-    "chhurpi vs churpi",
-  ],
-  "how-to-eat-chhurpi": [
-    "how to eat chhurpi",
-    "how to eat churpi",
-    "chhurpi recipe",
-    "churpi snack ideas",
-    "chewing chhurpi",
-  ],
-  "chhurpi-vs-khattu": [
-    "chhurpi vs khattu",
-    "churpi vs khattu",
-    "Nepali snack comparison",
-    "khattu meaning",
-  ],
+  "what-is-chhurpi": ["what is chhurpi", "what is churpi", "chhurpi meaning"],
+  "how-to-eat-chhurpi": ["how to eat chhurpi", "chhurpi recipe"],
+  "chhurpi-vs-khattu": ["chhurpi vs khattu", "Nepali snack comparison"],
   "where-to-buy-chhurpi-pokhara": [
     "where to buy chhurpi Pokhara",
-    "where to buy churpi Pokhara",
     "chhurpi shop near me",
-    "churpi shop near me",
-    "dairy shop Pokhara",
   ],
   "order-chhurpi-kathmandu": [
     "buy chhurpi Kathmandu",
-    "churpi Kathmandu",
     "chhurpi delivery Kathmandu",
-    "order churpi online Nepal",
-    "khattu Kathmandu",
   ],
-  "what-is-paun": [
-    "what is paun Nepal",
-    "paun titaura meaning",
-    "paun vs titaura",
-    "Nepali paun snack",
-    "titaura Nepal Bhasa",
-  ],
-  "chhurpi-for-dogs": [
-    "chhurpi dog chew",
-    "churpi dog chew",
-    "is chhurpi safe for dogs",
-    "Himalayan dog chew",
-    "natural dog treats Nepal",
-  ],
-  "history-of-chhurpi-ilam": [
-    "chhurpi from Ilam",
-    "chhurpi history Nepal",
-    "traditional Himalayan cheese",
-    "Ilam dairy tradition",
-  ],
+  "what-is-paun": ["what is paun Nepal", "paun vs titaura"],
+  "chhurpi-for-dogs": ["chhurpi dog chew", "is chhurpi safe for dogs"],
+  "history-of-chhurpi-ilam": ["chhurpi from Ilam", "chhurpi history Nepal"],
 };
 
 export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
@@ -544,10 +462,7 @@ export const buildBlogMeta = (blog: SanityBlogMeta, slug: string): Metadata => {
     : (BLOG_KEYWORD_SEEDS[slug] ?? [
         blog.title,
         "Banstola Brothers blog",
-        "chhurpi articles",
-        "churpi articles",
         "Nepali food culture",
-        "Himalayan cheese",
       ]);
 
   const imageUrl =
@@ -610,9 +525,7 @@ export const blogMetaQuery = `
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. DYNAMIC "ALL REVIEWS" PAGE METADATA
 //
-//    Replaces the static pageMeta.allReviews export for app/all-reviews/page.tsx.
-//    Computes the real review count server-side instead of hand-typing a
-//    number that will drift out of date (previously hardcoded as "267+").
+//    Computes the real review count server-side instead of hardcoding one.
 //
 //    Usage in app/all-reviews/page.tsx:
 //
@@ -627,16 +540,12 @@ export const buildAllReviewsMeta = async (): Promise<Metadata> => {
   const keywords = [
     "Banstola Brothers reviews",
     "Chhurpi reviews Nepal",
-    "Churpi reviews",
     "Khattu reviews",
     "Dog Chew reviews",
-    "customer feedback Chhurpi",
   ];
 
   let totalReviews = 0;
   try {
-    // Lazy imports to avoid pulling the Sanity client into every page that
-    // imports this file — only loaded when this function actually runs.
     const { client } = await import("@/lib/sanity");
     const { allReviewsQuery } = await import("@/lib/queries");
     const docs = await client.fetch<{ reviews?: unknown[] }[]>(allReviewsQuery);
@@ -653,53 +562,3 @@ export const buildAllReviewsMeta = async (): Promise<Metadata> => {
 
   return buildMeta(title, description, path, keywords);
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 7. SUGGESTED FIRST BLOG POSTS (as of Jul 2026 — /blogs has 0 posts live)
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// These slugs match BLOG_KEYWORD_SEEDS above, and are picked based on real
-// Search Console queries already hitting the site with no dedicated content
-// to answer them (churpi/dairy/"near me" terms getting impressions but
-// ranking poorly, positions 8-11) plus themes visible in your own customer
-// reviews (softness, smokiness, dog chew popularity, Ilam sourcing story).
-//
-//   1. "what-is-chhurpi"               — explainer for people who've never
-//                                         heard of it; capture informational
-//                                         searches, both spellings.
-//   2. "chhurpi-vs-khattu"             — comparison content, easy to rank
-//                                         for since little competition.
-//   3. "where-to-buy-chhurpi-pokhara"  — directly targets "near me" /
-//                                         "dairy shop near me" impressions
-//                                         you're already getting but not
-//                                         ranking well for.
-//   4. "chhurpi-for-dogs"              — reviews already mention dogs
-//                                         loving the dog chew; own this
-//                                         angle with a dedicated post.
-//   5. "history-of-chhurpi-ilam"       — ties into your Story page and
-//                                         founding narrative, good for
-//                                         brand + "chhurpi from Ilam" terms.
-//   6. "order-chhurpi-kathmandu"       — verified via live site hero copy:
-//                                         "Chhurpi from Ilam, Paun from
-//                                         Kathmandu" — paun/titaura is
-//                                         actually sourced from Kathmandu,
-//                                         not just delivered there. This is
-//                                         a stronger, more specific angle
-//                                         than generic delivery copy —
-//                                         tell the real sourcing story.
-//   7. "what-is-paun"                  — your own tagline already says
-//                                         "chhurpi & paun shop" but nothing
-//                                         on-site explains that "paun" is
-//                                         the Nepal Bhasa name for titaura
-//                                         (the sweet-sour-spicy dried fruit
-//                                         candy — lapsi, mango, lemon) —
-//                                         a completely different snack
-//                                         category from chhurpi (dairy).
-//                                         Worth a short explainer post so
-//                                         first-time visitors aren't
-//                                         confused by the combined name.
-//
-// Add these as real posts in Sanity Studio with slugs matching the keys
-// above (or update BLOG_KEYWORD_SEEDS to match whatever slugs you use) —
-// then buildBlogMeta() will automatically pick up the right keyword seed
-// per post if you leave `seo.keywords` empty in Studio.
