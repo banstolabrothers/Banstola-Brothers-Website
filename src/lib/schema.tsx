@@ -363,7 +363,6 @@ export function BlogArticleSchema({ blog, slug }: BlogSchemaProps) {
       "@type": "WebPage",
       "@id": `${BASE_URL}/blogs/${slug}`,
     },
-    keywords: blog.tags?.map((t) => t.name).join(", ") ?? "",
   };
 
   return (
