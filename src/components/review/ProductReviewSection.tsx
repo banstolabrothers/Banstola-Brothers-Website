@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
-import { productReviewsByIdQuery, allReviewsFullQuery } from "@/lib/queries"; // ← add allReviewsFullQuery
+import { productReviewsByIdQuery, allReviewsFullQuery } from "@/lib/queries";
 import MyButton from "@/components/ui/MyButton";
 import ReviewList from "@/components/review/ReviewList";
 import ReviewHeader from "@/components/review/ReviewHeader";
@@ -23,7 +23,8 @@ const ProductReviewSection = ({
   productSlug,
 }: ProductReviewSectionProps) => {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [allReviews, setAllReviews] = useState<ReviewItem[]>([]); // ← add
+  const [productDocs, setProductDocs] = useState<ReviewDoc[]>([]); // raw docs, needed for reviewsImages
+  const [allReviews, setAllReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("newest");
   const [filterBy, setFilterBy] = useState("all");
@@ -36,14 +37,14 @@ const ProductReviewSection = ({
   useEffect(() => {
     if (!productId) return;
 
-    // ← fetch both in parallel
     Promise.all([
       client.fetch<ReviewDoc[]>(productReviewsByIdQuery, { productId }),
       client.fetch<ReviewDoc[]>(allReviewsFullQuery),
     ])
-      .then(([productDocs, allDocs]) => {
-        setReviews(flattenReviews(productDocs));
-        setAllReviews(flattenReviews(allDocs)); // ← all reviews for modal lookup
+      .then(([productDocsResult, allDocs]) => {
+        setReviews(flattenReviews(productDocsResult));
+        setProductDocs(productDocsResult);
+        setAllReviews(flattenReviews(allDocs));
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -81,7 +82,10 @@ const ProductReviewSection = ({
 
   const filtered = filterAndSortReviews(reviews, filterBy, sortBy);
   const ratingStats = calculateRatingStats(reviews);
-  const customerImages = extractCustomerImages(reviews);
+
+  // customerImages now includes both per-review images and the
+  // product-level reviewsImages, via the shared helper
+  const customerImages = extractCustomerImages(productDocs);
 
   return (
     <section className="flex flex-col w-full max-w-[1440] mx-auto my-20 px-4">
@@ -97,7 +101,7 @@ const ProductReviewSection = ({
       />
       <ReviewList
         reviews={filtered.slice(0, displayCount)}
-        allReviews={allReviews} // ← pass full cross-product reviews
+        allReviews={allReviews}
         showLoadMore={displayCount < filtered.length}
         onLoadMore={() => setDisplayCount((p) => p + 10)}
         totalReviews={filtered.length}

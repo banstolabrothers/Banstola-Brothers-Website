@@ -15,6 +15,37 @@ export const review = defineType({
     }),
 
     defineField({
+      name: 'reviewsImages',
+      title: 'Reviews Images',
+      type: 'array',
+      description:
+        "General images for this product's reviews section (not linked to any specific review)",
+      of: [
+        {
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alt text',
+              description: 'Alt text for the image',
+            },
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
+              description: 'Optional caption for the image',
+            },
+          ],
+        },
+      ],
+      options: {
+        layout: 'grid',
+      },
+    }),
+
+    defineField({
       name: 'reviews',
       title: 'Reviews',
       type: 'array',

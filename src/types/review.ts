@@ -44,6 +44,7 @@ export interface ReviewDoc {
   product?: ReviewProduct;
   category?: ReviewCategory;
   reviews?: ReviewEntry[];
+  reviewsImages?: ReviewImage[];
 }
 
 export interface ReviewItem extends ReviewEntry {
@@ -64,7 +65,8 @@ export interface RatingStats {
 export interface CustomerImage {
   url: string;
   caption?: string;
-  username: string;
+  username?: string; // optional — general images have no reviewer
+  isGeneral?: boolean; // true when sourced from the doc-level reviewsImages field
 }
 
 export interface ProductFilter {

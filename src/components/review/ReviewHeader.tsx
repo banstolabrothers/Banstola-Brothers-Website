@@ -1,7 +1,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Filter, Pencil } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Pencil,
+} from "lucide-react";
 import Image from "next/image";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
 import MyButton from "@/components/ui/MyButton";
 import star from "@/assets/svg/star.svg";
 import type { RatingStats, CustomerImage, ProductFilter } from "@/types/review";
@@ -86,9 +94,9 @@ const ReviewHeader = ({
   return (
     <div className="mb-8 w-full">
       {/* ── Row 1: Rating summary + customer images ── */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mb-6">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mb-6 items-center">
         {/* Rating bars */}
-        <div className="flex flex-col w-full lg:w-4/12 gap-4">
+        <div className="flex flex-col w-full lg:w-5/12 gap-4">
           <div className="flex items-center gap-4">
             <h3 className="text-brand-900">
               {ratingStats.averageRating.toFixed(1)}
@@ -136,23 +144,58 @@ const ReviewHeader = ({
           </div>
         </div>
 
-        {/* Customer images */}
+        {/* Customer images — Swiper carousel */}
         {showCustomerImages && customerImages.length > 0 && (
-          <div className="flex flex-col w-full lg:w-8/12  gap-4">
-            <div className="flex gap-1 pb-1 scroll-smooth flex-wrap">
+          <div className="relative flex flex-col items-center w-full lg:w-7/12 gap-4">
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              slidesPerView={5}
+              spaceBetween={8}
+              loop={customerImages.length > 3}
+              autoplay={{ delay: 1000, disableOnInteraction: false }}
+              navigation={{
+                nextEl: ".customer-images-next",
+                prevEl: ".customer-images-prev",
+              }}
+              breakpoints={{
+                0: { slidesPerView: 3 },
+                640: { slidesPerView: 4 },
+                1024: { slidesPerView: 5 },
+              }}
+              className="w-full"
+            >
               {customerImages.slice(0, 30).map((img, index) => (
-                <div key={index} className="bg-brand-100/50">
+                <SwiperSlide key={index}>
                   <Image
                     src={img.url}
-                    alt={`Submitted by ${img.username}`}
-                    width={80}
-                    height={80}
-                    className="w-20 h-20 rounded-xl object-cover hover:scale-105 transition-transform duration-200 cursor-pointer hover:shadow-sm"
+                    alt={
+                      img.isGeneral
+                        ? "Product image"
+                        : `Submitted by ${img.username}`
+                    }
+                    width={140}
+                    height={160}
+                    unoptimized
+                    className="w-100 h-60 rounded-xl object-cover transition-transform duration-200 "
                     loading="lazy"
                   />
-                </div>
+                </SwiperSlide>
               ))}
-            </div>
+            </Swiper>
+
+            {/* Nav buttons */}
+            <button
+              className="customer-images-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
+              aria-label="Previous images"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              className="customer-images-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
+              aria-label="Next images"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
         )}
       </div>

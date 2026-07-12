@@ -18,6 +18,7 @@ const reviewDocFragment = `
   _id,
   product->{ _id, title, slug, primaryImage{ ${imageFragment} } },
   category->{ title, image{ ${imageFragment} } },
+  reviewsImages[]{ ${imageFragment}, caption },
   ${reviewEntriesFragment}
 `;
 

@@ -75,7 +75,10 @@ const ReviewPageClient = ({ allReviews }: ReviewPageClientProps) => {
       : filterAndSortReviews(ratingFiltered, filterBy, sortBy);
 
   const ratingStats = calculateRatingStats(allFlatReviews);
-  const customerImages = extractCustomerImages(allFlatReviews);
+
+  // customerImages now includes both per-review images and the
+  // product-level reviewsImages, via the shared helper
+  const customerImages = extractCustomerImages(filteredDocs);
 
   return (
     <>
@@ -96,7 +99,7 @@ const ReviewPageClient = ({ allReviews }: ReviewPageClientProps) => {
       />
       <ReviewList
         reviews={reviewsData.slice(0, displayCount)}
-        allReviews={allFlatReviews} // ← add this line
+        allReviews={allFlatReviews}
         showLoadMore={displayCount < reviewsData.length}
         onLoadMore={() => setDisplayCount((p) => p + 10)}
         totalReviews={reviewsData.length}

@@ -140,21 +140,37 @@ export const filterAndSortReviews = (
 // ─────────────────────────────────────────────────────────────────────────────
 // CUSTOMER IMAGES
 // ─────────────────────────────────────────────────────────────────────────────
+// Takes raw ReviewDoc[] (not flattened ReviewItem[]) because reviewsImages
+// lives at the document level, not on individual reviews.
 
-export const extractCustomerImages = (
-  reviews: ReviewItem[],
-): CustomerImage[] => {
+export const extractCustomerImages = (docs: ReviewDoc[]): CustomerImage[] => {
   const images: CustomerImage[] = [];
-  reviews.forEach((r) => {
-    r.productReviewImages?.forEach((img) => {
+
+  const sanityResize = (url: string) =>
+    `${url}?w=160&h=160&fit=crop&auto=format`;
+
+  docs.forEach((doc) => {
+    doc.reviews?.forEach((r) => {
+      r.productReviewImages?.forEach((img) => {
+        if (img?.asset?.url)
+          images.push({
+            url: sanityResize(img.asset.url),
+            caption: img.caption,
+            username: r.username || "Anonymous",
+          });
+      });
+    });
+
+    doc.reviewsImages?.forEach((img) => {
       if (img?.asset?.url)
         images.push({
-          url: img.asset.url,
+          url: sanityResize(img.asset.url),
           caption: img.caption,
-          username: r.username || "Anonymous",
+          isGeneral: true,
         });
     });
   });
+
   return images;
 };
 
