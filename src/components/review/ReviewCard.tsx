@@ -143,12 +143,12 @@ const ReviewCard = ({
           {review.reply?.message && (
             <div className="flex flex-col gap-1 flex-1 pl-4 border-l-2 border-brand-500/30">
               <div className="flex items-center justify-between">
-                <h6>Store Owner</h6>
+                <p className="text-neutral-500">Store Owner</p>
                 <label className="text-neutral-500">
                   {getTimeAgo(review.reply.replyDate)}
                 </label>
               </div>
-              <label className="text-neutral-700">{review.reply.message}</label>
+              <p className="text-neutral-700">{review.reply.message}</p>
             </div>
           )}
         </div>
