@@ -166,32 +166,33 @@ const ReviewHeader = ({
             >
               {customerImages.slice(0, 30).map((img, index) => (
                 <SwiperSlide key={index}>
-                  <Image
-                    src={img.url}
-                    alt={
-                      img.isGeneral
-                        ? "Product image"
-                        : `Submitted by ${img.username}`
-                    }
-                    width={140}
-                    height={160}
-                    unoptimized
-                    className="w-100 h-60 rounded-xl object-cover transition-transform duration-200 "
-                    loading="lazy"
-                  />
+                  <div className="relative w-full h-60 rounded-xl overflow-hidden">
+                    <Image
+                      src={img.url}
+                      alt={
+                        img.isGeneral
+                          ? "Product image"
+                          : `Submitted by ${img.username}`
+                      }
+                      fill
+                      sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                      className="object-cover transition-transform duration-200"
+                      loading="lazy"
+                    />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
 
             {/* Nav buttons */}
             <button
-              className="customer-images-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
+              className="customer-images-prev absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
               aria-label="Previous images"
             >
               <ChevronLeft size={20} />
             </button>
             <button
-              className="customer-images-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
+              className="customer-images-next absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 rounded-full p-1 shadow hover:bg-white"
               aria-label="Next images"
             >
               <ChevronRight size={20} />

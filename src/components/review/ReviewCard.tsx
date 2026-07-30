@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, ChevronRight } from "lucide-react";
+import { Check } from "lucide-react";
 import type { ReviewItem } from "@/types/review";
 import { getInitials, getTimeAgo, getDisplayName } from "@/lib/reviewUtils";
 import RenderStars from "@/components/review/RenderStars";
@@ -12,14 +12,36 @@ interface ReviewCardProps {
   review: ReviewItem;
   allReviews?: ReviewItem[];
   onProductClick?: (slug: string) => void;
-  disableRepeatCustomer?: boolean; // ← add
+  disableRepeatCustomer?: boolean;
 }
+
+// Ensures the reply's displayed "time ago" is never chronologically
+// earlier than the review it belongs to — guards against bad/missing
+// replyDate values in the source data.
+const getSafeReplyTimeAgo = (
+  reviewDate?: string,
+  replyDate?: string,
+): string => {
+  if (!replyDate) return getTimeAgo(reviewDate);
+
+  const reviewTime = reviewDate ? new Date(reviewDate).getTime() : 0;
+  const replyTime = new Date(replyDate).getTime();
+
+  // If replyDate is invalid or earlier than the review itself,
+  // fall back to the review's own date instead of showing something
+  // that doesn't make sense (e.g. "1 day ago" reply on a "2 days ago" review).
+  if (isNaN(replyTime) || replyTime < reviewTime) {
+    return getTimeAgo(reviewDate);
+  }
+
+  return getTimeAgo(replyDate);
+};
 
 const ReviewCard = ({
   review,
   allReviews = [],
   onProductClick,
-  disableRepeatCustomer = false, // ← add
+  disableRepeatCustomer = false,
 }: ReviewCardProps) => {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -32,7 +54,6 @@ const ReviewCard = ({
     onProductClick ? onProductClick(slug) : router.push(`/products/${slug}`);
   };
 
-  // All reviews by this customer across all products
   const customerReviews = allReviews.filter(
     (r) => r.username === review.username,
   );
@@ -42,7 +63,6 @@ const ReviewCard = ({
       <div className="flex flex-col lg:flex-row w-full gap-10 text-left py-8">
         {/* ── Left: User + Product ── */}
         <div className="w-full lg:w-4/12 gap-4">
-          {/* User info */}
           <div className="flex flex-row items-center gap-4">
             <span className="flex w-16 h-16 aspect-square rounded-full bg-yellow-500 items-center justify-center text-brand-900 flex-shrink-0">
               <h5>{getInitials(review.username)}</h5>
@@ -58,26 +78,23 @@ const ReviewCard = ({
                   </span>
                   Verified
                 </label>
+                {review.isRepeatCustomer && !disableRepeatCustomer && (
+                  <div
+                    onClick={() => setShowModal(true)}
+                    className="bg-brand-500/10 px-3 pt-1 pb-1 rounded-full w-fit hover:bg-brand-500/15 cursor-pointer "
+                  >
+                    <label className="text-brand-900 cursor-pointer ">
+                      {" "}
+                      Repeat Customer
+                    </label>
+                  </div>
+                )}
               </span>
-
-              {/* ── Repeat Customer badge — now a button ── */}
-              {review.isRepeatCustomer && !disableRepeatCustomer && (
-                <div
-                  onClick={() => setShowModal(true)}
-                  className="bg-brand-500/10 px-3 pt-1 pb-1 rounded-full w-fit hover:bg-brand-500/15 cursor-pointer "
-                >
-                  <label className="text-brand-900 cursor-pointer ">
-                    {" "}
-                    Repeat Customer
-                  </label>
-                </div>
-              )}
             </div>
           </div>
 
           <hr className="my-4 w-full border-brand-900/20" />
 
-          {/* Product info */}
           {review.product && (
             <div
               className="flex items-center gap-3 w-full text-left hover:bg-brand-100/50 p-2 rounded-2xl transition-colors cursor-pointer"
@@ -145,7 +162,10 @@ const ReviewCard = ({
               <div className="flex items-center justify-between">
                 <p className="text-neutral-500">Store Owner</p>
                 <label className="text-neutral-500">
-                  {getTimeAgo(review.reply.replyDate)}
+                  {getSafeReplyTimeAgo(
+                    review.reviewDate,
+                    review.reply.replyDate,
+                  )}
                 </label>
               </div>
               <p className="text-neutral-700">{review.reply.message}</p>
@@ -154,7 +174,6 @@ const ReviewCard = ({
         </div>
       </div>
 
-      {/* ── Modal (rendered outside card flow) ── */}
       {showModal && (
         <RepeatCustomerModal
           username={review.username || "Anonymous"}

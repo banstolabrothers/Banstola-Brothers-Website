@@ -91,7 +91,7 @@ const ProductRow = ({ product }: { product: Product }) => {
       )}
       {/* Product Content */}
       <div className="flex flex-col text-center md:text-left justify-center items-center md:items-start w-full gap-8 mt-4">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col w-full gap-1">
           <h2 className="text-brand-900">{product.title}</h2>
           {product.shortDescription && (
             <p className="text-neutral-800">{product.shortDescription}</p>
@@ -101,7 +101,7 @@ const ProductRow = ({ product }: { product: Product }) => {
         {loading ? (
           <StarsSkeleton />
         ) : hasReviews && ratingStats ? (
-          <div className="flex items-center gap-2 w-full text-neutral-600">
+          <div className="flex items-center justify-center md:justify-start gap-2 w-full text-neutral-600">
             <RenderStars rating={ratingStats.averageRating} size={20} />
             <p>{ratingStats.averageRating.toFixed(1)}</p>
             <p>({ratingStats.totalReviews} reviews)</p>

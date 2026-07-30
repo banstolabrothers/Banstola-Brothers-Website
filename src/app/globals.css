@@ -323,3 +323,25 @@
     transition-duration: 0ms !important;
   }
 }
+
+[data-pt-title-wrap] {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1024px; /* full width up to this cap, never wider */
+  margin-inline: auto;
+  padding-inline: 16px; /* smallest devices */
+}
+
+@media (min-width: 640px) {
+  [data-pt-title-wrap] {
+    padding-inline: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-pt-title-wrap] {
+    padding-inline: 32px;
+  }
+}

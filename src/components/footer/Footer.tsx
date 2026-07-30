@@ -1,7 +1,6 @@
 import Image from "next/image";
 import logo from "@/assets/svg/banstola brothers vertical.svg";
 import { footerData, type FooterLink } from "./footerData";
-// ── NEW: internal links use the dissolve transition ───────────────────────────
 import { TransitionLink } from "@/components/transition/TransitionLink";
 
 // ── FooterLinkItem ────────────────────────────────────────────────────────────
@@ -13,7 +12,6 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
 
   const content = link.icon ?? <p>{link.label}</p>;
 
-  // External links stay as plain <a> — no dissolve transition needed
   if (link.external) {
     return (
       <a
@@ -28,7 +26,6 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
     );
   }
 
-  // Internal links use the WebGL dissolve transition
   return (
     <TransitionLink
       href={link.href}
@@ -43,11 +40,9 @@ const FooterLinkItem = ({ link }: { link: FooterLink }) => {
 // ── Footer ────────────────────────────────────────────────────────────────────
 
 const Footer = () => {
-  const colCount = footerData.length;
-
   return (
     <div className="flex bg-brand-100 pt-40 pb-20 px-4">
-      <div className="max-w-[1440] w-full mx-auto my-auto flex flex-col lg:flex-row gap-12 lg:gap-16">
+      <div className="w-full my-auto flex flex-col lg:flex-row gap-12 lg:gap-16">
         {/* Logo — also uses TransitionLink */}
         <div className="w-full lg:w-3/8">
           <TransitionLink href="/">
@@ -61,12 +56,7 @@ const Footer = () => {
 
         {/* Link groups */}
         <div className="flex w-full lg:w-5/8 flex-col gap-8">
-          <div
-            className="grid gap-4 w-full"
-            style={{
-              gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))`,
-            }}
-          >
+          <div className="grid grid-cols-2 gap-4 w-full lg:grid-cols-4">
             {footerData.map((group, i) => {
               const hasIcons = group.links.some((l) => l.icon);
               return (

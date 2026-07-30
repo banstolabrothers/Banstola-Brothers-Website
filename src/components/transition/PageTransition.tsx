@@ -5,30 +5,41 @@
  *
  * ── Initial load (first paint) ────────────────────────────────────────────────
  *
- *  TransitionContext starts with phase = "covering", so the curtain is already
- *  covering the screen before React even renders the page. On first mount,
- *  PageTransition detects isFirstMount + phase = "covering" and immediately
- *  starts the title-read → reveal sequence WITHOUT waiting for a pathname change.
+ *  Curtain starts parked ABOVE the viewport (translateY(-100%), invisible).
+ *  One frame after mount, it animates DOWN to translateY(0%) — a top-to-bottom
+ *  "closing" sweep, mirroring the reveal animation in reverse. Once that
+ *  cover animation finishes (COVER_MS), the title-read sequence begins.
  *
  *  Flow:
- *    Mount → step = "covering" (curtain already down) → poll document.title
- *    → title found → chars animate in → hold → chars exit
- *    → onCharsExited → beginReveal() → curtain falls off bottom → idle
+ *    Mount → curtain parked above (idle) → rAF → curtain slides down (covering)
+ *    → COVER_MS elapses → poll document.title → title found → chars animate in
+ *    → hold → chars exit → onCharsExited → beginReveal()
+ *    → curtain slides off bottom (top-to-bottom reveal edge) → idle
  *
  * ── Link-click navigation (subsequent) ───────────────────────────────────────
  *
- *  Same as before: phase goes covering → route pushes → pathname changes
- *  → new page mounts → title poll → chars → reveal → idle
+ *  Same idea, driven by TransitionContext: phase goes covering → route pushes
+ *  → pathname changes → new page mounts → title poll → chars → reveal → idle
+ *
+ * ── Long-title handling ──────────────────────────────────────────────────────
+ *
+ *  Title is split into words; words stay unbreakable (nowrap) but real spaces
+ *  sit between them so the browser can wrap onto multiple lines. Width/margin/
+ *  padding for the wrapping box are controlled purely via CSS on
+ *  [data-pt-title-wrap] in globals.css. Reading hold time is capped so a very
+ *  long title (70-80 words) doesn't produce a multi-second stall.
  *
  * ── globals.css ───────────────────────────────────────────────────────────────
  *
- *  Add this to avoid React 19 <style> tag warning:
+ *  Requires (already added):
  *
  *    @media (prefers-reduced-motion: reduce) {
  *      [data-pt-curtain], [data-pt-content] {
  *        transition-duration: 0ms !important;
  *      }
  *    }
+ *
+ *    [data-pt-title-wrap] { ... responsive width/margin/padding rules ... }
  */
 
 import { usePathname } from "next/navigation";
@@ -54,11 +65,13 @@ const POLL_FIRST_MS = 60;
 const POLL_RETRY_MS = 50;
 const READING_BASE_MS = 500;
 const READING_PER_CHAR_MS = 40;
+const READING_MAX_MS = 2600; // hard ceiling so long titles don't stall for seconds
 
 const allCharsInMs = (n: number) =>
   (CHAR.delayFirst + CHAR.stagger * (n - 1) + CHAR.duration) * 1000;
 
-const readingHoldMs = (n: number) => READING_BASE_MS + READING_PER_CHAR_MS * n;
+const readingHoldMs = (n: number) =>
+  Math.min(READING_BASE_MS + READING_PER_CHAR_MS * n, READING_MAX_MS);
 
 const readTitle = (): string => {
   if (typeof document === "undefined") return "";
@@ -68,21 +81,20 @@ const readTitle = (): string => {
 // ─── Variants ─────────────────────────────────────────────────────────────────
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: CHAR.stagger,
-      delayChildren: CHAR.delayFirst,
-    },
-  },
-  exit: { transition: { staggerChildren: 0 } },
+  visible: {},
+  exit: {},
 };
 
 const charVariants = {
   hidden: { y: "110%" },
-  visible: {
+  visible: (i: number) => ({
     y: "0%",
-    transition: { duration: CHAR.duration, ease: CHAR_EASE_IN },
-  },
+    transition: {
+      duration: CHAR.duration,
+      ease: CHAR_EASE_IN,
+      delay: CHAR.delayFirst + CHAR.stagger * i,
+    },
+  }),
   exit: {
     y: "110%",
     transition: { duration: CHAR.exitDuration, ease: CHAR_EASE_OUT },
@@ -93,33 +105,67 @@ type Step = "idle" | "covering" | "waiting" | "reading" | "exiting";
 
 // ─── TitleChars ───────────────────────────────────────────────────────────────
 function TitleChars({ title }: { title: string }) {
+  // Preserve whitespace runs as their own tokens so real spaces stay between words
+  const tokens = title.split(/(\s+)/).filter(Boolean);
+  let charIndex = 0; // running index over visible chars only — drives stagger delay
+
   return (
     <motion.h1
       aria-label={title}
-      className="whitespace-nowrap text-brand-100 select-none"
+      className="text-brand-100 select-none"
+      style={{
+        whiteSpace: "normal",
+        overflowWrap: "break-word",
+        wordBreak: "break-word",
+        textAlign: "center",
+      }}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
-      {title.split("").map((char, i) => (
-        <span
-          key={i}
-          style={{
-            display: "inline-block",
-            overflow: "hidden",
-            verticalAlign: "bottom",
-          }}
-        >
-          <motion.span
-            aria-hidden="true"
-            variants={charVariants}
-            style={{ display: "inline-block" }}
+      {tokens.map((token, tIdx) => {
+        const isSpace = /^\s+$/.test(token);
+
+        if (isSpace) {
+          // Real space — the only thing giving the browser a legal line-break point
+          return <span key={tIdx}>{token}</span>;
+        }
+
+        return (
+          <span
+            key={tIdx}
+            style={{
+              display: "inline-block",
+              whiteSpace: "nowrap", // keeps this one word atomic
+              verticalAlign: "bottom",
+            }}
           >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        </span>
-      ))}
+            {token.split("").map((char, cIdx) => {
+              const idx = charIndex++;
+              return (
+                <span
+                  key={cIdx}
+                  style={{
+                    display: "inline-block",
+                    overflow: "hidden",
+                    verticalAlign: "bottom",
+                  }}
+                >
+                  <motion.span
+                    aria-hidden="true"
+                    custom={idx}
+                    variants={charVariants}
+                    style={{ display: "inline-block" }}
+                  >
+                    {char}
+                  </motion.span>
+                </span>
+              );
+            })}
+          </span>
+        );
+      })}
     </motion.h1>
   );
 }
@@ -136,21 +182,24 @@ export default function PageTransition({
   const [displayChildren, setDisplayChildren] = useState(children);
   const pendingChildren = useRef(children);
 
-  // Tracks whether we are in the very first mount
+  // Tracks whether we are in the very first mount. Only flipped to false
+  // right when the initial cover animation is kicked off (see effect below) —
+  // NOT immediately on mount — so the "subsequent navigations" effect can't
+  // race ahead and skip the animated entrance.
   const isFirstMount = useRef(true);
 
   useEffect(() => {
     pendingChildren.current = children;
   }, [children]);
 
-  const [step, setStep] = useState<Step>(
-    // Mirror initial phase — if context starts covering, curtain is already down
-    "covering",
-  );
+  // Local step starts "idle" — curtain parked above the viewport, invisible.
+  // This is what lets the very first cover be an animated slide-down instead
+  // of an instant snap-to-covered.
+  const [step, setStep] = useState<Step>("idle");
   const [overlayTitle, setOverlayTitle] = useState("");
   const [showTitle, setShowTitle] = useState(false);
 
-  const stepRef = useRef<Step>("covering");
+  const stepRef = useRef<Step>("idle");
   const titleWasShown = useRef(false);
 
   const go = useCallback((s: Step) => {
@@ -193,8 +242,10 @@ export default function PageTransition({
         titleWasShown.current = true;
         setShowTitle(true);
 
-        const totalMs =
-          allCharsInMs(title.length) + readingHoldMs(title.length);
+        // Use visible-char count (spaces excluded) for both timing calcs —
+        // spaces no longer animate, so they shouldn't inflate the hold time.
+        const visibleLen = title.replace(/\s+/g, "").length;
+        const totalMs = allCharsInMs(visibleLen) + readingHoldMs(visibleLen);
         holdTimer.current = setTimeout(() => setShowTitle(false), totalMs);
         return;
       }
@@ -208,17 +259,35 @@ export default function PageTransition({
     pollTimer.current = setTimeout(poll, POLL_FIRST_MS);
   }, [go, stopAll]);
 
-  // ── Initial load: curtain is already down, start title sequence immediately ─
+  // ── Initial load: animate the curtain sliding DOWN to cover the screen,
+  //    then start the title sequence once it's fully covered ────────────────
   useEffect(() => {
-    // Only runs once on first mount
     if (!isFirstMount.current) return;
-    isFirstMount.current = false;
 
-    // Context starts as "covering" — curtain is already covering the screen.
-    // Start reading the title immediately, no need to wait for pathname change.
-    startTitleSequence();
+    let raf1 = 0;
+    let raf2 = 0;
 
-    return stopAll;
+    // Double rAF: guarantees the browser has painted the parked (-100%)
+    // position at least once before we flip to "covering", so the CSS
+    // transition actually animates instead of jumping straight there.
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        isFirstMount.current = false; // flip right as the animation begins
+        go("covering");
+      });
+    });
+
+    // Start reading the title once the cover sweep has finished.
+    const coverTimer = setTimeout(() => {
+      startTitleSequence();
+    }, COVER_MS);
+
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      clearTimeout(coverTimer);
+      stopAll();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // empty deps — runs exactly once on mount
 
@@ -294,12 +363,16 @@ export default function PageTransition({
       </div>
 
       {/* ── Curtain ──────────────────────────────────────────────────────────
-          Starts at translateY(0%) on first paint — already covering the screen.
-          Falls to translateY(100%) during reveal — slides off the bottom.
-          Returns to translateY(-100%) at idle — parked above viewport.
+          idle:      translateY(-100%) — parked above viewport, invisible
+          covering:  translateY(0%)    — slides DOWN to cover (top→bottom close)
+          exiting:   translateY(100%)  — slides further down, off the bottom
+                                          (top→bottom reveal edge)
 
-          On initial load: no transition on the initial cover position
-          (it's already there). Only the reveal gets an animated transition.
+          Both the close (idle→covering) and the reveal (covering→exiting)
+          move in the SAME direction (downward) — same mechanism, same easing,
+          just different start/end points. Only "idle" itself is unanimated,
+          since that's the instant reset back to the parked position after a
+          full cycle completes.
       ─────────────────────────────────────────────────────────────────────── */}
       <div
         data-pt-curtain
@@ -308,7 +381,7 @@ export default function PageTransition({
         style={{
           transform: `translateY(${curtainY})`,
           transition:
-            step === "idle" || (step === "covering" && isFirstMount.current)
+            step === "idle"
               ? "none"
               : `transform ${
                   step === "exiting" || phase === "revealing"
@@ -320,7 +393,7 @@ export default function PageTransition({
         }}
       >
         <div className="w-full h-full bg-brand-500 flex items-center justify-center">
-          <div>
+          <div data-pt-title-wrap>
             <AnimatePresence mode="wait" onExitComplete={onCharsExited}>
               {showTitle && overlayTitle ? (
                 <TitleChars key={overlayTitle} title={overlayTitle} />
