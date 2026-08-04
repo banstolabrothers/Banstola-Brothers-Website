@@ -39,7 +39,7 @@ const LOGO_CONFIGS = {
       final: {
         top: "50%",
         yPercent: -78,
-        scale: 0.3,
+        scale: 0.25,
         zIndex: 99,
       },
     },

@@ -31,11 +31,18 @@ const page = () => {
                 <p> Opposite side of Pokhara Central Oasis </p>
               </div>
 
-              <MyButton
-                type="primarybutton"
-                text="Get Direction"
-                link="https://www.google.com/maps/dir//Banstola+Brothers"
-              />
+              <div className="w-full flex gap-4 ">
+                <MyButton
+                  type="primarybutton"
+                  text="Get Direction"
+                  link="https://www.google.com/maps/dir//Banstola+Brothers"
+                />
+                <MyButton
+                  type="primarybutton"
+                  text="Call Now"
+                  link="tel:+9779824119665"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import ProductImageGallerySection from "@/components/products/ProductImageGaller
 import { MapPin } from "lucide-react";
 import VariantSelector from "@/components/ui/VariantSelector";
 import type { Product, SelectedOptions } from "@/types/product";
+import ProductDeliveryStatus from "./ProductDeliveryStatus";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,11 +30,11 @@ const ProductHeroSection = ({
       />
 
       {/* Right: Product Info */}
-      <div className="flex flex-col w-full md:w-6/12 md:items-center md:justify-center gap-8">
+      <div className="flex flex-col w-full md:w-4/10 md:items-center md:justify-center gap-8 ">
         <h2 className="text-brand-900 w-fit md:w-full">{product.title}</h2>
 
         {(product.variantGroups?.length ?? 0) > 0 && (
-          <div className="flex flex-col flex-wrap gap-8 w-full">
+          <div className="flex flex-col flex-wrap gap-4 w-full">
             {product.variantGroups!.map((group, groupIndex) => (
               <VariantSelector
                 key={groupIndex}
@@ -52,17 +53,22 @@ const ProductHeroSection = ({
         {/* Action Buttons */}
         <div className="pt-4 flex gap-4 w-full flex-wrap">
           <MyButton
-            type="secondarybutton"
-            text="Visit Store"
-            leadicon={<MapPin size={32} />}
-            link="/store"
+            type="whatsapp"
+            text="Send Inquiry"
+            product={product ? { ...product, selectedOptions } : null}
           />
 
           <MyButton
-            type="whatsapp"
-            text="Order Via WhatsApp"
-            product={product ? { ...product, selectedOptions } : null}
+            type="secondarybutton"
+            text="Visit"
+            leadicon={<MapPin size={32} />}
+            link="/store"
           />
+        </div>
+
+        {/* Delivery Section */}
+        <div className="pt-4 flex w-full">
+          <ProductDeliveryStatus />
         </div>
       </div>
     </section>

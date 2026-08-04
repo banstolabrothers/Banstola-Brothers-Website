@@ -4,8 +4,8 @@ import MyButton from "@/components/ui/MyButton";
 
 const HistorySection = () => {
   return (
-    <section className="flex  bg-gradient-to-b from-brand-100 to-brand-50">
-      <section className="py-32 px-4 mx-auto my-auto flex-col lg:flex-row max-w-[1440] gap-16 lg:gap-8 lg:justify-between items-center flex w-full mx-auto">
+    <section className="flex  ">
+      <section className="py-32 px-4 mx-auto my-auto flex-col lg:flex-row max-w-[1440] gap-16 lg:gap-8 lg:justify-between items-center flex w-full">
         <div className="max-w-3xl text-center lg:text-left text-brand-900">
           <h1>Founded in late 1990s</h1>
           <p>

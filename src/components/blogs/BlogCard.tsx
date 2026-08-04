@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { BlogCard as BlogCardType } from "@/types/blogs";
+import { TransitionLink } from "../transition/TransitionLink";
 
 interface Props {
   blog: BlogCardType;
@@ -18,7 +18,7 @@ export default function BlogCard({ blog }: Props) {
   const imageUrl = blog.primaryImage?.asset?.url;
 
   return (
-    <Link
+    <TransitionLink
       href={`/blogs/${blog.slug}`}
       className="group flex flex-col hover:cursor-pointer"
     >
@@ -37,15 +37,15 @@ export default function BlogCard({ blog }: Props) {
         <p className="text-brand-900 group-hover:opacity-50 transition-opacity">
           {blog.title}
         </p>
-        {blog.publishedAt && (
+        {/* {blog.publishedAt && (
           <time
             dateTime={blog.publishedAt}
             className="text-sm text-neutral-500"
           >
             {formatDate(blog.publishedAt)}
           </time>
-        )}
+        )} */}
       </div>
-    </Link>
+    </TransitionLink>
   );
 }

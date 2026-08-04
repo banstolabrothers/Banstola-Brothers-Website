@@ -119,7 +119,7 @@ const VariantOption = ({
       }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <div className="flex-1 space-y-1">
+        <div className="flex-1 space-y-0.5">
           <p
             className={`cursor-pointer ${
               isSelected && !isOutOfStock ? "text-brand-900" : "text-brand-900"
@@ -128,7 +128,7 @@ const VariantOption = ({
             {option.optionName}
           </p>
           {option.description && (
-            <label className="cursor-pointer line-clamp-1 text-brand-900/80 block">
+            <label className="cursor-pointer line-clamp-1 text-brand-900/64 block">
               {option.description}
             </label>
           )}
@@ -147,12 +147,12 @@ const VariantSelector = ({
   if (!group?.options?.length) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-brand-900">{group.groupName}</p>
+        <label className="text-brand-900/80">{group.groupName}</label>
       </div>
 
-      <div className="flex flex-wrap flex-row gap-3">
+      <div className="flex flex-wrap flex-row gap-2">
         {group.options.map((option, i) => (
           <VariantOption
             key={i}

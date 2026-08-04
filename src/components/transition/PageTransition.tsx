@@ -5,21 +5,23 @@
  *
  * ── Initial load (first paint) ────────────────────────────────────────────────
  *
- *  Curtain starts parked ABOVE the viewport (translateY(-100%), invisible).
- *  One frame after mount, it animates DOWN to translateY(0%) — a top-to-bottom
- *  "closing" sweep, mirroring the reveal animation in reverse. Once that
- *  cover animation finishes (COVER_MS), the title-read sequence begins.
+ *  Curtain starts ALREADY COVERING the viewport (translateY(0%)) on the very
+ *  first render — no animated sweep-in. There is nothing behind it yet worth
+ *  protecting from a sweep, so we skip straight to the title-read sequence.
+ *  This avoids the brief flash of underlying content that occurred when the
+ *  curtain used to start parked off-screen and animate down into place.
  *
  *  Flow:
- *    Mount → curtain parked above (idle) → rAF → curtain slides down (covering)
- *    → COVER_MS elapses → poll document.title → title found → chars animate in
- *    → hold → chars exit → onCharsExited → beginReveal()
- *    → curtain slides off bottom (top-to-bottom reveal edge) → idle
+ *    Mount → curtain already covering (step="covering") → title poll
+ *    → title found → chars animate in → hold → chars exit → onCharsExited
+ *    → beginReveal() → curtain slides off bottom (top-to-bottom reveal edge)
+ *    → idle
  *
  * ── Link-click navigation (subsequent) ───────────────────────────────────────
  *
  *  Same idea, driven by TransitionContext: phase goes covering → route pushes
  *  → pathname changes → new page mounts → title poll → chars → reveal → idle
+ *  Here the curtain DOES animate down to cover (there's a live page to hide).
  *
  * ── Long-title handling ──────────────────────────────────────────────────────
  *
@@ -182,24 +184,27 @@ export default function PageTransition({
   const [displayChildren, setDisplayChildren] = useState(children);
   const pendingChildren = useRef(children);
 
-  // Tracks whether we are in the very first mount. Only flipped to false
-  // right when the initial cover animation is kicked off (see effect below) —
-  // NOT immediately on mount — so the "subsequent navigations" effect can't
-  // race ahead and skip the animated entrance.
+  // Tracks whether we are in the very first mount. Flipped to false on the
+  // frame right after mount (via rAF), which is early enough to let the
+  // pathname-change effect below skip itself on the initial commit, but
+  // without gating anything on an animation this time (there isn't one).
   const isFirstMount = useRef(true);
 
   useEffect(() => {
     pendingChildren.current = children;
   }, [children]);
 
-  // Local step starts "idle" — curtain parked above the viewport, invisible.
-  // This is what lets the very first cover be an animated slide-down instead
-  // of an instant snap-to-covered.
-  const [step, setStep] = useState<Step>("idle");
+  // Local step starts "covering" — curtain is ALREADY covering the viewport
+  // on first paint (translateY(0%)). No animated sweep-in on load: there's
+  // nothing behind it yet worth protecting from a sweep, and starting here
+  // avoids a frame (or few) where both the curtain and the page content are
+  // invisible at once, which is what caused the old "flash of landing page"
+  // before the curtain finished sliding down.
+  const [step, setStep] = useState<Step>("covering");
   const [overlayTitle, setOverlayTitle] = useState("");
   const [showTitle, setShowTitle] = useState(false);
 
-  const stepRef = useRef<Step>("idle");
+  const stepRef = useRef<Step>("covering");
   const titleWasShown = useRef(false);
 
   const go = useCallback((s: Step) => {
@@ -259,33 +264,23 @@ export default function PageTransition({
     pollTimer.current = setTimeout(poll, POLL_FIRST_MS);
   }, [go, stopAll]);
 
-  // ── Initial load: animate the curtain sliding DOWN to cover the screen,
-  //    then start the title sequence once it's fully covered ────────────────
+  // ── Initial load: curtain is ALREADY covering (step starts "covering"),
+  //    so there's nothing to sweep — go straight into the title read
+  //    sequence as soon as we mount. ──────────────────────────────────────
   useEffect(() => {
-    if (!isFirstMount.current) return;
+    startTitleSequence();
 
-    let raf1 = 0;
-    let raf2 = 0;
-
-    // Double rAF: guarantees the browser has painted the parked (-100%)
-    // position at least once before we flip to "covering", so the CSS
-    // transition actually animates instead of jumping straight there.
-    raf1 = requestAnimationFrame(() => {
-      raf2 = requestAnimationFrame(() => {
-        isFirstMount.current = false; // flip right as the animation begins
-        go("covering");
-      });
+    // Defer flipping isFirstMount to the next frame — NOT synchronously —
+    // so the pathname-change effect below (which also fires on this same
+    // initial commit) still sees isFirstMount.current === true and skips
+    // itself, avoiding a duplicate startTitleSequence() call for the same
+    // initial route.
+    const raf = requestAnimationFrame(() => {
+      isFirstMount.current = false;
     });
 
-    // Start reading the title once the cover sweep has finished.
-    const coverTimer = setTimeout(() => {
-      startTitleSequence();
-    }, COVER_MS);
-
     return () => {
-      cancelAnimationFrame(raf1);
-      cancelAnimationFrame(raf2);
-      clearTimeout(coverTimer);
+      cancelAnimationFrame(raf);
       stopAll();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -363,16 +358,17 @@ export default function PageTransition({
       </div>
 
       {/* ── Curtain ──────────────────────────────────────────────────────────
-          idle:      translateY(-100%) — parked above viewport, invisible
-          covering:  translateY(0%)    — slides DOWN to cover (top→bottom close)
-          exiting:   translateY(100%)  — slides further down, off the bottom
-                                          (top→bottom reveal edge)
+          covering (initial): translateY(0%) from the very first paint —
+                               no sweep-in animation, just already there.
+          covering (link-click): animates from idle's -100% down to 0% —
+                               this IS a visible sweep, because there's a
+                               live page underneath worth wiping away.
+          exiting:  translateY(100%)  — slides further down, off the bottom
+                                        (top→bottom reveal edge)
 
-          Both the close (idle→covering) and the reveal (covering→exiting)
-          move in the SAME direction (downward) — same mechanism, same easing,
-          just different start/end points. Only "idle" itself is unanimated,
-          since that's the instant reset back to the parked position after a
-          full cycle completes.
+          Only "idle" itself is unanimated (transition: none), since that's
+          the instant reset back to the parked position after a full cycle
+          completes, ready for the next link-click's animated sweep-in.
       ─────────────────────────────────────────────────────────────────────── */}
       <div
         data-pt-curtain
