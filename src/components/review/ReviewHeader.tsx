@@ -13,6 +13,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import MyButton from "@/components/ui/MyButton";
 import star from "@/assets/svg/star.svg";
 import type { RatingStats, CustomerImage, ProductFilter } from "@/types/review";
+import { getDisplayName } from "@/lib/reviewUtils"; // adjust path to wherever it actually lives
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -166,7 +167,7 @@ const ReviewHeader = ({
             >
               {customerImages.slice(0, 30).map((img, index) => (
                 <SwiperSlide key={index}>
-                  <div className="relative w-full h-60 rounded-xl overflow-hidden">
+                  <div className="relative w-full h-60 rounded-2xl overflow-hidden">
                     <Image
                       src={img.url}
                       alt={
@@ -175,10 +176,19 @@ const ReviewHeader = ({
                           : `Submitted by ${img.username}`
                       }
                       fill
-                      sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 100vw"
                       className="object-cover transition-transform duration-200"
                       loading="lazy"
                     />
+
+                    {/* Customer name badge — only on actual customer submissions */}
+                    {!img.isGeneral && img.username && (
+                      <div className="absolute bg-brand-50 px-4 py-2 bottom-2 left-2 right-auto rounded-xl">
+                        <label className="text-brand-900">
+                          {getDisplayName(img.username)}
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </SwiperSlide>
               ))}

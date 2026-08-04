@@ -62,7 +62,7 @@ export default function ProductDeliveryStatus() {
   }, []);
 
   return (
-    <div className="w-full max-w-xl flex flex-col gap-1.5">
+    <div className="w-full max-w-xl flex flex-col gap-1.5 pt-4 ">
       <div className="w-full  bg-brand-900/5 rounded-4xl py-4 md:py-8 px-2 md:px-4 flex items-start ">
         {steps.map((step, i) => {
           const Icon = step.icon;

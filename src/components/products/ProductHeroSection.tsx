@@ -32,7 +32,6 @@ const ProductHeroSection = ({
       {/* Right: Product Info */}
       <div className="flex flex-col w-full md:w-4/10 md:items-center md:justify-center gap-8 ">
         <h2 className="text-brand-900 w-fit md:w-full">{product.title}</h2>
-
         {(product.variantGroups?.length ?? 0) > 0 && (
           <div className="flex flex-col flex-wrap gap-4 w-full">
             {product.variantGroups!.map((group, groupIndex) => (
@@ -49,27 +48,27 @@ const ProductHeroSection = ({
             ))}
           </div>
         )}
-
         {/* Action Buttons */}
-        <div className="pt-4 flex gap-4 w-full flex-wrap">
-          <MyButton
-            type="whatsapp"
-            text="Send Inquiry"
-            product={product ? { ...product, selectedOptions } : null}
-          />
+        <div className="pt-4 flex flex-col gap-2 w-full ">
+          <div className="flex gap-4 w-full flex-wrap">
+            <MyButton
+              type="whatsapp"
+              text="Order via WhatsApp"
+              product={product ? { ...product, selectedOptions } : null}
+            />
 
-          <MyButton
-            type="secondarybutton"
-            text="Visit"
-            leadicon={<MapPin size={32} />}
-            link="/store"
-          />
+            <MyButton
+              type="secondarybutton"
+              text="Visit"
+              leadicon={<MapPin size={32} />}
+              link="/store"
+            />
+          </div>{" "}
+          {/* <label className="">Get Reply in 5 min</label> */}
         </div>
 
         {/* Delivery Section */}
-        <div className="pt-4 flex w-full">
-          <ProductDeliveryStatus />
-        </div>
+        <ProductDeliveryStatus />
       </div>
     </section>
   );

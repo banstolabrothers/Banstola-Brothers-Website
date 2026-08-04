@@ -147,7 +147,7 @@ export const extractCustomerImages = (docs: ReviewDoc[]): CustomerImage[] => {
   const images: CustomerImage[] = [];
 
   const sanityResize = (url: string) =>
-    `${url}?w=160&h=160&fit=crop&auto=format`;
+    `${url}?w=500&h=500&fit=crop&auto=format`;
 
   docs.forEach((doc) => {
     doc.reviews?.forEach((r) => {
