@@ -9,26 +9,24 @@ import StepCard from "@/components/checkout/StepCard";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import OrderSuccessCard from "@/components/checkout/OrderSuccessCard";
 import { usePicknDrop } from "./_hooks/usePicknDrop";
-import { DEMO_CART_ITEMS, INITIAL_FORM } from "@/lib/constants";
-import type { CartItem, CheckoutFormData, FormErrors } from "@/lib/checkout";
+import { INITIAL_FORM } from "@/lib/constants";
+import type { CheckoutFormData, FormErrors } from "@/lib/checkout";
+import { useCart } from "@/context/CartContext";
 
 export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   // ── Cart ──────────────────────────────────────────────────────────────────
-  const [cartItems, setCartItems] = useState<CartItem[]>(DEMO_CART_ITEMS);
-
-  const handleUpdateQuantity = (id: string, qty: number) => {
-    if (qty < 1) return;
-    setCartItems((p) =>
-      p.map((i) => (i.cartId === id ? { ...i, quantity: qty } : i)),
-    );
-  };
-  const handleRemoveItem = (id: string) =>
-    setCartItems((p) => p.filter((i) => i.cartId !== id));
-  const handleClearCart = () => setCartItems([]);
-  const cartSubtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  // Sourced from CartContext (localStorage-backed) instead of demo data.
+  const {
+    items: cartItems,
+    updateQuantity: handleUpdateQuantity,
+    removeItem: handleRemoveItem,
+    clearCart: handleClearCart,
+    subtotal: cartSubtotal,
+    hydrated: cartHydrated,
+  } = useCart();
 
   // ── Form ──────────────────────────────────────────────────────────────────
   const [formData, setFormData] = useState<CheckoutFormData>(INITIAL_FORM);
@@ -41,7 +39,16 @@ export default function CheckoutPage() {
       >,
     ) => {
       const { name, value } = e.target;
-      setFormData((p) => ({ ...p, [name]: value }));
+      setFormData((p) => {
+        // Picking a different branch invalidates whatever area was
+        // selected under the previous branch — clear it so the customer
+        // can't submit an area that doesn't belong to the branch they
+        // just switched to.
+        if (name === "pndBranch" && value !== p.pndBranch) {
+          return { ...p, pndBranch: value, pndArea: "" };
+        }
+        return { ...p, [name]: value };
+      });
       if (errors[name as keyof FormErrors]) {
         setErrors((p) => ({ ...p, [name]: "" }));
       }
@@ -50,17 +57,23 @@ export default function CheckoutPage() {
   );
 
   // ── Pick & Drop ───────────────────────────────────────────────────────────
+  // `destinations` is one entry per real branch (label = branch name only,
+  // e.g. "Kathmandu Valley"). Each destination also carries `areas`: the
+  // individual localities under that branch (Thamel, Basantapur, ...),
+  // parsed out of Pick & Drop's raw data — see usePicknDrop.ts. Nothing
+  // auto-selects; both fields start empty until the customer picks.
   const {
-    deliverableBranches,
+    destinations,
     loading: initLoading,
     error: initError,
     scanProgress,
   } = usePicknDrop();
-  const branchNames = deliverableBranches.map((b) => b.branch_name);
-  const selectedBranchObj = deliverableBranches.find(
-    (b) => b.branch_name === formData.pndBranch,
+  const branchLabels = destinations.map((d) => d.label);
+  const selectedDestination = destinations.find(
+    (d) => d.label === formData.pndBranch,
   );
-  const deliveryRate = selectedBranchObj?.deliveryAmount ?? null;
+  const areaOptions = selectedDestination?.areas ?? [];
+  const deliveryRate = selectedDestination?.deliveryAmount ?? null;
   const codAmount =
     deliveryRate !== null
       ? Math.round(cartSubtotal + deliveryRate)
@@ -77,8 +90,10 @@ export default function CheckoutPage() {
         e.phone = "Please enter a valid 10-digit phone number";
     } else if (step === 2) {
       if (!formData.pndBranch) e.pndBranch = "Please select a delivery branch";
-      if (!formData.streetAddress.trim())
-        e.streetAddress = "Street address is required";
+      // Only require an area/locality when the selected branch actually
+      // has parsed localities to choose from.
+      if (formData.pndBranch && areaOptions.length > 0 && !formData.pndArea)
+        e.pndArea = "Please select your area / locality";
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -97,35 +112,58 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
+  // Snapshot of what was ordered, kept for display after the cart is cleared.
+  const [placedItems, setPlacedItems] = useState<typeof cartItems>([]);
 
   const handleSubmit = async () => {
     if (!validateStep(2)) return;
     setIsSubmitting(true);
     setSubmitError("");
 
-    const cartDesc = cartItems
-      .map((i) => `${i.name} x${i.quantity}`)
-      .join(", ");
-    const instruction = [formData.streetAddress, formData.landmark]
-      .filter(Boolean)
-      .join(", ");
+    // orderDescription: what's actually in the parcel — name, variant, qty
+    // for every line item. This is the "manual" field Pick & Drop's own
+    // dashboard shows to whoever handles the package, so it needs to reflect
+    // the real order contents every time, not get replaced by the
+    // customer's note.
+    const orderDescription =
+      cartItems
+        .map(
+          (i) =>
+            `${i.name}${i.variant ? ` (${i.variant})` : ""} x${i.quantity}`,
+        )
+        .join(", ") || "Order from website";
+
+    // instruction: carries ONLY the customer's own note — address, area,
+    // and landmark are sent through their own dedicated fields below, so
+    // they don't need to be duplicated in here.
+    const instruction = formData.orderNote ? `${formData.orderNote}` : "";
+
+    // destinationBranch: the real branch name (e.g. "Kathmandu Valley").
+    // destinationCityArea: the specific locality the customer picked
+    // (e.g. "Thamel") — falls back to the branch name only if the branch
+    // has no parsed localities to choose from.
+    const destinationBranch =
+      selectedDestination?.branchName ?? formData.pndBranch;
+    const destinationCityArea =
+      formData.pndArea || selectedDestination?.branchName || formData.pndBranch;
 
     try {
       const result = await createOrder({
         customerName: `${formData.firstName} ${formData.lastName}`.trim(),
         primaryMobileNo: formData.phone,
-        destinationBranch: formData.pndBranch,
-        destinationCityArea: formData.pndBranch,
-        orderDescription:
-          formData.orderNote || cartDesc || "Order from website",
+        destinationBranch,
+        destinationCityArea,
+        orderDescription,
         codAmount,
         instruction,
         orderType: "Regular",
         ...(formData.landmark && { landmark: formData.landmark }),
       });
       setOrderResult(result);
+      setPlacedItems(cartItems); // keep a copy to show in the summary panel
       setCompletedSteps((p) => (p.includes(3) ? p : [...p, 3]));
       setCurrentStep(4);
+      handleClearCart(); // order is placed — empty the cart so it doesn't linger
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : "Something went wrong.",
@@ -137,7 +175,25 @@ export default function CheckoutPage() {
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  if (!mounted || !cartHydrated) return null;
+
+  // Nothing in the cart and no order was just placed — send them back to shop
+  // instead of showing an empty checkout form.
+  if (cartItems.length === 0 && !orderResult) {
+    return (
+      <section className="flex flex-col items-center justify-center min-h-screen gap-4 px-4 text-center">
+        <h5 className="text-gray-900">Your cart is empty</h5>
+        <p className="text-gray-500 text-sm max-w-sm">
+          Add something from the shop before checking out.
+        </p>
+        <MyButton
+          type="primarybutton"
+          text="Browse products"
+          link="/products"
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="flex flex-col mx-auto min-h-screen my-auto w-full bg-white">
@@ -214,7 +270,7 @@ export default function CheckoutPage() {
             title="Delivery address"
             isActive={currentStep === 2}
             isCompleted={completedSteps.includes(2)}
-            summaryText={`${formData.pndBranch} · ${formData.streetAddress}${formData.landmark ? ` (${formData.landmark})` : ""}`}
+            summaryText={`${formData.pndBranch}${formData.pndArea ? ` · ${formData.pndArea}` : ""} · ${formData.landmark ? ` (${formData.landmark})` : ""}`}
             onChangeClick={() => setCurrentStep(2)}
           >
             {initError && (
@@ -253,11 +309,11 @@ export default function CheckoutPage() {
               name="pndBranch"
               value={formData.pndBranch}
               onChange={handleInputChange} // works unchanged — same synthetic event shape
-              options={branchNames}
+              options={branchLabels}
               placeholder={
                 initLoading
                   ? `Scanning… (${scanProgress}%)`
-                  : branchNames.length === 0
+                  : branchLabels.length === 0
                     ? "No delivery locations available"
                     : "Search delivery branch…"
               }
@@ -266,31 +322,23 @@ export default function CheckoutPage() {
               disabled={initLoading}
             />
 
-            {/* {formData.pndBranch && (
-              <div className="flex items-center justify-between px-4 py-3 rounded-2xl border bg-green-50 border-green-200">
-                <div>
-                  <span className="text-xs text-gray-500 block">
-                    Delivery charge to
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    {formData.pndBranch}
-                  </span>
-                </div>
-                <span className="text-lg font-bold text-green-700">
-                  Rs. {Number(deliveryRate ?? 0).toFixed(2)}
-                </span>
-              </div>
-            )} */}
+            {/* Area / Locality: only meaningful once a branch is picked
+                and that branch actually has parsed localities. Hidden
+                otherwise so the form doesn't show an empty, confusing
+                dropdown before a branch is chosen. */}
+            {formData.pndBranch && areaOptions.length > 0 && (
+              <ComboSelectField
+                label="Area / Locality"
+                name="pndArea"
+                value={formData.pndArea}
+                onChange={handleInputChange}
+                options={areaOptions}
+                placeholder="Search your area, e.g. Thamel…"
+                error={errors.pndArea}
+                required
+              />
+            )}
 
-            <InputField
-              label="Street Address"
-              name="streetAddress"
-              value={formData.streetAddress}
-              onChange={handleInputChange}
-              placeholder="Street name, house no., tole"
-              error={errors.streetAddress}
-              required
-            />
             <InputField
               label="Landmark"
               name="landmark"
@@ -367,7 +415,7 @@ export default function CheckoutPage() {
         <div className="lg:sticky lg:top-4 flex flex-col w-5/12 gap-6 self-start">
           <div className="bg-white rounded-3xl border border-neutral-200 p-6">
             <OrderSummary
-              cartItems={cartItems}
+              cartItems={orderResult ? placedItems : cartItems}
               onUpdateQuantity={handleUpdateQuantity}
               onRemoveItem={handleRemoveItem}
               onClearCart={handleClearCart}

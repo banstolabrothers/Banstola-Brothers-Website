@@ -1,10 +1,13 @@
 // import VariantSelector from "@/components/ui/VariantSelector";
 import MyButton from "@/components/ui/MyButton";
 import ProductImageGallerySection from "@/components/products/ProductImageGallerySection";
-import { MapPin } from "lucide-react";
+import { MapPin, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
 import VariantSelector from "@/components/ui/VariantSelector";
 import type { Product, SelectedOptions } from "@/types/product";
 import ProductDeliveryStatus from "./ProductDeliveryStatus";
+import { useCart } from "@/context/CartContext";
+import { buildCartItem } from "@/lib/checkout";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,6 +24,15 @@ const ProductHeroSection = ({
   selectedOptions,
   onOptionSelect,
 }: ProductHeroSectionProps) => {
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const handleBuyNow = () => {
+    const item = buildCartItem(product, selectedOptions, 1);
+    addItem(item, 1);
+    router.push("/checkout");
+  };
+
   return (
     <section className="flex max-w-[1280px] w-full lg:max-w-full md:h-[80vh] lg:h-[90vh] mx-auto p-4 flex-col md:flex-row gap-12">
       {/* Left: Image Gallery */}
@@ -51,6 +63,13 @@ const ProductHeroSection = ({
         {/* Action Buttons */}
         <div className="pt-4 flex flex-col gap-2 w-full ">
           <div className="flex gap-4 w-full flex-wrap">
+            {/* <MyButton
+              type="primarybutton"
+              text="Buy Now"
+              leadicon={<ShoppingBag size={20} />}
+              onClick={handleBuyNow}
+            /> */}
+
             <MyButton
               type="whatsapp"
               text="Order via WhatsApp"

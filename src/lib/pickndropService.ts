@@ -1,6 +1,6 @@
-// ── Env vars (Next.js uses NEXT_PUBLIC_ prefix for client-side) ──────────────
-const API_KEY = process.env.NEXT_PUBLIC_PND_API_KEY ?? "";
-const API_SECRET = process.env.NEXT_PUBLIC_PND_API_SECRET ?? "";
+// The API key/secret live server-side only (src/app/api/pnd/[...path]/route.ts)
+// and are attached there. The browser never sees them — it just calls this
+// same-origin proxy path.
 const BASE_URL = "/api/pnd"; // Next.js API route proxy
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -9,6 +9,24 @@ export interface PndBranch {
   area?: string[];
   branch_code?: string;
   status?: string;
+  deliveryAmount?: number;
+}
+
+// One selectable branch, with its individual localities parsed out.
+//
+// IMPORTANT: Pick & Drop's `area` field is NOT one clean string per
+// locality despite what their docs example shows. In practice a branch's
+// `area` array can contain a single entry that is itself a giant
+// comma-joined blob, e.g.:
+//   area: ["Thamel,Basantapur,New Road,Swayambhu,Lazimpat,Durbar Marg,..."]
+// So every entry in `area` must be split on "," and trimmed to get the
+// real list of individual locality names — see parseAreaNames() in
+// usePicknDrop.ts, which builds `areas` below.
+export interface PndDestination {
+  key: string; // unique React key (== branchName)
+  label: string; // shown in the "Delivery Branch" dropdown — branch name ONLY
+  branchName: string; // real branch_name — goes to destinationBranch
+  areas: string[]; // parsed individual localities under this branch, for the separate "Area / Locality" field
   deliveryAmount?: number;
 }
 
@@ -48,7 +66,6 @@ async function pndFetch(endpoint: string, options: RequestInit = {}) {
   const res = await fetch(endpoint, {
     ...options,
     headers: {
-      Authorization: `token ${API_KEY}:${API_SECRET}`,
       "Content-Type": "application/json",
       Accept: "*/*",
       ...(options.headers ?? {}),
@@ -81,6 +98,21 @@ export async function getBusinessAddress(): Promise<{
 }
 
 export async function getVendorBranch(): Promise<VendorBranch> {
+  // ── Temporary override ──────────────────────────────────────────────────
+  // The Pick & Drop account currently on file may have the wrong business
+  // address registered (e.g. a demo/test address in a different city than
+  // where this vendor actually operates from). Rather than silently
+  // computing delivery rates from the wrong pickup point, set this env var
+  // to force the correct branch until the account's registered address is
+  // corrected with Pick & Drop directly.
+  //
+  // NEXT_PUBLIC_ is safe here — a branch/city name isn't a secret, and this
+  // runs client-side inside usePicknDrop.
+  const override = process.env.NEXT_PUBLIC_PND_PICKUP_BRANCH_OVERRIDE;
+  if (override) {
+    return { branch_name: override, location: override };
+  }
+
   const [branches, business] = await Promise.all([
     getBranches(),
     getBusinessAddress(),

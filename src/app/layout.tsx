@@ -3,6 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 import LenisProvider from "@/components/ui/LenisProvider"; // 👈 import
 import { LocalBusinessSchema } from "@/lib/schema";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.banstolabrothers.com.np"),
@@ -95,7 +96,9 @@ export default async function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <LenisProvider>{children}</LenisProvider> {/* 👈 wrap children */}
+        <CartProvider>
+          <LenisProvider>{children}</LenisProvider> {/* 👈 wrap children */}
+        </CartProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-04011M7W45"
           strategy="afterInteractive"
