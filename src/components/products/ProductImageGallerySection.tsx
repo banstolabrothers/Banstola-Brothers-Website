@@ -119,7 +119,7 @@ const ProductImageGallerySection = ({
   }, [selectedOptions, allImages]);
 
   return (
-    <div className="relative w-full md:w-6/10 h-[620px] md:h-full object-cover rounded-3xl overflow-clip">
+    <div className="relative w-full h-[620px] md:h-full object-cover rounded-3xl overflow-clip">
       {/* Main swiper */}
       <div className="flex w-full h-full bg-brand-100/50 rounded-lg overflow-hidden">
         <Swiper

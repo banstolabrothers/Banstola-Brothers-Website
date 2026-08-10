@@ -34,18 +34,23 @@ const ProductHeroSection = ({
   };
 
   return (
-    <section className="flex max-w-[1280px] w-full lg:max-w-full md:h-[80vh] lg:h-[90vh] mx-auto p-4 flex-col md:flex-row gap-12">
+    <section className="flex max-w-5xl w-full lg:max-w-full md:h-[80vh] lg:h-[90vh] p-4 flex-col md:flex-row gap-12">
       {/* Left: Image Gallery */}
-      <ProductImageGallerySection
-        product={product}
-        selectedOptions={selectedOptions}
-      />
+      <div className="flex w-full md:w-7/12">
+        <ProductImageGallerySection
+          product={product}
+          selectedOptions={selectedOptions}
+        />
+      </div>
 
       {/* Right: Product Info */}
-      <div className="flex flex-col w-full md:w-4/10 md:items-center md:justify-center gap-8 ">
+      <div className="flex flex-col w-full md:w-5/12 md:min-w-0 md:items-left md:justify-center gap-8">
+        {/* Title */}
         <h2 className="text-brand-900 w-fit md:w-full">{product.title}</h2>
+
+        {/* Variant */}
         {(product.variantGroups?.length ?? 0) > 0 && (
-          <div className="flex flex-col flex-wrap gap-4 w-full">
+          <div className="w-full">
             {product.variantGroups!.map((group, groupIndex) => (
               <VariantSelector
                 key={groupIndex}
@@ -54,8 +59,8 @@ const ProductHeroSection = ({
                 onOptionSelect={(optionName: string) =>
                   onOptionSelect(group.groupName, optionName)
                 }
-                layout="grid"
-                columns={2}
+                // layout="grid"
+                // columns={2}
               />
             ))}
           </div>

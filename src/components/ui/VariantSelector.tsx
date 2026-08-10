@@ -28,8 +28,6 @@ interface VariantSelectorProps {
   group: VariantGroup;
   selectedOption: string;
   onOptionSelect: (optionName: string) => void;
-  layout?: "grid" | "row"; // add this
-  columns?: number; // add this
 }
 
 // ── Individual option ────────────────────────────────────────────────────────
@@ -49,7 +47,7 @@ const VariantOption = ({
         onClick={isOutOfStock ? undefined : onSelect}
         onMouseEnter={() => !isOutOfStock && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`relative transition-all duration-300 ${
+        className={`relative transition-all duration-300 shrink-0 snap-start ${
           isOutOfStock ? "opacity-20 cursor-not-allowed" : "cursor-pointer"
         }`}
       >
@@ -106,29 +104,25 @@ const VariantOption = ({
     );
   }
 
-  // Text-based variant (button style)
+  // Text-based variant
   return (
     <div
       onClick={isOutOfStock ? undefined : onSelect}
-      className={`relative rounded-3xl px-5 py-3 transition-all duration-300 border-2 w-fit ${
+      className={`relative rounded-3xl px-5 py-3 transition-all duration-300 border-2 w-fit shrink-0 snap-start ${
         isOutOfStock
           ? "bg-neutral-50 opacity-40 text-neutral-400 cursor-not-allowed border-neutral-200 pointer-events-none"
           : isSelected
             ? "text-white bg-brand-100 cursor-pointer"
-            : "bg-white hover:bg-brand-100/50 border-neutral-200  cursor-pointer"
+            : "bg-white hover:bg-brand-100/50 border-neutral-200 cursor-pointer"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 space-y-0.5">
-          <p
-            className={`cursor-pointer ${
-              isSelected && !isOutOfStock ? "text-brand-900" : "text-brand-900"
-            }`}
-          >
+          <p className="cursor-pointer text-brand-900 whitespace-nowrap">
             {option.optionName}
           </p>
           {option.description && (
-            <label className="cursor-pointer line-clamp-1 text-brand-900/64 block">
+            <label className="cursor-pointer line-clamp-1 text-brand-900/64 block whitespace-nowrap">
               {option.description}
             </label>
           )}
@@ -147,12 +141,10 @@ const VariantSelector = ({
   if (!group?.options?.length) return null;
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-brand-900/80">{group.groupName}</label>
-      </div>
+    <div className="flex flex-col gap-4 w-full">
+      <label className="text-brand-900/80 w-full">{group.groupName}</label>
 
-      <div className="flex flex-wrap flex-row gap-2">
+      <div className="flex flex-row gap-4 overflow-x-auto w-full pb-2 px-1  scrollbar-thin">
         {group.options.map((option, i) => (
           <VariantOption
             key={i}
