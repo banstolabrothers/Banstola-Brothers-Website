@@ -13,7 +13,7 @@ const LocationSection = () => {
           loading="lazy"
           title="Google Map showing Banstola Brothers location in Pokhara"
           referrerPolicy="no-referrer-when-downgrade"
-          className="h-[480] md:h-[640] rounded-2xl"
+          className="h-[480] md:h-[560] rounded-2xl"
         />
       </div>
       <div className="w-full md:max-w-4/12 flex flex-col p-6 md:p-8 gap-4 md:gap-6 text-brand-900">
@@ -28,27 +28,22 @@ const LocationSection = () => {
           </p>
         </div>
         <div className="flex flex-row md:flex-col gap-1 w-full ">
-          <p className="text-brand-900/80">Phone</p>
-          <p className="w-full text-right md:text-left">
-            (+977) 9846054755, 9856041086
-          </p>
-        </div>
-        <div className="flex flex-row md:flex-col gap-1 w-full ">
           <p className="text-brand-900/80">Open</p>
           <p className="w-full text-right md:text-left">9am ~ 7pm</p>
         </div>
         <p>If closed just give a call and will open store for you.</p>
         <div className="w-full flex gap-2 ">
-          <MyButton
+          {/* <MyButton
             type="primarybutton"
             text="Get Direction"
             link="https://www.google.com/maps/dir//Banstola+Brothers"
-          />
+          /> */}
           <MyButton
-            type="secondarybutton"
+            type="primarybutton"
             text="Call Now"
             link="tel:+9779824119665"
           />
+          <MyButton type="whatsapp" text="Send Message" />
         </div>
       </div>
     </section>

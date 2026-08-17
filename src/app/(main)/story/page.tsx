@@ -5,6 +5,7 @@ import { buildStaticPageMeta } from "@/lib/metadata";
 import MyButton from "@/components/ui/MyButton";
 import SourceSection from "@/components/story/SourceSection";
 import HeroSection from "@/components/story/HeroSection";
+import LocationSection from "@/components/home/LocationSection";
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildStaticPageMeta("story");
@@ -74,7 +75,7 @@ const page = () => {
       </section> */}
 
       {/* Store Photo */}
-      <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
+      {/* <section className="max-w-[1440] flex flex-col w-full mx-auto p-4 py-32 gap-24 justify-center">
         <div className="flex flex-col max-w-[860] mx-auto gap-4 w-full text-center justify-center ">
           <h2>
             Get Original Chhurpi at our Store <br />
@@ -105,7 +106,9 @@ const page = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      <LocationSection />
 
       {/* Process Section */}
       {/* <section className=" w-full mx-auto text-center ">
